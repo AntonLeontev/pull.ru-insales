@@ -1,0 +1,843 @@
+<!-- {% for widgetDrop in widget_lists.product-list.widgets %}
+  {% widget widgetDrop %}
+{% endfor %} -->
+
+<section class="section-product-view">
+  <div class="container">
+    <div class="product_inner">
+      <div class="product_info">
+        <div class="carousel">
+          <div thumbsSlider="" class="swiper product_view_swiper_th">
+            <div class="swiper-wrapper">
+              {% for image in product.images %}
+                <div class="swiper-slide">
+                  <img src="{{ image.thumb_url }}" alt="{{ image.title }}" />
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="swiper product_view_swiper">
+            <div class="swiper-wrapper">
+              {% for image in product.images %}
+                <div class="swiper-slide">
+                  <div class="rating">
+                    4.5
+                    <span>/</span>
+                    5
+
+                  <img src="media/Star 1.svg" alt="" />
+                </div>
+                  <img src="{{ image.original_url }}" alt="{{ image.title }}" />
+                </div>
+              {% endfor %}
+              <div class="swiper-button-next"></div>
+              <div class="swiper-button-prev"></div>
+            </div>
+            <div class="swiper-pagination"></div>
+          </div>
+        </div>
+
+        <div class="product_info_char">
+          <div class="product_name">{{product.title}}</div>
+          <div class="product_price">
+            <span>{{ product.price | money }} </span>
+            <div class="product_old_price">{{ product.old_price | money }}</div>
+          </div>
+          <div class="product_details">
+
+            <form>
+
+            {% for option in product.options %}
+              <select
+                  name="{{option.id}}"
+                  id="select-{{option.id}}"
+                  class="nice_select select_ordinary">
+                  <option value="0" selected>Выберите {{option.title}}</option>
+                      {% for value in option.values %}
+                        <option value="{{ value.id }}">{{ value.title | escape }}</option>
+                      {% endfor %}
+              </select>
+            {% endfor %}
+
+            </form>
+
+            <form action="{{ cart_url }}" method="post" class="data">
+                <input type="hidden" name="variant_id" value="{{ product.variants.first.id }}"/>
+                <button class="add_to_card button_black">Добавить в корзину</button>
+            </form>
+
+            <a href="#" class="save_btn"
+              >В избранное <img src="{{ 'ICO-heart.svg' | asset_url }}" alt=""
+            /></a>
+            <div class="deleviry_info">
+              <div class="info_item">
+                <div class="info_img">
+                  <img
+                    src="{{ 'iconamoon_delivery-fast-thin.svg' | asset_url }}"
+                    alt="" />
+                </div>
+                <div>
+                  B пункты <span>выдачи заказов</span> с примеркой,
+                  бесплатно при покупке <br />
+                  от 3 500 ₽
+                </div>
+              </div>
+              <div class="info_item">
+                <div class="info_img">
+                  <img
+                    src="{{ 'iconamoon_delivery-fast-thin.svg' | asset_url }}"
+                    alt="" />
+                </div>
+                <div>
+                  По адресу, <span>курьером</span> — с примеркой,
+                  бесплатно при покупке <br />от 4 500 ₽
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="product_tab">
+        <div class="tab_header">
+          <a href="#" class="tab_header_item active" data-tab="info_tab"
+            >О товаре</a
+          >
+          <a href="#" class="tab_header_item" data-tab="review_tab"
+            >Отзывы ({{product.reviews_count}})</a
+          >
+          <a href="#" class="tab_header_item" data-tab="questions_tab"
+            >Вопросы (0)</a
+          >
+        </div>
+        <div class="tab_body">
+          <div class="tab_body_item info_tab active">
+            <div class="info_tab_list">
+
+              {% for property in product.properties %}
+
+                  <div class="list_item">
+                    <div class="item_label">{{property.name}}</div>
+                     
+                    <div class="item_info">{% for item in property.characteristics %}{{item.name}},{% endfor %}</div>
+                  </div>
+
+              {% endfor %}
+              
+            </div>
+          </div>
+          <!-- em - empty
+                    nem- not empty
+                -->
+          <div class="tab_body_item review_tab nem">
+            {% if account.reviews_enabled? %}
+              
+              
+              {% if product.reviews == empty %}
+                
+                <div class="tab_item_innner">
+                  <div class="tab_item_title">Нет отзывов</div>
+                  <div class="subtitle">
+                    О нет! На данный товар пока никто не оставил свой отзыв.
+                  </div>
+                  <a href="#" class="btn">Оставить отзыв</a>
+                </div>
+
+              {% else %}
+
+                <div class="not_empty">
+                  <div class="review_header">
+                    <div class="review_rating">
+                      4.5
+                      <img src="media/star.svg" alt="" />
+                      <div class="rating_text">Суммарная оценка</div>
+                    </div>
+                    <div class="review_header_slider_wr">
+                      <div class="swiper review_header_slider">
+                        <!-- Additional required wrapper -->
+                        <div class="swiper-wrapper">
+                          <!-- Slides -->
+                          <div class="swiper-slide">
+                            <a href="#" class="moree_review"
+                              ><img
+                                src="{{ 'product-thumb.png' | asset_url }}"
+                                alt="" /><span>Подробнее</span></a
+                            >
+                          </div>
+                          <div class="swiper-slide">
+                            <a href="#" class="moree_review"
+                              ><img
+                                src="{{ 'product-thumb.png' | asset_url }}"
+                                alt="" /><span>Подробнее</span></a
+                            >
+                          </div>
+                          <div class="swiper-slide">
+                            <a href="#" class="moree_review"
+                              ><img
+                                src="{{ 'product-thumb.png' | asset_url }}"
+                                alt="" /><span>Подробнее</span></a
+                            >
+                          </div>
+                          <div class="swiper-slide">
+                            <a href="#" class="moree_review"
+                              ><img
+                                src="{{ 'product-thumb.png' | asset_url }}"
+                                alt="" /><span>Подробнее</span></a
+                            >
+                          </div>
+                          <div class="swiper-slide">
+                            <a href="#" class="moree_review"
+                              ><img
+                                src="{{ 'product-thumb.png' | asset_url }}"
+                                alt="" /><span>Подробнее</span></a
+                            >
+                          </div>
+                          <div class="swiper-slide">
+                            <a href="#" class="moree_review"
+                              ><img
+                                src="{{ 'product-thumb.png' | asset_url }}"
+                                alt="" /><span>Подробнее</span></a
+                            >
+                          </div>
+                          <div class="swiper-slide">
+                            <a href="#" class="moree_review"
+                              ><img
+                                src="{{ 'product-thumb.png' | asset_url }}"
+                                alt="" /><span>Подробнее</span></a
+                            >
+                          </div>
+                          <div class="swiper-slide">
+                            <a href="#" class="moree_review"
+                              ><img
+                                src="{{ 'product-thumb.png' | asset_url }}"
+                                alt="" /><span>Подробнее</span></a
+                            >
+                          </div>
+                          <div class="swiper-slide">
+                            <a href="#" class="moree_review"
+                              ><img
+                                src="{{ 'product-thumb.png' | asset_url }}"
+                                alt="" /><span>Подробнее</span></a
+                            >
+                          </div>
+                          <div class="swiper-slide">
+                            <a href="#" class="moree_review"
+                              ><img
+                                src="{{ 'product-thumb.png' | asset_url }}"
+                                alt="" /><span>Подробнее</span></a
+                            >
+                          </div>
+                          <div class="swiper-slide">
+                            <a href="#" class="moree_review"
+                              ><img
+                                src="{{ 'product-thumb.png' | asset_url }}"
+                                alt="" /><span>Подробнее</span></a
+                            >
+                          </div>
+                          <div class="swiper-slide">
+                            <a href="#" class="moree_review"
+                              ><img
+                                src="{{ 'product-thumb.png' | asset_url }}"
+                                alt="" /><span>Подробнее</span></a
+                            >
+                          </div>
+                        </div>
+                      </div>
+                      <!-- If we need navigation buttons -->
+                      <div class="swiper-button-next">
+                        <img src="media/ICO-next.svg" alt="" />
+                      </div>
+                      <div class="swiper-button-prev">
+                        <img src="media/ICO-back.svg" alt="" />
+                      </div>
+                    </div>
+                  </div>
+                  {% for review in product.reviews %}
+                    <div class="comment_item">
+                      <div class="comment_name">Андрей Н.</div>
+                      <div class="comment_text">
+                        There are many variations of passages of Lorem Ipsum
+                        available, but the majority have suffered alteration
+                        in some form, by injected humour
+                      </div>
+                      <div class="comment_rating">
+                        <img src="media/star (1).svg" alt="" />
+                      </div>
+                      <div class="comment_info">Отличный товар</div>
+                    </div>
+                  {% endfor %}
+                </div>
+
+              {% endif %}
+            {% endif %}
+          </div>
+          <div class="tab_body_item questions_tab em">
+            <div class="tab_item_innner empty">
+              <div class="tab_item_title">Нет вопросов</div>
+              <div class="subtitle">
+                Пока никто не задавал уточняющих вопросов
+              </div>
+              <a href="#" class="btn">Задать вопрос</a>
+            </div>
+            <div class="not_empty">
+              <div class="comment_item">
+                <div class="comment_name">Андрей Н.</div>
+                <div class="comment_text">
+                  There are many variations of passages of Lorem Ipsum
+                  available, but the majority have suffered alteration
+                  in some form, by injected humour
+                </div>
+                <div class="accordion_content">
+                  <div class="comment_info answer_title">Ответ</div>
+                  <div class="comment_text">
+                    There are many variations of passages of Lorem Ipsum
+                    available, but the majority have suffered alteration
+                    in some form, by injected humour
+                  </div>
+                </div>
+                <a href="#" class="comment_info accordion_link"
+                  >Показать ответ
+                  <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
+                /></a>
+              </div>
+              <div class="comment_item">
+                <div class="comment_name">Андрей Н.</div>
+                <div class="comment_text">
+                  There are many variations of passages of Lorem Ipsum
+                  available, but the majority have suffered alteration
+                  in some form, by injected humour
+                </div>
+                <div class="accordion_content">
+                  <div class="comment_info answer_title">Ответ</div>
+                  <div class="comment_text">
+                    There are many variations of passages of Lorem Ipsum
+                    available, but the majority have suffered alteration
+                    in some form, by injected humour
+                  </div>
+                </div>
+                <a href="#" class="comment_info accordion_link"
+                  >Показать ответ
+                  <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
+                /></a>
+              </div>
+              <div class="comment_item">
+                <div class="comment_name">Андрей Н.</div>
+                <div class="comment_text">
+                  There are many variations of passages of Lorem Ipsum
+                  available, but the majority have suffered alteration
+                  in some form, by injected humour
+                </div>
+                <div class="accordion_content">
+                  <div class="comment_info answer_title">Ответ</div>
+                  <div class="comment_text">
+                    There are many variations of passages of Lorem Ipsum
+                    available, but the majority have suffered alteration
+                    in some form, by injected humour
+                  </div>
+                </div>
+                <a href="#" class="comment_info accordion_link"
+                  >Показать ответ
+                  <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
+                /></a>
+              </div>
+              <div class="comment_item">
+                <div class="comment_name">Андрей Н.</div>
+                <div class="comment_text">
+                  There are many variations of passages of Lorem Ipsum
+                  available, but the majority have suffered alteration
+                  in some form, by injected humour
+                </div>
+                <div class="accordion_content">
+                  <div class="comment_info answer_title">Ответ</div>
+                  <div class="comment_text">
+                    There are many variations of passages of Lorem Ipsum
+                    available, but the majority have suffered alteration
+                    in some form, by injected humour
+                  </div>
+                </div>
+                <a href="#" class="comment_info accordion_link"
+                  >Показать ответ
+                  <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
+                /></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+      </div>
+
+      <div class="product_accordion mb">
+        <div class="accordion_item">
+          <a href="" class="accordion_link ">
+            О товаре <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
+          </a>
+          <div class="accordion_content">
+            <div class="info_tab_list">
+
+              {% for property in product.properties %}
+              
+                <div class="list_item">
+                  <div class="item_label">{{property.name}}</div>
+                  <div class="item_info">{% for item in property.characteristics %}{{item.name}},{% endfor %}</div>
+                </div>
+
+              {% endfor %}
+
+            </div>
+
+            <div class="description">
+              {{product.description}}
+            </div>
+          </div>
+
+          <div class="accardion_footer">
+            <a href="" class="accordion_link_hide ">
+              <span>Скрыть</span> <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
+            </a>
+            
+          </div>
+        </div>
+        <div class="accordion_item">
+          <a href="" class="accordion_link ">
+            Отзывы ({{product.reviews_count}}) <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
+          </a>
+          <div class="accordion_content">
+            <div class="review_header">
+
+              <div class="review_rating">
+                4.5
+                <div>
+                  <img src="media/star.svg" alt="" />
+                  <a href="#" class="rating_text">Написать отзыв</a> 
+                </div>
+              </div>
+
+              <div class="review_header_slider_wr">
+                <div class="swiper review_header_slider">
+                  <!-- Additional required wrapper -->
+                  <div class="swiper-wrapper">
+                    <!-- Slides -->
+                    <div class="swiper-slide">
+                      <a href="#" class="moree_review"
+                        ><img
+                          src="{{ 'product-thumb.png' | asset_url }}"
+                          alt="" /><span>Подробнее</span></a
+                      >
+                    </div>
+                    <div class="swiper-slide">
+                      <a href="#" class="moree_review"
+                        ><img
+                          src="{{ 'product-thumb.png' | asset_url }}"
+                          alt="" /><span>Подробнее</span></a
+                      >
+                    </div>
+                    <div class="swiper-slide">
+                      <a href="#" class="moree_review"
+                        ><img
+                          src="{{ 'product-thumb.png' | asset_url }}"
+                          alt="" /><span>Подробнее</span></a
+                      >
+                    </div>
+                    <div class="swiper-slide">
+                      <a href="#" class="moree_review"
+                        ><img
+                          src="{{ 'product-thumb.png' | asset_url }}"
+                          alt="" /><span>Подробнее</span></a
+                      >
+                    </div>
+                    <div class="swiper-slide">
+                      <a href="#" class="moree_review"
+                        ><img
+                          src="{{ 'product-thumb.png' | asset_url }}"
+                          alt="" /><span>Подробнее</span></a
+                      >
+                    </div>
+                    <div class="swiper-slide">
+                      <a href="#" class="moree_review"
+                        ><img
+                          src="{{ 'product-thumb.png' | asset_url }}"
+                          alt="" /><span>Подробнее</span></a
+                      >
+                    </div>
+                    <div class="swiper-slide">
+                      <a href="#" class="moree_review"
+                        ><img
+                          src="{{ 'product-thumb.png' | asset_url }}"
+                          alt="" /><span>Подробнее</span></a
+                      >
+                    </div>
+                    <div class="swiper-slide">
+                      <a href="#" class="moree_review"
+                        ><img
+                          src="{{ 'product-thumb.png' | asset_url }}"
+                          alt="" /><span>Подробнее</span></a
+                      >
+                    </div>
+                    <div class="swiper-slide">
+                      <a href="#" class="moree_review"
+                        ><img
+                          src="{{ 'product-thumb.png' | asset_url }}"
+                          alt="" /><span>Подробнее</span></a
+                      >
+                    </div>
+                    <div class="swiper-slide">
+                      <a href="#" class="moree_review"
+                        ><img
+                          src="{{ 'product-thumb.png' | asset_url }}"
+                          alt="" /><span>Подробнее</span></a
+                      >
+                    </div>
+                    <div class="swiper-slide">
+                      <a href="#" class="moree_review"
+                        ><img
+                          src="{{ 'product-thumb.png' | asset_url }}"
+                          alt="" /><span>Подробнее</span></a
+                      >
+                    </div>
+                    <div class="swiper-slide">
+                      <a href="#" class="moree_review"
+                        ><img
+                          src="{{ 'product-thumb.png' | asset_url }}"
+                          alt="" /><span>Подробнее</span></a
+                      >
+                    </div>
+                  </div>
+                </div>
+                <!-- If we need navigation buttons -->
+                <div class="swiper-button-next">
+                  <img src="{{ 'ICO-next.svg' | asset_url }}" alt="" />
+                </div>
+                <div class="swiper-button-prev">
+                  <img src="{{ 'ICO-back.svg' | asset_url }}" alt="" />
+                </div>
+              </div>
+            </div>
+            {% if product.reviews_count > 0 %}
+              {% for review in product.reviews %}
+
+                <div class="comment_item">
+                  <div class="comment_name">{{ review.author }}</div>
+                  <div class="comment_text">
+                    {{ review.content | newline_to_br }}
+                  </div>
+                  <div class="comment_rating">
+                    <img src="{{ 'star (1).svg' | asset_url }}" alt="" />
+                  </div>
+                  <div class="comment_info">{{ review.rating }}</div>
+                </div>
+
+              {% endfor %}
+            {% endif %}
+
+          </div>
+
+          <div class="accardion_footer p-0">
+            <a href="#" class="more_link">Больше отзывов</a>
+            <a href="#" class="accordion_link_hide ">
+              <span>Скрыть</span> <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
+            </a>
+            
+          </div>
+          
+        </div>
+        <div class="accordion_item">
+          <a href="" class="accordion_link ">
+            Вопросы (12) <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
+          </a>
+          <div class="accordion_content">
+            <div class="comment_item">
+              <div class="comment_name">Андрей Н.</div>
+              <div class="comment_text">
+                There are many variations of passages of Lorem Ipsum
+                available, but the majority have suffered alteration
+                in some form, by injected humour
+              </div>
+              <div class="accordion_content">
+                <div class="comment_info answer_title">Ответ</div>
+                <div class="comment_text">
+                  There are many variations of passages of Lorem Ipsum
+                  available, but the majority have suffered alteration
+                  in some form, by injected humour
+                </div>
+              </div>
+              <a href="#" class="comment_info accordion_link"
+                >Показать ответ
+                <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
+              /></a>
+            </div>
+            <div class="comment_item">
+              <div class="comment_name">Андрей Н.</div>
+              <div class="comment_text">
+                There are many variations of passages of Lorem Ipsum
+                available, but the majority have suffered alteration
+                in some form, by injected humour
+              </div>
+              <div class="accordion_content">
+                <div class="comment_info answer_title">Ответ</div>
+                <div class="comment_text">
+                  There are many variations of passages of Lorem Ipsum
+                  available, but the majority have suffered alteration
+                  in some form, by injected humour
+                </div>
+              </div>
+              <a href="#" class="comment_info accordion_link"
+                >Показать ответ
+                <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
+              /></a>
+            </div>
+            <div class="comment_item">
+              <div class="comment_name">Андрей Н.</div>
+              <div class="comment_text">
+                There are many variations of passages of Lorem Ipsum
+                available, but the majority have suffered alteration
+                in some form, by injected humour
+              </div>
+              <div class="accordion_content">
+                <div class="comment_info answer_title">Ответ</div>
+                <div class="comment_text">
+                  There are many variations of passages of Lorem Ipsum
+                  available, but the majority have suffered alteration
+                  in some form, by injected humour
+                </div>
+              </div>
+              <a href="#" class="comment_info accordion_link"
+                >Показать ответ
+                <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
+              /></a>
+            </div>
+            <div class="comment_item">
+              <div class="comment_name">Андрей Н.</div>
+              <div class="comment_text">
+                There are many variations of passages of Lorem Ipsum
+                available, but the majority have suffered alteration
+                in some form, by injected humour
+              </div>
+              <div class="accordion_content">
+                <div class="comment_info answer_title">Ответ</div>
+                <div class="comment_text">
+                  There are many variations of passages of Lorem Ipsum
+                  available, but the majority have suffered alteration
+                  in some form, by injected humour
+                </div>
+              </div>
+              <a href="#" class="comment_info accordion_link"
+                >Показать ответ
+                <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
+              /></a>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      <!-- <div class="pagination">
+        <ul class="pagination_list">
+          <li class="list_item">
+            <a href="#" class="list_link active">1</a>
+          </li>
+          <li class="list_item">
+            <a href="#" class="list_link">2</a>
+          </li>
+          <li class="list_item">
+            <a href="#" class="list_link">3</a>
+          </li>
+          <li class="list_item">
+            <a href="#" class="list_link">4</a>
+          </li>
+          <li class="list_item">
+            <a href="#" class="list_link"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="21"
+                height="20"
+                viewBox="0 0 21 20"
+                fill="none">
+                <path
+                  d="M6.37968 2.39402C6.49901 2.26917 6.64098 2.17007 6.79739 2.10244C6.95381 2.03482 7.12158 2 7.29103 2C7.46048 2 7.62825 2.03482 7.78467 2.10244C7.94108 2.17007 8.08305 2.26917 8.20238 2.39402L14.6203 9.05425C14.7406 9.17808 14.8361 9.3254 14.9013 9.48773C14.9664 9.65005 15 9.82415 15 10C15 10.1758 14.9664 10.35 14.9013 10.5123C14.8361 10.6746 14.7406 10.8219 14.6203 10.9458L8.20238 17.606C8.08305 17.7308 7.94109 17.8299 7.78467 17.8976C7.62825 17.9652 7.46048 18 7.29103 18C7.12158 18 6.95381 17.9652 6.79739 17.8976C6.64098 17.8299 6.49901 17.7308 6.37968 17.606C6.25938 17.4822 6.16388 17.3348 6.09872 17.1725C6.03355 17.0102 6 16.8361 6 16.6602C6 16.4844 6.03355 16.3103 6.09872 16.148C6.16388 15.9856 6.25937 15.8383 6.37968 15.7145L11.8991 10L6.37968 4.28552C6.25937 4.16169 6.16388 4.01437 6.09872 3.85204C6.03355 3.68972 6 3.51562 6 3.33977C6 3.16392 6.03355 2.98982 6.09872 2.8275C6.16388 2.66517 6.25937 2.51785 6.37968 2.39402Z"
+                  fill="#939393" /></svg></a>
+          </li>
+        </ul>
+      </div> -->
+    </div>
+    <div class="same_links">
+      <a href="#" class="same_link">
+        <div class="same_link_img">
+          <img src="{{ 'IMG-blck.png' | asset_url }}" alt="" />
+        </div>
+        <div class="same_link_text">
+          <div class="same_link_name">
+            Все спротивные костюмы «BOSS»
+          </div>
+          <div class="same_link_subname">Бренд и категория</div>
+        </div>
+      </a>
+      <a href="#" class="same_link">
+        <div class="same_link_img">
+          <img src="{{ 'IMG-boss.svg' | asset_url }}" alt="" />
+
+        </div>
+        <div class="same_link_text">
+          <div class="same_link_name">Вся продукция «BOSS»</div>
+          <div class="same_link_subname">Бренд</div>
+        </div>
+      </a>
+      <a href="#" class="same_link">
+        <div class="same_link_img">
+          <img src="{{ 'IMG-blck.png' | asset_url }}" alt="" />
+        </div>
+        <div class="same_link_text">
+          <div class="same_link_name">Все спортиные костюмы</div>
+          <div class="same_link_subname">Категория</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+{% if product.similar_products.size > 0 %}
+
+<!-- section-products-carousel-->
+<section class="section-products-carousel">
+  <div class="container">
+    <div class="products_header section_header">
+      <div class="section_title">Похожие</div>
+      <div class="slider_buttons">
+        <div class="swiper-button-next">
+          <img src="{{ 'ICO-next.svg' | asset_url }}" alt="" />
+        </div>
+        <div class="swiper-button-prev">
+          <img src="{{ 'ICO-back.svg' | asset_url }}" alt="" />
+        </div>
+      </div>
+    </div>
+    <!-- Slider main container -->
+    <div
+      class="swiper products_swiper swiper-initialized swiper-horizontal swiper-backface-hidden">
+      <!-- Additional required wrapper -->
+      <div
+        class="swiper-wrapper"
+        id="swiper-wrapper-cb1071e566d10864ee"
+        aria-live="polite">
+        <!-- Slides -->
+
+        
+        {% for product in product.similar_products %}
+          <div class="swiper-slide">
+            <div class="product_slide_card">
+              <a href="{{ product.url }}" class="product_card_img">
+                <img src="{{ product.first_image.large_url }}" alt="" />
+
+                <div class="labels">
+                  <div class="labe_discount">-24%</div>
+                  <div class="labe_premium">-Premium</div>
+                </div>
+                <div class="product_save_btn">
+                  <a href="" class="img"
+                    ><img src="{{ 'ICO-heart.svg' | asset_url }}" alt=""
+                  /></a>
+                </div>
+              </a>
+              <div class="product_card_itext">
+                <a href="{{ product.url }}" class="product_card_name">{{ product.title }}</a>
+                
+                <div class="product_card_prices">
+                  <div class="product_card_price">{{ product.price | money }}</div>
+                  <div class="product_card_old_price">{{ product.old_price | money }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+
+        
+
+      </div>
+
+      <!-- If we need navigation buttons -->
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+      <span
+        class="swiper-notification"
+        aria-live="assertive"
+        aria-atomic="true"></span>
+    </div>
+  </div>
+</section>
+
+{% endif %}
+<!-- 
+<section class="section-products-recent">
+  <div class="container">
+    <div class="products_header section_header">
+      <div class="section_title">Недавно смотрели</div>
+    </div>
+    
+    <div class="product_slide_card">
+      <a href="#" class="product_card_img">
+        <img src="media/product-card.png" alt="" />
+
+        <div class="labels">
+          <div class="labe_discount">-24%</div>
+          <div class="labe_premium">-Premium</div>
+        </div>
+        <div class="product_save_btn">
+          <a href="" class="img"
+            ><img src="media/ICO-heart.svg" alt=""
+          /></a>
+        </div>
+      </a>
+      <div class="product_card_itext">
+        <a href="#" class="product_card_name"
+          >Спортивный костюм “BOSS”</a
+        >
+        <div class="product_card_prices">
+          <div class="product_card_price">2 931,65 ₽</div>
+          <div class="product_card_old_price">2 931,65 ₽</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+
+<script>
+
+  // var in_stock_text = '<p class="in_stock">Товар есть в наличии</p>';
+  // var sold_out_text = '<p class="sold_out">Товар распродан</p>';
+  // var not_available_text = '<p class="not_available">Такой комплектации нет в наличии</p>';
+  // {% if product.available == false %}
+  //   $('.product_form .submit_bg').addClass('submit_bg_disabled');
+  //   $('.product_available').html(sold_out_text);
+  // {% endif %}
+
+  // var selectCallback = function(variant, selector) {
+
+  //   $('.add_button').removeAttr('disabled');
+  //   $('.product_form .submit_bg').removeClass('submit_bg_disabled');
+  //   $('.product_available').html(in_stock_text);
+  //   if(variant){
+  //     $('.product_price span').html(InSales.formatMoney(variant.price, "{{ money_with_currency_format }}"));
+  //     $('.product_price .product_old_price').html(InSales.formatMoney(variant.old_price, "{{ money_with_currency_format }}"));
+  //   }
+  //   if(variant && variant.available == true){
+  //     $('.product_price span').html(InSales.formatMoney(variant.price, "{{ money_with_currency_format }}"));
+  //     $('.product_price .product_old_price').html(InSales.formatMoney(variant.old_price, "{{ money_with_currency_format }}"));
+  //   }else{
+  //     if(variant){
+  //       $('.add_button').attr('disabled','disabled');
+  //       $('.product_form .submit_bg').addClass('submit_bg_disabled');
+  //       $('.product_available').html(sold_out_text);
+  //       $('#price-field').html(InSales.formatMoney(variant.price, "{{ money_with_currency_format }}"));
+  //       $('#old-price-field').html(InSales.formatMoney(variant.old_price, "{{ money_with_currency_format }}"));
+  //     }else{
+  //       $('.sku').html('<span>Артикул:</span> —');
+  //       $('.add_button').attr('disabled','disabled');
+  //       $('.product_form .submit_bg').addClass('submit_bg_disabled');
+  //       $('.product_available').html(not_available_text);
+  //       $('#price-field').html('—');
+  //       $('#old-price-field').html('');
+  //     }
+  //   }
+  // };
+  // new InSales.OptionSelectors('size-select', { product: {{ product | json }}, onVariantSelected: selectCallback });
+</script>

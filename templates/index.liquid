@@ -1,0 +1,19 @@
+{% include "banners" %}
+
+{% include "categories" %}
+
+{% include "bestsellers" %}
+
+{% include "big_black_banner" %}
+
+{% include "popular_brands" %}
+
+{% include "collection_new" %}
+
+{% include "section_blog" %}
+
+{% include "section_apps_block" %}
+
+{% for widgetDrop in widget_lists.index-list.widgets %}
+  {% widget widgetDrop %}
+{% endfor %}

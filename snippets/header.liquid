@@ -1,0 +1,101 @@
+<header class="header">
+  <div class="header__top">
+    <div class="container">
+      <div class="header__top_inner">
+        <div class="adress">
+          <a href="#" class="address_link header_link">
+            <img src="{{ 'ICO-GPS.svg' | asset_url }}" alt="" /> Укажите адрес
+            доставки</a
+          >
+        </div>
+        <div class="payment">
+          <a href="#" class="payment_link header_link"
+            >Доставка и оплата</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="header__navbar">
+    <div class="container">
+      <div class="header__navbar_actions">
+        <div class="mb_header_buttons">
+          <div class="mb burger_btn_toggler">
+            <a href="#" class="btn"
+              ><img src="{{ 'ICO-burger.svg' | asset_url }}" alt=""
+            /></a>
+          </div>
+          <div class="mb">
+            <button><img src="{{ 'ICO-search.svg' | asset_url }}" alt="" /></button>
+          </div>
+        </div>
+        <div class="header_logo">
+          <a href="/"><img src="{{ 'logo-black.png' | asset_url }}" alt="" /></a>
+        </div>
+
+        <div class="header_search_bar">
+          <form action="/search">
+            <input
+              type="text"
+              placeholder="Искать “Женское пальто”"
+              name="search"
+              class="ordinary_input" />
+            <button class="button_black">Искать</button>
+          </form>
+        </div>
+        <div class="header_account_actions">
+          <a href="/cart_items"><img src="{{ 'ICO-shop.svg' | asset_url }}" alt="" /></a>
+          <a href="/client_account/login"><img src="{{ 'ICO-profil.svg' | asset_url }}" alt="" /></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="header__category">
+    <div class="container">
+      <div class="category_inner">
+        <div class="category_pol">
+          
+          {% for link in linklists.gender-menu.links %}
+            <a href="{{link.url}}" class="{% if link.current? %} active	{% endif %}">{{link.title}}</a>
+            {% unless forloop.last %}
+              <span class="delimiter">/</span>
+            {% endunless %}
+          {% endfor %}
+
+        </div>
+        <div class="category_list">
+          <div class="list_item mb">
+            <div class="category_pol">
+              {% for link in linklists.gender-menu.links %}
+                <a href="{{link.url}}" class="{% if link.current? %} active	{% endif %}">{{link.title}}</a>
+                {% unless forloop.last %}
+                  <span class="delimiter">/</span>
+                {% endunless %}
+              {% endfor %}
+            </div>
+          </div>
+          <!-- <div class="list_item">
+            <img src="{{ 'ICO-diskount.svg' | asset_url }}" alt="" /><a
+              href="#"
+              class="list_link"
+              >Распродажа</a>
+          </div> -->
+
+          {% for link in linklists.main-menu.links %}
+            <div class="list_item">
+              <a href="{{link.url}}" class="list_link">{{link.title}}</a>
+            </div>
+          {% endfor %}
+          
+          <div class="list_item mb">
+            <a href="#" class="button_black">Войти</a>
+            <a href="#" class="mb-link">Укажите адрес доставки</a>
+            <a href="#" class="mb-link"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>

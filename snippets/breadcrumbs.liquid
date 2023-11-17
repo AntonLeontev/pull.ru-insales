@@ -1,0 +1,129 @@
+<!-- Breadcrumbs -->
+<div class="container">
+  <ul class="breadcrumb">
+
+    {% case template %}
+      {% when 'collection' %}
+      
+        <li class="breadcrumb_item">
+          <a class="breadcrumb_link" href="/">Главная</a>
+        </li>
+
+        {% if current_collections.size > 0 %}
+
+          {% for collection in current_collections %}
+            {% if forloop.last %}
+              {% if collection.level > 0 %}
+              <li class="breadcrumb_item">
+                <span class="breadcrumb_link" class="current">{{ collection.title }}</span>
+              </li>
+              {% endif %}
+            {% else %}
+              {% if collection.level > 0 %}
+              <li class="breadcrumb_item">
+                <a class="breadcrumb_link" href="{{ collection.url }}">{{ collection.title }}</a>
+              </li>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+
+        {% endif %}
+      {% when 'product' %}
+      {{current_collections}}
+        <li class="breadcrumb_item">
+          <a class="breadcrumb_link" href="/">Главная</a>
+        </li>
+      
+        {% if product.collections.size > 0 %}
+          {% for collection in product.collections %}
+            {% if collection.level > 0 %}
+              <li class="breadcrumb_item">
+                <a class="breadcrumb_link" href="{{ collection.url }}">{{ collection.title }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+
+        <li class="breadcrumb_item">
+          <span class="breadcrumb_link">{{ product.title }} </span>
+        </li>
+
+      {% when 'blog' %}
+
+        <li class="breadcrumb_item">
+          <a class="breadcrumb_link" href="/">Главная</a>
+        </li>
+
+        <li class="breadcrumb_item">
+          <span class="breadcrumb_link">{{ blog.title }}</span>
+        </li>
+      
+      {% when 'article' %}
+
+        <li class="breadcrumb_item">
+          <a class="breadcrumb_link" href="/">Главная</a>
+        </li>
+
+        <li class="breadcrumb_item">
+          <a class="breadcrumb_link" href="/blog">{{ blog.title }}</a>
+        </li>
+
+        <li class="breadcrumb_item">
+          <span class="breadcrumb_link">{{ article.title }}</span>
+        </li>
+
+      {% when 'page' %}
+        
+        <li class="breadcrumb_item">
+          <a class="breadcrumb_link" href="/">Главная</a>
+        </li>
+
+        <li class="breadcrumb_item">
+          <span class="breadcrumb_link">{{ page.title }}</span>
+        </li>
+
+      {% when '404' %}
+      
+        <li class="breadcrumb_item">
+          <a class="breadcrumb_link" href="/">Главная</a>
+        </li>
+
+        <li class="breadcrumb_item">
+          <span class="breadcrumb_link">Страница не найдена</span>
+        </li>
+
+      {% when 'search' %}
+
+        <li class="breadcrumb_item">
+          <a class="breadcrumb_link" href="/">Главная</a>
+        </li>
+
+        <li class="breadcrumb_item">
+          <span class="breadcrumb_link">Поиск по каталогу</span>
+        </li>
+
+      {% when 'cart' %}
+
+        <li class="breadcrumb_item">
+          <a class="breadcrumb_link" href="/">Главная</a>
+        </li>
+
+        <li class="breadcrumb_item">
+          <span class="breadcrumb_link">Ваша корзина</span>
+        </li>
+
+      {% when 'compare' %}
+
+        <li class="breadcrumb_item">
+          <a class="breadcrumb_link" href="/">Главная</a>
+        </li>
+
+        <li class="breadcrumb_item">
+          <span class="breadcrumb_link">Сравнение товаров</span>
+        </li>
+
+      {% else %}
+        
+    {% endcase %}
+  </ul>
+</div>

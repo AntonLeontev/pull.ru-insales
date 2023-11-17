@@ -1,0 +1,86 @@
+<!-- section-blog-carousel-->
+<section class="section-relevant-carousel">
+  <div class="container">
+    <div class="products_header section_header">
+      <div class="section_title">Актуально</div>
+      <div class="slider_buttons">
+        <div
+          class="swiper-button-next"
+          tabindex="0"
+          role="button"
+          aria-label="Next slide"
+          aria-controls="swiper-wrapper-878d5bebf13e18f4">
+          <img src="{{ 'ICO-next.svg' | asset_url }}" alt="" />
+        </div>
+        <div
+          class="swiper-button-prev"
+          tabindex="0"
+          role="button"
+          aria-label="Previous slide"
+          aria-controls="swiper-wrapper-878d5bebf13e18f4">
+          <img src="{{ 'ICO-back.svg' | asset_url }}" alt="" />
+        </div>
+      </div>
+    </div>
+    <div class="relevant_inner">
+      <!-- Slider main container -->
+      <div
+        class="swiper relevant_swiper swiper-initialized swiper-horizontal swiper-backface-hidden">
+        <!-- Additional required wrapper -->
+        <div
+          class="swiper-wrapper"
+          id="swiper-wrapper-878d5bebf13e18f4"
+          aria-live="polite">
+          <!-- Slides -->
+          {% for blog in blogs %}
+            {% for article in blog.articles  %}
+            
+              <div class="swiper-slide relevant-slide">
+                <div class="relevant_slide_inner">
+                  <a href="{{article.url}}" class="img">
+                    <img src="{{article.image.large_url}}" alt="" />
+                  </a>
+                  <div class="text">
+                    <a href="{{article.url}}" class="relevant_name">{{article.title}}</a>
+
+                    <div class="relevant_subtitle">на каждый день</div>
+                  </div>
+                </div>
+              </div>
+
+            {% endfor%}
+          {% endfor %}
+
+          <!-- Slides -->
+          {% for blog in blogs %}
+            {% for article in blog.articles  %}
+            
+              <div class="swiper-slide relevant-slide">
+                <div class="relevant_slide_inner">
+                  <a href="#" class="img">
+                    <img src="{{article.image.large_url}}" alt="" />
+                  </a>
+                  <div class="text">
+                    <a href="#" class="relevant_name">{{article.title}}</a>
+
+                    <div class="relevant_subtitle">на каждый день</div>
+                  </div>
+                </div>
+              </div>
+
+            {% endfor%}
+          {% endfor %}
+
+        </div>
+
+        <!-- If we need navigation buttons -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+        <span
+          class="swiper-notification"
+          aria-live="assertive"
+          aria-atomic="true"></span>
+      </div>
+    </div>
+  </div>
+</section>

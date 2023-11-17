@@ -1,0 +1,55 @@
+<!-- section-categories-carousel -->
+<section class="section-categories-carousel">
+  <div class="container">
+    <div class="accordeon">
+      <div class="section-categories-carousel__inner">
+        {% for block in block_lists.with_template['system-promo-slider-7'].categories.blocks %}
+
+          <div class="categories-slide">
+            <div class="categories_slide_inner">
+              <a href="#" class="categories_slide_img">
+                <img src="{{block.image}}" alt="" />
+              </a>
+              <a href="#" class="categories_slide_label">{{block.title}}</a>
+            </div>
+          </div>
+        
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="show_toggler">
+      <button class="link_more"><span>Показать ещё</span></button>
+    </div>
+  </div>
+</section>
+
+<script>
+  let categories = document.querySelector('.section-categories-carousel')
+  let accordeon = categories.querySelector('.accordeon')
+  let itemHeight = categories.querySelector('.categories-slide').offsetHeight
+  let totalHeight = categories.querySelector('.section-categories-carousel__inner').offsetHeight
+  
+  let categoriesToggle = categories.querySelector('.link_more')
+
+  if (itemHeight == totalHeight) {
+    categoriesToggle.hidden = true
+  } else {
+    accordeon.style.height = itemHeight + 'px'
+    categoriesToggle.addEventListener('click', toggleCategories)
+  }
+
+  function toggleCategories() {
+  console.log('test')
+    if (itemHeight == accordeon.offsetHeight) {
+      categoriesToggle.classList.add('active')
+      accordeon.style.height = totalHeight + 'px'
+      categoriesToggle.querySelector('span').innerText = 'Скрыть'
+      return
+    }
+
+    categoriesToggle.classList.remove('active')
+    accordeon.style.height = itemHeight + 'px'
+    categoriesToggle.querySelector('span').innerText = 'Показать ещё'
+  }
+</script>

@@ -34,22 +34,5 @@
 
     {% include "microdata" %}
 
-    <!-- Изменение ссылок при просмотре не основного шаблона -->
-    <script>
-      let loc = new URL(document.location.href);
-
-      if (loc.searchParams.has("theme_preview")) {
-        let ref = loc.searchParams.get("theme_preview");
-        let links = document.querySelectorAll("a");
-
-        links.forEach((link) => {
-          if (link.href.includes("pull.ru")) {
-            let url = new URL(link.href);
-            url.searchParams.set("theme_preview", ref);
-            link.href = url.href;
-          }
-        });
-      }
-    </script>
   </body>
 </html>

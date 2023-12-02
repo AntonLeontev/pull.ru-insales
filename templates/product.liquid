@@ -26,7 +26,7 @@
                     <span>/</span>
                     5
 
-                  <img src="media/Star 1.svg" alt="" />
+                  <img src="{{ 'Star 1.svg' | asset_url }}" alt="" />
                 </div>
                   <img src="{{ image.original_url }}" alt="{{ image.title }}" />
                 </div>
@@ -149,7 +149,7 @@
                   <div class="review_header">
                     <div class="review_rating">
                       4.5
-                      <img src="media/star.svg" alt="" />
+                      <img src="{{ 'star.svg' | asset_url }}" alt="" />
                       <div class="rating_text">Суммарная оценка</div>
                     </div>
                     <div class="review_header_slider_wr">
@@ -245,10 +245,10 @@
                       </div>
                       <!-- If we need navigation buttons -->
                       <div class="swiper-button-next">
-                        <img src="media/ICO-next.svg" alt="" />
+                        <img src="{{ 'ICO-next.svg' | asset_url }}" alt="Next" />
                       </div>
                       <div class="swiper-button-prev">
-                        <img src="media/ICO-back.svg" alt="" />
+                        <img src="{{ 'ICO-back.svg' | asset_url }}" alt="previous" />
                       </div>
                     </div>
                   </div>
@@ -261,7 +261,7 @@
                         in some form, by injected humour
                       </div>
                       <div class="comment_rating">
-                        <img src="media/star (1).svg" alt="" />
+                        <img src="{{ 'star__1.svg' | asset_url }}" alt="" />
                       </div>
                       <div class="comment_info">Отличный товар</div>
                     </div>
@@ -408,7 +408,7 @@
               <div class="review_rating">
                 4.5
                 <div>
-                  <img src="media/star.svg" alt="" />
+                  <img src="{{ 'star.svg' |asset_url }}" alt="" />
                   <a href="#" class="rating_text">Написать отзыв</a> 
                 </div>
               </div>
@@ -522,7 +522,7 @@
                     {{ review.content | newline_to_br }}
                   </div>
                   <div class="comment_rating">
-                    <img src="{{ 'star (1).svg' | asset_url }}" alt="" />
+                    <img src="{{ 'star.svg' | asset_url }}" alt="" />
                   </div>
                   <div class="comment_info">{{ review.rating }}</div>
                 </div>

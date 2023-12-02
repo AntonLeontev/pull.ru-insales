@@ -1,0 +1,28 @@
+<div class="pagination">
+  <ul class="pagination_list">
+    {% for part in paginate.parts %}
+      {% if part.is_link %}
+        <li class="">
+          <a href="{{ part.url }}"
+              class="list_link"
+          >
+            {{ part.title }}
+          </a>
+        </li>
+      {% else %}
+        <li class="">
+          {% if part.title == paginate['current_page'] %}
+            <span class="active">
+              {{ part.title }}
+            </span>
+          {% else %}
+            <span class="pagination-node--block">
+              {{ part.title }}
+            </span>
+          {% endif %}
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+  <span class="pagination_count">{{ collection_size }} из {{ paginate.items }}</span>
+</div>

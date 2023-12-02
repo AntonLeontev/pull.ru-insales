@@ -1,54 +1,54 @@
 
 {% if cart.items == empty %}
     <div class="container">
-      <h3>Ваша корзинка пуста!</h3>
+      <h3>Ваша корзина пуста!</h3>
     </div>
 {% endif %}
 {% if cart.items != empty %}
-  <form data-reload-on-coupon="false" data-cart-form action="{{ cart_items }}" method="post" class="cart_section">
-    <div class="section-order-info">
-      <div class="container">
-        <div class="order_info_inner">
-          <div class="info_card">
-            <div class="card_name">Получатель</div>
-          
-            <div class="card_content">
-              <a href="#" class="card_link open_order_form">Добавить получателя</a>
+  <form data-reload-on-coupon="false" id="cart_form" data-cart-form action="/cart_items" method="post" class="cart_section" 
+    @delivery-chosen="setDelivery"
+    @delivery-calculated="updateDelivery"
+    @cart-event="update"
+    x-data="{
+      deliveryType: null,
+      deliveryTariff: null,
+      deliveryAddress: null,
+      cart: null,
 
-              <div class="order_form" hidden style="margin-top:30px;display:none;">
-                  <input class="ordinary_input" required name="email" placeholder="E-mail" style="display:block; width: 100%; margin-bottom: 20px">
-                  <input class="ordinary_input" required name="name" placeholder="Имя" style="display:block; width: 100%; margin-bottom: 20px">
-                  <input class="ordinary_input" required name="phone" placeholder="Телефон" style="display:block; width: 100%; margin-bottom: 20px">
+      init() {
+        ajaxAPI.cart.get().done(done => {
+          this.cart = done
+          console.log('order',done)
+        })
+      },
+      update() {
+        ajaxAPI.cart.get().done(done => {
+          this.cart = done
+        })
+        this.$dispatch('order-changed')
+      },
+      setDelivery() {
+        this.deliveryType = this.$event.detail.type
+        this.deliveryTariff = this.$event.detail.tariff
+        this.deliveryAddress = this.$event.detail.address
+      },
+      updateDelivery() {
+        if (this.deliveryTariff === null) {
+          return
+        }
 
-                  <input class="ordinary_input" required name="address" placeholder="Адрес" style="display:block; width: 100%; margin-bottom: 20px">
-
-                  
-              </div>
-
-            </div>
-          </div>
-          <div class="info_card">
-            <div class="card_name">Доставка</div>
-            <div class="card_content">
-              
-              <div class="card_text delivery_text">Не указанны данные получателя </div>
-              <!-- <div class="order_form" style="max-width: 320px;display:none;">
-                <select
-                  name="select_delivery"
-                  id=""
-                  class="nice_select select_ordinary">
-                    <option value="" selected>Способ доставки</option>
-                    {% for delivery_variant in account.delivery_variants %}
-                      <option value="{{delivery_variant.id}}">{{delivery_variant.id}} - {{delivery_variant.title}}</option>
-                    {% endfor %}
-                </select>
-              </div> -->
-              {% include "system_insales_widget-calculate_delivery" %}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        let tariffs = this.$event.detail.tariff
+        tariffs = [...tariffs.door, ...tariffs.office, ...tariffs.pickup]
+        tariffs.forEach(tariff => {
+          if (tariff.tariff_code === this.deliveryTariff.tariff_code) {
+            this.deliveryTariff = tariff
+            return
+          }
+        })
+      },
+      
+    }"
+  >
 
     <div class="section-order section-cart">
         <div class="container">
@@ -59,7 +59,7 @@
               <div class="section_title flex_100">
                 У вас есть промокод?
               </div>
-              <form action="#">
+              <div action="#">
                 <input
                   type="text"
                   placeholder="Ваш промокод"
@@ -68,7 +68,7 @@
                 <button class="button_black">
                   Применить
                 </button>
-              </form>
+              </div>
             </div>
           </div>
 
@@ -78,8 +78,8 @@
               <div class="section_title flex_100">
                 Ваш заказ
               </div>
-              {% for item in cart.items %}
-                <div class="product_items">
+              <div class="product_items">
+                {% for item in cart.items %}
                   <div class="product_item {{ cart_class }}" data-product-id="{{ item.product.id }}" data-item-id="{{ item.id }}">
                     <a href="{{item.product.canonical_url}}" class="product_img">
                       <img src="{{ item.product.first_image.large_url }}" alt="">
@@ -88,7 +88,7 @@
                       <div class="product_text_header">
                         <a href="{{item.product.canonical_url}}" class="product_name">{{ item.title | escape }}</a>
 
-                        <button data-item-delete="{{ item.id }}" type="submit" class="product_delete_tgl">
+                        <button data-item-delete="{{ item.id }}" type="button" class="product_delete_tgl">
                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <path d="M22.2979 3.76471H17.383V2.58824C17.383 1.90179 17.1117 1.24346 16.6289 0.758077C16.1461 0.272688 15.4913 0 14.8085 0H9.19149C8.5087 0 7.85387 0.272688 7.37107 0.758077C6.88826 1.24346 6.61702 1.90179 6.61702 2.58824V3.76471H1.70213C1.51591 3.76471 1.33732 3.83908 1.20565 3.97145C1.07397 4.10383 1 4.28338 1 4.47059C1 4.6578 1.07397 4.83734 1.20565 4.96972C1.33732 5.1021 1.51591 5.17647 1.70213 5.17647H2.87234V22.3529C2.87234 22.7898 3.04495 23.2087 3.35219 23.5176C3.65943 23.8265 4.07613 24 4.51064 24H19.4894C19.9239 24 20.3406 23.8265 20.6478 23.5176C20.9551 23.2087 21.1277 22.7898 21.1277 22.3529V5.17647H22.2979C22.4841 5.17647 22.6627 5.1021 22.7944 4.96972C22.926 4.83734 23 4.6578 23 4.47059C23 4.28338 22.926 4.10383 22.7944 3.97145C22.6627 3.83908 22.4841 3.76471 22.2979 3.76471ZM8.02128 2.58824C8.02128 2.27622 8.14457 1.97698 8.36402 1.75634C8.58348 1.53571 8.88113 1.41176 9.19149 1.41176H14.8085C15.1189 1.41176 15.4165 1.53571 15.636 1.75634C15.8554 1.97698 15.9787 2.27622 15.9787 2.58824V3.76471H8.02128V2.58824ZM19.7234 22.3529C19.7234 22.4153 19.6987 22.4752 19.6549 22.5193C19.611 22.5634 19.5514 22.5882 19.4894 22.5882H4.51064C4.44857 22.5882 4.38904 22.5634 4.34514 22.5193C4.30125 22.4752 4.2766 22.4153 4.2766 22.3529V5.17647H19.7234V22.3529ZM9.89362 10.1176V17.6471C9.89362 17.8343 9.81964 18.0138 9.68797 18.1462C9.55629 18.2786 9.3777 18.3529 9.19149 18.3529C9.00527 18.3529 8.82668 18.2786 8.69501 18.1462C8.56334 18.0138 8.48936 17.8343 8.48936 17.6471V10.1176C8.48936 9.93044 8.56334 9.75089 8.69501 9.61851C8.82668 9.48613 9.00527 9.41177 9.19149 9.41177C9.3777 9.41177 9.55629 9.48613 9.68797 9.61851C9.81964 9.75089 9.89362 9.93044 9.89362 10.1176ZM15.5106 10.1176V17.6471C15.5106 17.8343 15.4367 18.0138 15.305 18.1462C15.1733 18.2786 14.9947 18.3529 14.8085 18.3529C14.6223 18.3529 14.4437 18.2786 14.312 18.1462C14.1804 18.0138 14.1064 17.8343 14.1064 17.6471V10.1176C14.1064 9.93044 14.1804 9.75089 14.312 9.61851C14.4437 9.48613 14.6223 9.41177 14.8085 9.41177C14.9947 9.41177 15.1733 9.48613 15.305 9.61851C15.4367 9.75089 15.5106 9.93044 15.5106 10.1176Z" fill="#111111"/>
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M19.7234 22.3529C19.7234 22.4153 19.6987 22.4752 19.6549 22.5193C19.611 22.5634 19.5514 22.5882 19.4894 22.5882H4.51064C4.44857 22.5882 4.38904 22.5634 4.34514 22.5193C4.30125 22.4752 4.2766 22.4153 4.2766 22.3529V5.17647H19.7234V22.3529ZM9.89362 17.6471V10.1176C9.89362 9.93044 9.81964 9.75089 9.68797 9.61851C9.55629 9.48613 9.3777 9.41177 9.19149 9.41177C9.00527 9.41177 8.82668 9.48613 8.69501 9.61851C8.56334 9.75089 8.48936 9.93044 8.48936 10.1176V17.6471C8.48936 17.8343 8.56334 18.0138 8.69501 18.1462C8.82668 18.2786 9.00527 18.3529 9.19149 18.3529C9.3777 18.3529 9.55629 18.2786 9.68797 18.1462C9.81964 18.0138 9.89362 17.8343 9.89362 17.6471ZM15.5106 17.6471V10.1176C15.5106 9.93044 15.4367 9.75089 15.305 9.61851C15.1733 9.48613 14.9947 9.41177 14.8085 9.41177C14.6223 9.41177 14.4437 9.48613 14.312 9.61851C14.1804 9.75089 14.1064 9.93044 14.1064 10.1176V17.6471C14.1064 17.8343 14.1804 18.0138 14.312 18.1462C14.4437 18.2786 14.6223 18.3529 14.8085 18.3529C14.9947 18.3529 15.1733 18.2786 15.305 18.1462C15.4367 18.0138 15.5106 17.8343 15.5106 17.6471Z" fill="white"/>
@@ -98,14 +98,12 @@
 
                       </div>
                       <div class="product_text_body">
-                        <div class="body_info_item">
-                          <div class="item_label">Цвет:</div>
-                          <div class="item_info">Чёрный</div>
-                        </div>
-                        <div class="body_info_item">
-                          <div class="item_label">Размер:</div>
-                          <div class="item_info">XS</div>
-                        </div>
+                        {% for option_value in item.variant.option_values %}
+                          <div class="body_info_item">
+                            <div class="item_label">{{ option_value.option_name.title }}:</div>
+                            <div class="item_info">{{ option_value.title }}</div>
+                          </div>
+                        {% endfor %}
                       </div>
                       <div class="product_text_footer">
                         <div class="product_qty" data-quantity>
@@ -137,8 +135,8 @@
                       </div>
                     </div>
                   </div>
-                </div>
-              {% endfor %}
+                {% endfor %}
+              </div>
             </div>
           </div>
           
@@ -155,11 +153,11 @@
                 <ul class="payment_content_list">
                     <li class="list_item">
                         <div class="label">Всего товаров</div>
-                        <div class="info"><span data-cart-positions-count>{{ cart.items_count }}</span> шт.</div>
+                        <div class="info"><span x-text="cart?.items_count"></span> шт.</div>
                     </li>
                     <li class="list_item">
                         <div class="label">Цена</div>
-                        <div class="info" data-cart-total-price>{{ cart.items_price | money }}</div>
+                        <div class="info"><span x-text="formatNumber(cart?.total_price)"></span> ₽</div>
                     </li>
                     <li class="list_item">
                       <div class="label">Скидка</div>
@@ -180,22 +178,29 @@
                         {% endif %}
                       </div>
                   </li>
+                  <li class="list_item">
+                      <div class="label">
+                        <span>Доставка</span>
+                      </div>
+                      <div class="info" x-text="deliveryTariff ? formatNumber(deliveryTariff?.delivery_sum) + ' ₽' : ''"></div>
+                  </li>
                 </ul>
                 <div class="total_sum">
                     <div class="sum_label">Итого к оплате:</div>
-                    <div class="sum" data-cart-full-total-price>{{ cart.total_price | money }}</div>
-                    <div class="sum_info sub_info">
+                    <!-- <div class="sum" data-cart-full-total-price>{{ cart.total_price | money }}</div> -->
+                    <div class="sum" x-text="formatNumber(cart?.total_price + (deliveryTariff?.delivery_sum ?? 0)) + ' ₽'"></div>
+                    <!-- <div class="sum_info sub_info">
                       Без учета возможной стоимости доставки
-                    </div>
+                    </div> -->
                 </div>
                 <div class="info_button">
                   <select
                   name="select_payment"
                   id=""
                   class="nice_select select_ordinary">
-                    <option value="" selected>способ оплаты</option>
+                    <option value="">Способ оплаты</option>
                     {% for payment_variant in account.payment_gateways %}
-                      <option value="{{payment_variant.id}}">{{payment_variant.id}} - {{payment_variant.title}}</option>
+                      <option selected value="{{payment_variant.id}}">{{payment_variant.id}} - {{payment_variant.title}}</option>
                     {% endfor %}
                   </select>
                     <button type="submit" class="disabled_payment_button" data-cart-submit>Оформить заказ</button>
@@ -231,6 +236,36 @@
         </div>
         </div>
     </div>
+
+
+    <div class="section-order-info">
+      <div class="container">
+        <div class="order_info_inner">
+          <div class="info_card">
+            <div class="card_name">Получатель</div>
+          
+            <div class="card_content">
+              <a href="#" class="card_link open_order_form">Добавить получателя</a>
+
+              <div class="order_form" hidden style="display:none;">
+                  <input class="ordinary_input" required name="email" placeholder="E-mail">
+                  <input class="ordinary_input" required name="name" placeholder="Имя">
+                  <input class="ordinary_input" required name="phone" placeholder="Телефон">
+
+                  <input class="ordinary_input" required name="address" placeholder="Адрес" value="">
+
+                  
+              </div>
+
+            </div>
+          </div>
+
+          {% include 'cdek-widget' %}
+      </div>
+
+
+    </div>
+
   </form>
   
   <div class="success_section" style="display:none;">
@@ -241,28 +276,12 @@
 {% endif %}
 
 
-
+<script src="{{ 'cart.js' | asset_url }}"></script>
 <script>
-  $(function(){
-	setTimeout(() => {
-
-		/*ajaxAPI.checkout.order({
-			email: 'user@mail.ru',
-			name: 'user',
-			phone: '79879991122',
-			adress: 'г. Москва, Кленовый бульвар'
-		}, {
-			delivery: 7921162,
-			payment: 5470555,
-		})
-		.done(function (onDone) { console.log('onDone: ', onDone) })
-		.fail(function (onFail) { console.log('onFail: ', onFail) });*/
-	}, 3000)
-
-
-    
-  })
-  
+  let emailField = $('[name=email]')
+  let nameField = $('[name=name]')
+  let phoneField = $('[name=phone]')
+  let addressField = $('[name=address]')
 
 
   $('.open_order_form').on('click',function(e){
@@ -272,29 +291,36 @@
     $('.order_form').slideDown();
   })
 
-  $('.order_form').on('submit', function(e){
+  $('#cart_form').on('submit', function(e){
     e.preventDefault();
-    let email = $(this).find('[name=email]').val()
-    let phone = $(this).find('[name=phone]').val()
-    let name = $(this).find('[name=name]').val()
-    let address = $(this).find('[name=address]').val()
+    let email = emailField.val()
+    let name = nameField.val()
+    let phone = phoneField.val()
+    let address = addressField.val()
     let paymentVarianId = $('[name=select_payment]').parent().find('.nice-select .list .selected').data('value');
-    let deliveryVarianId = $('[name=select_delivery]').parent().find('.nice-select .list .selected').data('value');
+    // let deliveryVarianId = $('[name=select_delivery]').parent().find('.nice-select .list .selected').data('value');
     
     
-    /*$.post('/fast_checkout.json', {
+    $.post('/fast_checkout.json', {
       client: {
         email: email,
         name: name,
         phone: phone,
-        consent_to_personal_data: true
+        consent_to_personal_data: true,
       },
       order: {
-        delivery_variant_id: deliveryVarianId,
+        delivery_variant_id: 7921162,
         payment_gateway_id: paymentVarianId,
         shipping_address: {
           address: address
-        }
+        },
+		    delivery_price: 500,
+      },
+      tariff_id: 'test tariff id',
+      field_31010907: 'test field_31010907',
+      delivery_info: {
+        tariff_id: 'delivery tariff_id',
+        price: 800,
       }
     })
     .done(function (response) {
@@ -306,7 +332,33 @@
     })
     .fail(function (fail) {
       console.log(fail);
-    })*/
+    })
   })
+
+  /*---------- Удаление товара из корзины ----------*/
+
+  EventBus.subscribe('always:insales:cart', function (data) {
+    if (data.action.method === 'delete_items') {
+      data.action.items.forEach(item => {
+        $(`[data-item-id=${item}]`).remove()
+      })
+    }
+
+    cart_form.dispatchEvent(new CustomEvent('cart-event', {
+      // bubbles: true,
+      detail: data
+    }));
+  });
+
+  /*---------- Заполнение данных клиента, если залогинен ----------*/
+
+  {% if client %}
+    ajaxAPI.shop.client.get()
+      .done(function (client) { 
+        emailField.val(client.email)
+        nameField.val(client.name)
+        phoneField.val(client.phone)
+      })
+  {% endif %}
 
 </script>

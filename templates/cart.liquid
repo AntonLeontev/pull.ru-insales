@@ -9,6 +9,7 @@
     @delivery-chosen="setDelivery"
     @delivery-calculated="updateDelivery"
     @cart-event="update"
+    @submit.prevent="makeOrder"
     x-data="{
       deliveryType: null,
       deliveryTariff: null,
@@ -18,7 +19,6 @@
       init() {
         ajaxAPI.cart.get().done(done => {
           this.cart = done
-          console.log('order',done)
         })
       },
       update() {
@@ -46,7 +46,52 @@
           }
         })
       },
-      
+      makeOrder() {
+        // if (this.deliveryTariff === null || this.deliveryType === null || this.deliveryAddress === null) {
+        //   alert('Выбирите способ доставки')
+        //   return 
+        // }
+
+        let paymentVarianId = $('[name=select_payment]').parent().find('.nice-select .list .selected').data('value')
+        
+        $.post('/fast_checkout.json', {
+          client: {
+            email: this.$refs.email.value,
+            name: this.$refs.name.value,
+            phone: this.$refs.phone.value,
+            consent_to_personal_data: true,
+          },
+          order: {
+            delivery_variant_id: 7921162,
+            payment_gateway_id: paymentVarianId,
+            delivery_price: this.deliveryTariff.delivery_sum,
+          },
+        })
+        .done((response) => {
+          if (response.status == 'ok') {
+            let order = response.order
+            order.delivery_info.price = this.deliveryTariff.delivery_sum
+            order.delivery_info.tariff_id = this.deliveryTariff.tariff_code
+            order.delivery_info.title = this.deliveryTariff.tariff_name
+            order.delivery_info.description = this.deliveryTariff.tariff_description
+            order.delivery_info.type = this.deliveryType
+            order.delivery_info.address = this.deliveryAddress
+            order.delivery_info.address.apartment = $('[name=\'apartment\']').val()
+            order.delivery_info.address.floor = $('[name=\'floor\']').val()
+            order.delivery_info.address.entrance = $('[name=\'entrance\']').val()
+            order.delivery_info.address.intercom = $('[name=\'intercom\']').val()
+            
+
+            $.post('https://api.pull.ru/webhooks/insales/orders_create', order)
+              .done(response => location.href = '/page/order-success')
+          } else {
+            console.log(response);
+          }
+        })
+        .fail((fail) => {
+          console.log(fail);
+        })
+      },
     }"
   >
 
@@ -248,11 +293,11 @@
               <a href="#" class="card_link open_order_form">Добавить получателя</a>
 
               <div class="order_form" hidden style="display:none;">
-                  <input class="ordinary_input" required name="email" placeholder="E-mail">
-                  <input class="ordinary_input" required name="name" placeholder="Имя">
-                  <input class="ordinary_input" required name="phone" placeholder="Телефон">
+                  <input class="ordinary_input" required name="email" placeholder="E-mail" x-ref="email">
+                  <input class="ordinary_input" required name="name" placeholder="Имя" x-ref="name">
+                  <input class="ordinary_input" required name="phone" placeholder="Телефон" x-ref="phone">
 
-                  <input class="ordinary_input" required name="address" placeholder="Адрес" value="">
+                  <!-- <input class="ordinary_input" required name="address" placeholder="Адрес" value=""> -->
 
                   
               </div>
@@ -293,46 +338,7 @@
 
   $('#cart_form').on('submit', function(e){
     e.preventDefault();
-    let email = emailField.val()
-    let name = nameField.val()
-    let phone = phoneField.val()
-    let address = addressField.val()
-    let paymentVarianId = $('[name=select_payment]').parent().find('.nice-select .list .selected').data('value');
-    // let deliveryVarianId = $('[name=select_delivery]').parent().find('.nice-select .list .selected').data('value');
     
-    
-    $.post('/fast_checkout.json', {
-      client: {
-        email: email,
-        name: name,
-        phone: phone,
-        consent_to_personal_data: true,
-      },
-      order: {
-        delivery_variant_id: 7921162,
-        payment_gateway_id: paymentVarianId,
-        shipping_address: {
-          address: address
-        },
-		    delivery_price: 500,
-      },
-      tariff_id: 'test tariff id',
-      field_31010907: 'test field_31010907',
-      delivery_info: {
-        tariff_id: 'delivery tariff_id',
-        price: 800,
-      }
-    })
-    .done(function (response) {
-      if (response.status == 'ok') {
-          location.href = '/page/order-success';
-      } else {
-        console.log(response);
-      }
-    })
-    .fail(function (fail) {
-      console.log(fail);
-    })
   })
 
   /*---------- Удаление товара из корзины ----------*/

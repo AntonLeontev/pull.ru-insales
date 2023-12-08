@@ -1,5 +1,7 @@
-<header class="header">
-  <div class="header__top">
+<header class="header" id="header" x-data="{
+  sidebar: false,
+}">
+  <!-- <div class="header__top">
     <div class="container">
       <div class="header__top_inner">
         <div class="adress">
@@ -15,15 +17,15 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
   <div class="header__navbar">
     <div class="container">
       <div class="header__navbar_actions">
         <div class="mb_header_buttons">
           <div class="mb burger_btn_toggler">
-            <a href="#" class="btn"
-              ><img src="{{ 'ICO-burger.svg' | asset_url }}" alt=""
-            /></a>
+            <button type="button" class="btn" @click="sidebar = true;overflow = false">
+              <img src="{{ 'ICO-burger.svg' | asset_url }}" alt="Кнопка меню"/>
+            </button>
           </div>
           <div class="mb">
             <button><img src="{{ 'ICO-search.svg' | asset_url }}" alt="" /></button>
@@ -61,7 +63,7 @@
   <div class="header__category">
     <div class="container">
       <div class="category_inner">
-        <div class="category_pol">
+        <nav class="category_pol">
           
           {% for link in linklists.gender-menu.links %}
             <a href="{{link.url}}" class="{% if link.current? %} active	{% endif %}">{{link.title}}</a>
@@ -70,39 +72,182 @@
             {% endunless %}
           {% endfor %}
 
-        </div>
+        </nav>
         <div class="category_list">
-          <div class="list_item mb">
-            <div class="category_pol">
-              {% for link in linklists.gender-menu.links %}
-                <a href="{{link.url}}" class="{% if link.current? %} active	{% endif %}">{{link.title}}</a>
-                {% unless forloop.last %}
-                  <span class="delimiter">/</span>
-                {% endunless %}
-              {% endfor %}
-            </div>
-          </div>
-          <!-- <div class="list_item">
-            <img src="{{ 'ICO-diskount.svg' | asset_url }}" alt="" /><a
-              href="#"
-              class="list_link"
-              >Распродажа</a>
-          </div> -->
+          <nav class="header__menu">
+            <!-- <div class="list_item">
+              <img src="{{ 'ICO-diskount.svg' | asset_url }}" alt="" /><a
+                href="#"
+                class="list_link"
+                >Распродажа</a>
+            </div> -->
+              <div class="list_item">
+                <a href="/collection/all" class="list_link">Каталог</a>
 
-          {% for link in linklists.main-menu.links %}
-            <div class="list_item">
-              <a href="{{link.url}}" class="list_link">{{link.title}}</a>
-            </div>
-          {% endfor %}
+                <nav class="header__categories">
+                  <div class="container">
+                  <nav class="categories__menu">
+                    <ul class="menu__column">
+                    <li class="menu__item menu__item_title">
+                      <a class="menu__link" href="{{ collections.muzhchinam.url }}">{{ collections.muzhchinam.title }}</a>
+                    </li>
+
+                    {% for collection in collections.muzhchinam.subcollections %}
+                      <li class="menu__item"><a class="menu__link" href="{{ collection.url }}">{{ collection.title }}</a></li>
+
+                      {% if collection.subcollections.size > 0 %}
+                      <ul class="submenu">
+                        {% for collection1 in collection.subcollections %}
+                        <li class="menu__item"><a href="{{ collection1.url }}" class="menu__link">{{ collection1.title }}</a></li>
+
+                        {% if collection1.subcollections.size > 0 %}
+                          <ul class="submenu">
+                          {% for collection2 in collection1.subcollections %}
+                            <li class="menu__item"><a href="{{ collection2.url }}" class="menu__link">{{ collection2.title }}</a></li>
+                          {% endfor %}
+                          </ul>
+                        {% endif %}
+                        {% endfor %}
+                      </ul>
+                      {% endif %}
+
+                    {% endfor %}
+                    </ul>
+                    <ul class="menu__column">
+                    <li class="menu__item menu__item_title">
+                      <a class="menu__link" href="{{ collections.zhenschinam.url }}">{{ collections.zhenschinam.title }}</a>
+                    </li>
+                    
+                    {% for collection in collections.zhenschinam.subcollections %}
+                      <li class="menu__item"><a class="menu__link" href="{{ collection.url }}">{{ collection.title }}</a></li>
+
+                      {% if collection.subcollections.size > 0 %}
+                      <ul class="submenu">
+                        {% for collection1 in collection.subcollections %}
+                        <li class="menu__item"><a href="{{ collection1.url }}" class="menu__link">{{ collection1.title }}</a></li>
+
+                        {% if collection1.subcollections.size > 0 %}
+                          <ul class="submenu">
+                          {% for collection2 in collection1.subcollections %}
+                            <li class="menu__item"><a href="{{ collection2.url }}" class="menu__link">{{ collection2.title }}</a></li>
+                          {% endfor %}
+                          </ul>
+                        {% endif %}
+                        {% endfor %}
+                      </ul>
+                      {% endif %}
+
+                    {% endfor %}
+                    </ul>
+                    
+                  </nav>
+                  </div>
+                </nav>
+              </div>
+            {% for link in linklists.main-menu.links %}
+              <div class="list_item">
+                <a href="{{link.url}}" class="list_link">{{link.title}}</a>
+              </div>
+            {% endfor %}
+          </nav>
           
-          <div class="list_item mb">
-            <a href="#" class="button_black">Войти</a>
-            <a href="#" class="mb-link">Укажите адрес доставки</a>
-            <a href="#" class="mb-link"></a>
-          </div>
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="cover" :class="sidebar && 'active'"></div>
+  <div 
+    class="sidebar" 
+    id="sidebar" 
+    :class="sidebar && 'active'"
+    x-data="{
+      tab: '',
+
+      init() {
+        if (location.href.includes('page/muzh') || location.href.includes('-men')) {
+          this.tab = 'men'
+        } else {
+          this.tab = 'women'
+        }
+      },
+  }">
+    <button class="sidebar__close" @click="sidebar = false;overflow = true">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g id="&#209;&#129;lose">
+        <rect id="Rectangle 572" x="4.11914" y="3" width="26.0216" height="2.16846" rx="1.08423" transform="rotate(45 4.11914 3)" fill="#111111"/>
+        <rect id="Rectangle 573" width="26.0216" height="2.16846" rx="1.08423" transform="matrix(-0.707107 0.707107 0.707107 0.707107 21.4668 3)" fill="#111111"/>
+        </g>
+      </svg>
+    </button>
+
+    <div class="sidebar__switch">
+      <button class="switch__button" :class="tab === 'men' && 'active'" @click="tab = 'men'">Мужчинам</button>
+      <button class="switch__button" :class="tab === 'women' && 'active'" @click="tab = 'women'">Женщинам</button>
+    </div>
+    <nav class="sidebar__menu-wrap">
+      <ul class="sidebar__menu" x-show="tab === 'men'">
+        {% for collection in collections.muzhchinam.subcollections %}
+          {% if collection.subcollections.size > 0 %}
+          <li class="menu__item" x-data="{show: false}">
+            <div class="menu__button" :class="show && 'active'" @click="show = !show">{{ collection.title }}</div>
+            
+            <div class="submenu" :class="show && 'active'">
+              <ul class="submenu__wrap">
+                {% for collection1 in collection.subcollections %}
+                  <li class="menu__item"><a href="{{ collection1.url }}" class="menu__link">{{ collection1.title }}</a></li>
+                {% endfor %}
+                
+                <li class="menu__item"><a href="{{ collection.url }}" class="menu__link menu__link_small">Все товары</a></li>
+              </ul>
+
+            </div>
+          </li>
+          {% else %}
+            <li class="menu__item"><a class="menu__link" href="{{ collection.url }}">{{ collection.title }}</a></li>
+          {% endif %}
+  
+        {% endfor %}
+
+        <li class="menu__item"><a class="menu__link menu__link_small" href="{{ collections.muzhchinam.url }}">Все товары</a></li>
+      </ul>
+
+      <ul class="sidebar__menu" x-show="tab === 'women'">
+        {% for collection in collections.zhenschinam.subcollections %}
+          {% if collection.subcollections.size > 0 %}
+          <li class="menu__item" x-data="{show: false}">
+            <div class="menu__button" :class="show && 'active'" @click="show = !show">{{ collection.title }}</div>
+            
+            <div class="submenu" :class="show && 'active'">
+              <ul class="submenu__wrap">
+                {% for collection1 in collection.subcollections %}
+                  <li class="menu__item"><a href="{{ collection1.url }}" class="menu__link">{{ collection1.title }}</a></li>
+                {% endfor %}
+                
+                <li class="menu__item"><a href="{{ collection.url }}" class="menu__link menu__link_small">Все товары</a></li>
+              </ul>
+
+            </div>
+          </li>
+          {% else %}
+            <li class="menu__item"><a class="menu__link" href="{{ collection.url }}">{{ collection.title }}</a></li>
+          {% endif %}
+  
+        {% endfor %}
+
+        <li class="menu__item"><a class="menu__link menu__link_small" href="{{ collections.muzhchinam.url }}">Все товары</a></li>
+      </ul>
+    </nav>
+    <nav class="sidebar__personal-menu">
+      <ul class="personal-menu">
+        <li class="menu__item"><a href="/favorites" class="menu__link">Избранное</a></li>
+        {% if client %}
+          <li class="menu__item"><a href="/client_account/orders" class="menu__link">Личный кабинет</a></li>
+        {% else %}
+          <li class="menu__item"><a href="/client_account/login" class="menu__link">Личный кабинет</a></li>
+        {% endif %}
+      </ul>
+    </nav>
   </div>
 
 </header>

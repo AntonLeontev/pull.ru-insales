@@ -6,25 +6,6 @@ document.addEventListener("DOMContentLoaded", function () {
     return window.innerWidth >= 567;
   }
   let body = document.querySelector("body");
-  //  фУНКЦИЯ ДЛЯ ОТКРЫТИЕ МОБ МЕНЮ
-  let burgerBtn = document.querySelector(".burger_btn_toggler");
-  burgerBtn.addEventListener("click", function (e) {
-    e.preventDefault();
-
-    body.classList.add("shadow");
-    this.parentElement.parentElement.parentElement.parentElement.parentElement.classList.add(
-      "active"
-    );
-  });
-  let closeBtn = document.querySelector(".header .button_close.mb");
-  if (closeBtn) {
-    closeBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-
-      body.classList.remove("shadow");
-      this.parentElement.classList.remove("active");
-    });
-  }
 
   if (detectDes()) {
     const catSwiper = new Swiper(".categories_swiper", {
@@ -408,21 +389,19 @@ document.addEventListener("DOMContentLoaded", function () {
   let allSelect = document.querySelector(".all_select");
   if (allSelect) {
     allSelect.querySelector(".sel").addEventListener("input", function (e) {
-     
-      this.classList.toggle('checked')
-      if(this.classList.contains('checked')){
+      this.classList.toggle("checked");
+      if (this.classList.contains("checked")) {
         checkboxWrapperBlack.forEach(function (inp) {
           console.log(inp);
           inp.querySelector("input").checked = true;
         });
-      }else{
+      } else {
         checkboxWrapperBlack.forEach(function (inp) {
           console.log(inp);
           inp.querySelector("input").checked = false;
         });
       }
     });
-   
   }
   let cancelAll = document.querySelector(".cancel_all");
   if (cancelAll) {
@@ -434,6 +413,4 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   }
-
-  
 });

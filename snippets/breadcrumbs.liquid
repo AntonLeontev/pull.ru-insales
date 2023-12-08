@@ -13,20 +13,20 @@
 
           {% for collection in current_collections %}
             {% if forloop.last %}
+            <li class="breadcrumb_item">
+              <span class="breadcrumb_link current">{{ collection.title }}</span>
+            </li>
               {% if collection.level > 0 %}
-              <li class="breadcrumb_item">
-                <span class="breadcrumb_link" class="current">{{ collection.title }}</span>
-              </li>
               {% endif %}
             {% else %}
+            <li class="breadcrumb_item">
+              <a class="breadcrumb_link" href="{{ collection.url }}">{{ collection.title }}</a>
+            </li>
               {% if collection.level > 0 %}
-              <li class="breadcrumb_item">
-                <a class="breadcrumb_link" href="{{ collection.url }}">{{ collection.title }}</a>
-              </li>
               {% endif %}
             {% endif %}
           {% endfor %}
-
+          
         {% endif %}
       {% when 'product' %}
       {{current_collections}}

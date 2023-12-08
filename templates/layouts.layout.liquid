@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
   <head>
     {% include "head" %}
   </head>
-  <body>
+  <body id="body" :class="overflow || 'ovhidden'" x-data="{overflow: true}">
     <div class="wrapper">
 
       {% include "header" %}

@@ -565,7 +565,7 @@ input[type="range"] {
 			line-height: 100%;
 		}
 		.labe_discount {
-			background: #d61818;
+			background: $danger;
 			padding: 7px 14px;
 		}
 		.labe_premium {
@@ -591,7 +591,7 @@ input[type="range"] {
 			color: $primary;
 			font-size: 20px;
 			font-style: normal;
-			font-weight: 600;
+			font-weight: 500;
 			line-height: 100%;
 		}
 		.product_card_old_price {
@@ -1121,21 +1121,23 @@ input[type="range"] {
 	.categories_slide_inner {
 		text-align: center;
 		.categories_slide_img {
-			height: 150px;
 			max-width: 100%;
 			background: $bg-light;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			overflow: hidden;
+
 			img {
 				max-height: 100%;
-				max-width: auto;
+				object-fit: cover;
+				width: 100%;
+				height: 100%;
+				aspect-ratio: 4/3;
 			}
 		}
 	}
 	.link_more {
-		position: relative;
 		color: $primary;
 		text-align: center;
 		border-bottom: 1px solid $primary;
@@ -1145,8 +1147,11 @@ input[type="range"] {
 		line-height: 100%;
 		padding: 8px;
 		width: 100%;
-		margin-top: 32px;
+		margin-top: 12px;
+
 		span {
+			position: relative;
+
 			&::after {
 				content: "";
 				position: absolute;
@@ -1157,11 +1162,12 @@ input[type="range"] {
 				background-image: url(ICO-arrow-down.svg);
 			}
 		}
-	}
-	.link_more.active {
-		span {
-			&::after {
-				rotate: 180deg;
+
+		&.active {
+			span {
+				&::after {
+					rotate: 180deg;
+				}
 			}
 		}
 	}
@@ -2222,7 +2228,7 @@ input[type="range"] {
 			margin-bottom: 0;
 			&:first-of-type {
 				margin-bottom: 14px;
-				border-bottom: 1px solid #d61818;
+				border-bottom: 1px solid $danger;
 				color: $danger;
 			}
 		}
@@ -3185,11 +3191,6 @@ input[type="range"] {
 		.section-categories-carousel__inner {
 			grid-template-columns: repeat(3, 1fr);
 		}
-		.categories_slide_inner {
-			.categories_slide_img {
-				height: 120px;
-			}
-		}
 	}
 }
 @media (max-width: 567px) {
@@ -3509,11 +3510,6 @@ input[type="range"] {
 		}
 	}
 	.section-categories-carousel {
-		.categories_slide_inner {
-			.categories_slide_img {
-				height: 85px;
-			}
-		}
 		.categories-slide {
 			flex: 0 0 calc(33% - 7px);
 			border: none;
@@ -3536,13 +3532,6 @@ input[type="range"] {
 			visibility: visible;
 			overflow: visible;
 			opacity: 1;
-		}
-	}
-	.categories_slide_img {
-		img {
-			width: 100%;
-			height: auto;
-			object-fit: contain;
 		}
 	}
 	.cloth_item {

@@ -3,18 +3,51 @@
   <div class="container">
     <div class="accordeon">
       <div class="section-categories-carousel__inner">
-        {% for block in block_lists.with_template['system-promo-slider-7'].categories.blocks %}
+		{% if page.url contains 'page/muzh' %}
+			{% for category in collections.muzhchinam.subcollections %}
 
-          <div class="categories-slide">
-            <div class="categories_slide_inner">
-              <a href="#" class="categories_slide_img">
-                <img src="{{block.image}}" alt="" />
-              </a>
-              <a href="#" class="categories_slide_label">{{block.title}}</a>
-            </div>
-          </div>
-        
-        {% endfor %}
+			<div class="categories-slide">
+				<div class="categories_slide_inner">
+				<a href="{{ category.url }}" class="categories_slide_img">
+					<img src="{{ category.image.medium_url | image_url: 280, format: 'webp' }}" alt="{{category.title}}" />
+				</a>
+				<a href="{{ category.url }}" class="categories_slide_label">{{category.title}}</a>
+				</div>
+			</div>
+			
+			{% endfor %}
+		{% elsif page.url contains 'page/zhen' %}
+			{% for category in collections.zhenschinam.subcollections %}
+
+			<div class="categories-slide">
+				<div class="categories_slide_inner">
+				<a href="{{ category.url }}" class="categories_slide_img">
+					<img src="{{ category.image.medium_url | image_url: 280, format: 'webp' }}" alt="{{category.title}}" />
+				</a>
+				<a href="{{ category.url }}" class="categories_slide_label">{{category.title}}</a>
+				</div>
+			</div>
+			
+			{% endfor %}
+		{% else %}
+			{% for category in collections.flatten %}
+
+			{% if category.title contains 'Муж' or category.title contains 'Жен' %}
+				{% continue %}
+			{% endif %}
+
+
+			<div class="categories-slide">
+				<div class="categories_slide_inner">
+				<a href="{{ category.url }}" class="categories_slide_img">
+					<img src="{{ category.image.medium_url | image_url: 280, format: 'webp' }}" alt="{{category.title}}" />
+				</a>
+				<a href="{{ category.url }}" class="categories_slide_label">{{category.title}}</a>
+				</div>
+			</div>
+			
+			{% endfor %}
+		{% endif %}
       </div>
     </div>
 

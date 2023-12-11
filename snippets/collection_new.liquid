@@ -35,7 +35,15 @@
         aria-live="polite"
       >
         <!-- Slides -->
-        {%for product in collections[block.collection.handle].products %}
+		{% if page.url contains 'page/muzh' %}
+          {% assign block_new = blocks.with_template['system-collection'].novinki-muzhchinam %}
+        {% elsif page.url contains 'page/zhen' %}
+          {% assign block_new = blocks.with_template['system-collection'].novinki-zhenschinam %}
+        {% else %}
+          {% assign block_new = blocks.with_template['system-collection'].kollektsiya-novinki-blok-1 %}
+        {% endif %}
+
+        {%for product in collections[block_new.collection.handle].products %}
         <div class="swiper-slide">
           <div class="product_slide_card">
             <div class="product_card_img">
@@ -56,7 +64,7 @@
                 </div>
               </div>
               <!-- <div class="product_card_actions">
-                    <a href="{{ product . url }}" class="link_more">Подробнее</a>
+                    <a href="{{ product.url }}" class="link_more">Подробнее</a>
                     <a href="" class="save_btn">
                       <svg
 xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -69,8 +77,6 @@ d="M14.4643 1.40625C12.6205 1.40625 11.0063 2.20136 10 3.54534C8.99375 2.20136 7
           </div>
         </div>
         {% endfor %} 
-        {% for block in block_lists.with_template['system-collection'].new-products.blocks %} 
-        {% endfor %}
       </div>
 
       <!-- If we need navigation buttons -->

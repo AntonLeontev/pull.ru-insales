@@ -1,7 +1,3 @@
-<!-- {% for widgetDrop in widget_lists.product-list.widgets %}
-  {% widget widgetDrop %}
-{% endfor %} -->
-
 <section class="section-product-view">
   <div class="container">
     <div class="product_inner">
@@ -26,7 +22,7 @@
                     <span>/</span>
                     5
 
-                  <img src="{{ 'Star 1.svg' | asset_url }}" alt="" />
+                  <img src="{{ 'Star_1.svg' | asset_url }}" alt="Иконка звездочки" />
                 </div>
                   <img src="{{ image.original_url }}" alt="{{ image.title }}" />
                 </div>
@@ -46,26 +42,37 @@
           </div>
           <div class="product_details">
 
-            <form>
+            <form action="{{ cart_url }}" method="post" data-product-id="{{ product.id }}">
+              {% if product.show_variants? %}
+                <div class="product-variants">
+                  <select name="variant_id" id="variant-select" class="nice_select select_ordinary" data-product-variants>
+                    {% for variant in product.variants %}
+                      <option value="{{ variant.id }}">{{ variant.title | escape }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              {% else %}
+                <input type="hidden" name="variant_id" value="{{ product.variants.first.id }}" />
+              {% endif %}
 
-            {% for option in product.options %}
+            <!-- {% for option in product.options %}
               <select
-                  name="{{option.id}}"
-                  id="select-{{option.id}}"
-                  class="nice_select select_ordinary">
-                  <option value="0" selected>Выберите {{option.title}}</option>
-                      {% for value in option.values %}
-                        <option value="{{ value.id }}">{{ value.title | escape }}</option>
-                      {% endfor %}
+                name="{{option.id}}"
+                id="select-{{option.id}}"
+                class="nice_select select_ordinary">
+                <option value="0" selected>Выберите {{option.title}}</option>
+                {% for value in option.values %}
+                  <option value="{{ value.id }}">{{ value.title | escape }}</option>
+                {% endfor %}
               </select>
-            {% endfor %}
+            {% endfor %} -->
 
+              <div action="{{ cart_url }}" method="post" class="data">
+                  <button class="add_to_card button_black">Добавить в корзину</button>
+              </div>
             </form>
 
-            <form action="{{ cart_url }}" method="post" class="data">
-                <input type="hidden" name="variant_id" value="{{ product.variants.first.id }}"/>
-                <button class="add_to_card button_black">Добавить в корзину</button>
-            </form>
+
 
             <a href="#" class="save_btn"
               >В избранное <img src="{{ 'ICO-heart.svg' | asset_url }}" alt=""
@@ -157,76 +164,6 @@
                         <!-- Additional required wrapper -->
                         <div class="swiper-wrapper">
                           <!-- Slides -->
-                          <div class="swiper-slide">
-                            <a href="#" class="moree_review"
-                              ><img
-                                src="{{ 'product-thumb.png' | asset_url }}"
-                                alt="" /><span>Подробнее</span></a
-                            >
-                          </div>
-                          <div class="swiper-slide">
-                            <a href="#" class="moree_review"
-                              ><img
-                                src="{{ 'product-thumb.png' | asset_url }}"
-                                alt="" /><span>Подробнее</span></a
-                            >
-                          </div>
-                          <div class="swiper-slide">
-                            <a href="#" class="moree_review"
-                              ><img
-                                src="{{ 'product-thumb.png' | asset_url }}"
-                                alt="" /><span>Подробнее</span></a
-                            >
-                          </div>
-                          <div class="swiper-slide">
-                            <a href="#" class="moree_review"
-                              ><img
-                                src="{{ 'product-thumb.png' | asset_url }}"
-                                alt="" /><span>Подробнее</span></a
-                            >
-                          </div>
-                          <div class="swiper-slide">
-                            <a href="#" class="moree_review"
-                              ><img
-                                src="{{ 'product-thumb.png' | asset_url }}"
-                                alt="" /><span>Подробнее</span></a
-                            >
-                          </div>
-                          <div class="swiper-slide">
-                            <a href="#" class="moree_review"
-                              ><img
-                                src="{{ 'product-thumb.png' | asset_url }}"
-                                alt="" /><span>Подробнее</span></a
-                            >
-                          </div>
-                          <div class="swiper-slide">
-                            <a href="#" class="moree_review"
-                              ><img
-                                src="{{ 'product-thumb.png' | asset_url }}"
-                                alt="" /><span>Подробнее</span></a
-                            >
-                          </div>
-                          <div class="swiper-slide">
-                            <a href="#" class="moree_review"
-                              ><img
-                                src="{{ 'product-thumb.png' | asset_url }}"
-                                alt="" /><span>Подробнее</span></a
-                            >
-                          </div>
-                          <div class="swiper-slide">
-                            <a href="#" class="moree_review"
-                              ><img
-                                src="{{ 'product-thumb.png' | asset_url }}"
-                                alt="" /><span>Подробнее</span></a
-                            >
-                          </div>
-                          <div class="swiper-slide">
-                            <a href="#" class="moree_review"
-                              ><img
-                                src="{{ 'product-thumb.png' | asset_url }}"
-                                alt="" /><span>Подробнее</span></a
-                            >
-                          </div>
                           <div class="swiper-slide">
                             <a href="#" class="moree_review"
                               ><img
@@ -801,6 +738,9 @@
 
 
 <script>
+  EventBus.subscribe('update_variant:insales:product', variant => {
+    console.log(variant);
+  })
 
   // var in_stock_text = '<p class="in_stock">Товар есть в наличии</p>';
   // var sold_out_text = '<p class="sold_out">Товар распродан</p>';

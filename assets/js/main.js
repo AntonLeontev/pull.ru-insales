@@ -268,112 +268,96 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  const accordionBtns = document.querySelectorAll(".accordion_link");
-  const accordionHideBtns = document.querySelectorAll(".accordion_link_hide");
+  //   const accordionBtns = document.querySelectorAll(".accordion_link");
+  //   const accordionHideBtns = document.querySelectorAll(".accordion_link_hide");
 
-  accordionBtns.forEach((accordion) => {
-    accordion.addEventListener("click", function (e) {
-      e.preventDefault();
-      this.classList.toggle("active");
+  //   accordionBtns.forEach((accordion) => {
+  //     accordion.addEventListener("click", function (e) {
+  //       e.preventDefault();
+  //       this.classList.toggle("active");
 
-      let content = this.parentElement.querySelector(".accordion_content");
+  //       let content = this.parentElement.querySelector(".accordion_content");
 
-      if (content.style.maxHeight) {
-        //this is if the accordion is open
-        content.style.maxHeight = null;
-        content.classList.toggle("active");
-        this.parentElement.classList.toggle("active");
-      } else {
-        //if the accordion is currently closed
-        content.style.maxHeight = content.scrollHeight + "px";
-        content.classList.toggle("active");
-        this.parentElement.classList.toggle("active");
-      }
-    });
-  });
-  accordionHideBtns.forEach((accordion) => {
-    accordion.addEventListener("click", function (e) {
-      e.preventDefault();
-      this.parentElement.parentElement
-        .querySelector(".accordion_link")
-        .classList.toggle("active");
+  //       if (content.style.maxHeight) {
+  //         //this is if the accordion is open
+  //         content.style.maxHeight = null;
+  //         content.classList.toggle("active");
+  //         this.parentElement.classList.toggle("active");
+  //       } else {
+  //         //if the accordion is currently closed
+  //         content.style.maxHeight = content.scrollHeight + "px";
+  //         content.classList.toggle("active");
+  //         this.parentElement.classList.toggle("active");
+  //       }
+  //     });
+  //   });
+  //   accordionHideBtns.forEach((accordion) => {
+  //     accordion.addEventListener("click", function (e) {
+  //       e.preventDefault();
+  //       this.parentElement.parentElement
+  //         .querySelector(".accordion_link")
+  //         .classList.toggle("active");
 
-      let content =
-        this.parentElement.parentElement.querySelector(".accordion_content");
+  //       let content =
+  //         this.parentElement.parentElement.querySelector(".accordion_content");
 
-      if (content.style.maxHeight) {
-        //this is if the accordion is open
-        content.style.maxHeight = null;
-        content.classList.toggle("active");
-        this.parentElement.parentElement.classList.toggle("active");
-      } else {
-        //if the accordion is currently closed
-        content.style.maxHeight = content.scrollHeight + "px";
-        content.classList.toggle("active");
-        this.parentElement.parentElement.classList.toggle("active");
-      }
-    });
-  });
-
-  let filterToggle = document.querySelector(".filter_toggle");
-  if (filterToggle) {
-    filterToggle.addEventListener("click", function (e) {
-      document.querySelector(".filter_block").classList.add("active");
-      body.classList.add("shadow");
-    });
-  }
-
-  let closeBtn2 = document.querySelector(".close_btn");
-  if (closeBtn2) {
-    closeBtn2.addEventListener("click", function (e) {
-      document.querySelector(".filter_block").classList.remove("active");
-      body.classList.remove("shadow");
-    });
-  }
+  //       if (content.style.maxHeight) {
+  //         //this is if the accordion is open
+  //         content.style.maxHeight = null;
+  //         content.classList.toggle("active");
+  //         this.parentElement.parentElement.classList.toggle("active");
+  //       } else {
+  //         //if the accordion is currently closed
+  //         content.style.maxHeight = content.scrollHeight + "px";
+  //         content.classList.toggle("active");
+  //         this.parentElement.parentElement.classList.toggle("active");
+  //       }
+  //     });
+  //   });
 
   // range slider
 
-  const rangeInput = document.querySelectorAll(".range-input input"),
-    priceInput = document.querySelectorAll(".price-input input"),
-    range = document.querySelector(".slider .progress");
-  let priceGap = 1000;
+  //   const rangeInput = document.querySelectorAll(".range-input input"),
+  //     priceInput = document.querySelectorAll(".price-input input"),
+  //     range = document.querySelector(".slider .progress");
+  //   let priceGap = 1000;
 
-  priceInput.forEach((input) => {
-    input.addEventListener("input", (e) => {
-      let minPrice = parseInt(priceInput[0].value),
-        maxPrice = parseInt(priceInput[1].value);
+  //   priceInput.forEach((input) => {
+  //     input.addEventListener("input", (e) => {
+  //       let minPrice = parseInt(priceInput[0].value),
+  //         maxPrice = parseInt(priceInput[1].value);
 
-      if (maxPrice - minPrice >= priceGap && maxPrice <= rangeInput[1].max) {
-        if (e.target.className === "input-min") {
-          rangeInput[0].value = minPrice;
-          range.style.left = (minPrice / rangeInput[0].max) * 100 + "%";
-        } else {
-          rangeInput[1].value = maxPrice;
-          range.style.right = 100 - (maxPrice / rangeInput[1].max) * 100 + "%";
-        }
-      }
-    });
-  });
+  //       if (maxPrice - minPrice >= priceGap && maxPrice <= rangeInput[1].max) {
+  //         if (e.target.className === "input-min") {
+  //           rangeInput[0].value = minPrice;
+  //           range.style.left = (minPrice / rangeInput[0].max) * 100 + "%";
+  //         } else {
+  //           rangeInput[1].value = maxPrice;
+  //           range.style.right = 100 - (maxPrice / rangeInput[1].max) * 100 + "%";
+  //         }
+  //       }
+  //     });
+  //   });
 
-  rangeInput.forEach((input) => {
-    input.addEventListener("input", (e) => {
-      let minVal = parseInt(rangeInput[0].value),
-        maxVal = parseInt(rangeInput[1].value);
+  //   rangeInput.forEach((input) => {
+  //     input.addEventListener("input", (e) => {
+  //       let minVal = parseInt(rangeInput[0].value),
+  //         maxVal = parseInt(rangeInput[1].value);
 
-      if (maxVal - minVal < priceGap) {
-        if (e.target.className === "range-min") {
-          rangeInput[0].value = maxVal - priceGap;
-        } else {
-          rangeInput[1].value = minVal + priceGap;
-        }
-      } else {
-        priceInput[0].value = minVal;
-        priceInput[1].value = maxVal;
-        range.style.left = (minVal / rangeInput[0].max) * 100 + "%";
-        range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
-      }
-    });
-  });
+  //       if (maxVal - minVal < priceGap) {
+  //         if (e.target.className === "range-min") {
+  //           rangeInput[0].value = maxVal - priceGap;
+  //         } else {
+  //           rangeInput[1].value = minVal + priceGap;
+  //         }
+  //       } else {
+  //         priceInput[0].value = minVal;
+  //         priceInput[1].value = maxVal;
+  //         range.style.left = (minVal / rangeInput[0].max) * 100 + "%";
+  //         range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
+  //       }
+  //     });
+  //   });
 
   let productSaveBtn = document.querySelectorAll(".product_save_btn a");
   productSaveBtn.forEach(function (btn) {

@@ -31,37 +31,60 @@ body.shadow {
 		right: 0;
 	}
 }
+.cover {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 100dvh;
+	display: none;
+	background-color: $primary;
+	opacity: 0.5;
+	z-index: 40;
+
+	&.active {
+		display: block;
+	}
+}
 .price-input {
-	width: 100%;
+	position: relative;
 	display: flex;
+	column-gap: 13px;
+	width: 100%;
 	margin: 30px 0 35px;
+
 	.field {
+		position: relative;
 		display: flex;
 		width: 100%;
 		height: 45px;
 		align-items: center;
-		&:first-of-type {
-			input {
-				margin-right: 12.5px;
-			}
+
+		&::before {
+			position: absolute;
+			left: 12px;
+			// top: 50%;
+			// transform: translateY(-50%);
+			color: $secondary;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 400;
+			line-height: 100%;
 		}
-		&:last-of-type {
-			input {
-				margin-left: 12.5px;
-			}
+
+		&:first-child::before {
+			content: 'от';
+		}
+		&:last-child::before {
+			content: 'до';
 		}
 	}
 	.separator {
-		width: 13px;
 		display: flex;
 		font-size: 19px;
 		align-items: center;
 		justify-content: center;
-		background: $primary;
-		height: 1px;
-		top: calc(50%);
-		position: absolute;
-		left: calc(50% - 4px);
+		color: $secondary;
 	}
 }
 .field {
@@ -84,8 +107,9 @@ body.shadow {
 	}
 }
 .slider-range {
-	height: 5px;
 	position: relative;
+	height: 5px;
+	margin-top: 3px;
 	background: #ddd;
 	border-radius: 5px;
 	top: 6px;
@@ -122,6 +146,11 @@ input[type="range"] {
 		-webkit-appearance: none;
 		box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
 		border: 1px solid $primary;
+		cursor: grab;
+
+		&:focus, &:active {
+			cursor: grabbing;
+		}
 	}
 	&::-moz-range-thumb {
 		height: 17px;
@@ -133,31 +162,35 @@ input[type="range"] {
 		-moz-appearance: none;
 		box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
 		border: 1px solid $primary;
+		cursor: grab;
+
+		&:focus, &:active {
+			cursor: grabbing;
+		}
 	}
 }
 .filter_block {
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 0;
 	width: 500px;
 	height: 105vh;
-	z-index: 99;
+	z-index: 50;
 	background-color: $white;
-	opacity: 0;
-	visibility: hidden;
-	transition: 0.4s all ease;
+	transition: 0.3s all ease;
 	overflow: scroll;
+	transform: translateX(-100%);
 	.flex_wrapper {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		flex-wrap: wrap;
 		gap: 16px;
+		padding-bottom: 16px;
 	}
 }
 .filter_block.active {
-	opacity: 1;
-	visibility: visible;
+	transform: translateX(0);
 }
 .flex_wrapper {
 	.item {
@@ -205,15 +238,12 @@ input[type="range"] {
 	}
 }
 .filter_header {
-	border-right: 3px solid #fff;
-	border-left: 3px solid #fff;
-	background: $primary;
-	padding: 15px 24px;
-	margin: 0 3px;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	padding: 15px 24px;
 	color: $white;
+	background: $primary;
 	font-size: 16px;
 	font-style: normal;
 	font-weight: 700;
@@ -238,6 +268,22 @@ input[type="range"] {
 	.filter_item {
 		border-bottom: 1px solid #939393;
 		background: #fff;
+
+		.filter_item_btn {
+			position: relative;
+			width: 100%;
+
+			.marker {
+				position: absolute;
+				right: 20px;
+				top: 50%;
+				width: 8px;
+				height: 8px;
+				background-color: $danger;
+				border-radius: 100%;
+				transform: translateY(-50%);
+			}
+		}
 	}
 	.filter_item.active {
 		padding-bottom: 24px;
@@ -247,7 +293,7 @@ input[type="range"] {
 	padding: 36px;
 	display: flex;
 	flex-direction: column;
-	padding-top: 0;
+
 	a {
 		width: 100%;
 		text-align: center;
@@ -272,9 +318,18 @@ input[type="range"] {
 	margin-top: 30px;
 }
 .accordion_content {
-	max-height: 0;
+	display: grid;
+	grid-template-rows: 0fr;
 	overflow: hidden;
-	transition: 0.4s all ease;
+	transition: 0.4s grid-template-rows ease;
+
+	&.active {
+		grid-template-rows: 1fr;
+	}
+
+	.accordion_content__wrap {
+		overflow: hidden;
+	}
 }
 .accordion_link.active {
 	img {
@@ -551,6 +606,19 @@ input[type="range"] {
 	.product_card_img {
 		position: relative;
 		margin-bottom: 24px;
+		aspect-ratio: 2 / 3;
+
+		.card_img__link {
+			width: 100%;
+			height: 100%;
+			
+			.card_img__image {
+				width: 100%;
+				height: 100%;
+				object-fit: contain;
+			}
+		}
+
 		.labels {
 			display: flex;
 			position: absolute;
@@ -600,18 +668,9 @@ input[type="range"] {
 			font-style: normal;
 			font-weight: 300;
 			line-height: 100%;
-			text-decoration-line: strikethrough;
+			text-decoration-thickness: 1px;
+			text-decoration-line: line-through;
 			position: relative;
-			&::after {
-				content: "";
-				position: absolute;
-				width: 100%;
-				height: 2px;
-				background-color: $background-color_4;
-				opacity: 0.5;
-				left: 0;
-				top: 7px;
-			}
 		}
 	}
 	.product_card_actions {
@@ -857,21 +916,6 @@ input[type="range"] {
 		}
 	}
 
-	.cover {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		height: 100dvh;
-		display: none;
-		background-color: $primary;
-		opacity: 0.5;
-		z-index: 40;
-
-		&.active {
-			display: block;
-		}
-	}
 	.sidebar {
 		display: flex;
 		flex-direction: column;
@@ -1173,6 +1217,8 @@ input[type="range"] {
 	}
 }
 .section-banner {
+	margin-top: 20px;
+
 	.banner_inner {
 		background: $primary;
 		display: flex;
@@ -1541,10 +1587,11 @@ input[type="range"] {
 	padding-top: 24px;
 }
 .catalog_buttons {
+	position: relative;
 	display: flex;
 	align-items: center;
 	gap: 24px;
-	a {
+	button {
 		display: flex;
 		align-items: center;
 		gap: 6px;
@@ -1555,25 +1602,53 @@ input[type="range"] {
 		line-height: 85%;
 		text-transform: uppercase;
 	}
+	.sort-list {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
+		margin-top: 10px;
+		padding: 10px;
+		display: flex;
+		flex-direction: column;
+		row-gap: 10px;
+		background-color: $white;
+		box-shadow: 0px 5px 5px 1px $secondary_dark;
+		z-index: 10;
+
+		.sort__link {
+			color: $primary;
+		}
+	}
 }
 .product_save_btn {
 	position: absolute;
 	top: 16px;
 	right: 16px;
-	a {
+
+	&.favorites-added {
+		.icon_delete {
+			display: inline-block;
+		}
+
+		.icon_add {
+			display: none;
+		}
+	}
+
+	.icon_delete {
+		display: none;
+	}
+
+	svg {
 		path {
 			transition: 0.4s all ease;
 		}
 		&:hover {
 			path {
-				fill: red;
+				fill: $danger;
 			}
 		}
-	}
-}
-.product_save_btn.saved {
-	path {
-		fill: red;
 	}
 }
 .product_cart_select {

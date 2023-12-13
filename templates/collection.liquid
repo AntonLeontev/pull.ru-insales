@@ -1,9 +1,9 @@
-{% assign collection_size = settings.collection_count | default: "24" %}
-<!-- {% assign filter_active = false %}
-{% assign display_filter = false %}
- -->
+{% assign collection_size = page_size | default: "24" %}
 
-<section class="section-catalog">
+<section class="section-catalog" x-data="{
+	showFilters: false,
+  showSort: false,
+}">
   <div class="container">
     
     {% paginate products by collection_size %}
@@ -12,13 +12,29 @@
           {{collection.title}}
         </div>
         <div class="catalog_buttons">
-          <a href="#" class="sort">
+          <button type="button" class="sort" @click="showSort = !showSort">
             <img src="{{ 'icon-park-outline_switch.svg' | asset_url }}" alt="" />
-            Сортировать</a
-          >
-          <a href="#" class="filter_toggle">
-            <img src="{{ 'bi_filter.svg' | asset_url }}" alt="" /> фильтр</a
-          >
+            Сортировать
+		      </button>
+          <button type="button" class="filter_toggle" @click="showFilters = true;overflow = false">
+            <img src="{{ 'bi_filter.svg' | asset_url }}" alt="" /> 
+            фильтр
+          </button>
+          <div class="sort-list" style="display: none;" x-show="showSort" @click.outside="showSort = false" x-data="{
+            addOrder(order) {
+              let url = new URL(location.href)
+              url.searchParams.set('order', order)
+              return url
+            },
+          }">
+            <a class="sort__link" :href="addOrder('price')">Сначала дешевые</a>
+            <a class="sort__link" :href="addOrder('descending_price')">Сначала дорогие</a>
+            <a class="sort__link" :href="addOrder('title')">По названию А-Я</a>
+            <a class="sort__link" :href="addOrder('descending_title')">По названию Я-А</a>
+            <a class="sort__link" :href="addOrder('discount')">По возрастанию скидки</a>
+            <a class="sort__link" :href="addOrder('descending_discount')">По убыванию скидки</a>
+            <a class="sort__link" :href="addOrder('popularity')">По популярности</a>
+          </div>
         </div>
       </div>
       <div class="catalog_inner">
@@ -28,20 +44,19 @@
           {% assign salePercent = saleNumber | round: 1 %}
           <div class="product_slide_card">
             <div class="product_card_img">
-              <a href="{{product.url}}">
-                <img src="{{product.first_image.large_url}}" alt="" />
+              <a class="card_img__link" href="{{product.url}}">
+                <img class="card_img__image" src="{{product.first_image.large_url}}" alt="{{product.title}}" />
               </a>
               <div class="labels">
-                {% if product.old_price != 0 %}
-                <div class="labe_discount">%{{ salePercent }}</div>
+                {% if product.old_price > 0 %}
+                <div class="labe_discount">{{ salePercent }}%</div>
                 {% endif %}
-                <div class="labe_premium">-Premium</div>
+                <!-- <div class="labe_premium">Premium</div> -->
               </div>
-              <div class="product_save_btn">
-                <a href="#" class="img">
-                  <img src="{{ 'ICO-heart.svg' | asset_url }}" alt=""/>
-                </a>
-              </div>
+			  <button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
+				<img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+				<img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+			  </button>
             </div>
             <div class="product_card_itext">
               <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
@@ -56,7 +71,11 @@
         {% endfor %}
       </div>
 
-      <div class="section-banner">
+      {% if paginate.pages > 1 %}
+        {% include 'pagination' %}
+      {% endif %}
+
+	  <div class="section-banner">
         <div class="banner_inner">
           <div class="banner_brend">
             MANGO
@@ -69,10 +88,10 @@
         </div>
       </div>
 
-      {% if paginate.pages > 1 %}
-        {% include 'pagination' %}
-      {% endif %}
-
     {% endpaginate %}
   </div>
+
+  <div class="cover" :class="showFilters && 'active'">
+  </div>
+  {% include "filters_block" %}
 </section>

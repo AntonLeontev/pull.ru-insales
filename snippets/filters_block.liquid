@@ -1,14 +1,41 @@
-<div class="filter_block">
+<div class="filter_block" :class="showFilters && 'active'" id="filters" x-data="{
+  filters: null,
+  priceMin: 0,
+  priceMax: 0,
+
+  init() {
+    let url = new URL(location.href);
+    url.pathname = 'front_api' + url.pathname
+    this.update(url)
+  },
+  update(url = null) {
+    if (url === null) {
+      url = new URL(location.href);
+      let search = new URLSearchParams(new FormData(this.$refs.filter_form))
+      url.pathname = 'front_api' + url.pathname
+      url.search = search
+    }
+    $.get(url)
+      .success(response => {
+        this.filters = response
+        this.priceMin = response.current_price_min
+        this.priceMax = response.current_price_max
+      })
+  },
+}">
   <div class="filter_header">
     <div class="filter_title">Фильтр поиска товара</div>
     <div class="filter_close">
-      <a href="#" class="close_btn"
-        ><img src="{{ 'ICO-close-btn.svg' | asset_url }}" alt=""
-      /></a>
+      <button class="close_btn" @click="showFilters = false;overflow = true">
+		    <img src="{{ 'ICO-close-btn.svg' | asset_url }}" alt="" />
+      </button>
     </div>
   </div>
-  <form class="filter_body">
-    <div class="filter_item">
+  <form class="filter_body" @change="update()" x-ref="filter_form">
+    {% if order %}
+	    <input type="hidden" name="order" value="{{ order }}">
+    {% endif %}
+    <!-- <div class="filter_item">
       <a href="#" class="filter_item_btn accordion_link"
         >По популярности <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
       /></a>
@@ -31,296 +58,162 @@
           </div>
         </div>
       </div>
+    </div> -->
+
+	  <div class="filter_item" id="price_filter" x-data="{
+      open: false,
+      minVal: 0,
+      maxVal: 0,
+
+      init() {
+        this.$watch('filters', () => this.updateRange())
+      },
+      updateRange() {
+        const diff = filters?.products_price_max - filters?.products_price_min
+        this.minVal = (priceMin - filters?.products_price_min) / diff * 100 
+        this.maxVal = (filters?.products_price_max - priceMax) / diff * 100
+      },
+    }">
+      <button type="button" class="filter_item_btn accordion_link" @click="open = !open" :class="open && 'active'">
+        Цена 
+        <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""/>
+      </button>
+      <div class="filter_item_content accordion_content" :class="open && 'active'">
+        <div class="accordion_content__wrap">
+          <div class="slider-range">
+            <div class="progress" :style="`left: ${minVal}%; right: ${maxVal}%`"></div>
+          </div>
+          <div class="range-input">
+            <input
+              type="range"
+              class="range-min"
+              :min="filters?.products_price_min"
+              :max="filters?.products_price_max"
+              x-model="priceMin"
+              @input="updateRange"
+              step="10" />
+            <input
+              type="range"
+              class="range-max"
+              :min="filters?.products_price_min"
+              :max="filters?.products_price_max"
+              @input="updateRange"
+              x-model="priceMax"
+              step="10" />
+          </div>
+          <div class="price-input">
+            <div class="field">
+              <input type="number" class="input-min" name="price_min" @input="updateRange" x-model="priceMin" />
+            </div>
+            <div class="separator">&mdash;</div>
+            <div class="field">
+              <input type="number" class="input-max" name="price_max" @input="updateRange" x-model="priceMax" />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="filter_item">
-      <a href="#" class="filter_item_btn accordion_link">
-        Цвет <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
-      /></a>
-      <div class="filter_item_content accordion_content">
-        <div class="flex_wrapper">
-          <div class="item">
-            <a href="#"
-              ><svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none">
-                <rect width="16" height="16" fill="#111111" />
-              </svg>
-              Черный</a
-            >
-          </div>
-          <div class="item">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none">
-              <rect
-                x="0.5"
-                y="0.5"
-                width="15"
-                height="15"
-                fill="white"
-                stroke="#111111" />
-            </svg>
-            Белый
-          </div>
-          <div class="item">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none">
-              <rect width="16" height="16" fill="#DD3636" />
-            </svg>
-            Красный
-          </div>
-          <div class="item">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none">
-              <rect width="16" height="16" fill="#9747FF" />
-            </svg>
-            Пурпурный
-          </div>
-          <div class="item">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none">
-              <rect width="16" height="16" fill="#A6D71A" />
-            </svg>
-            Зелёный
-          </div>
-          <div class="item">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none">
-              <rect width="16" height="16" fill="#636641" />
-            </svg>
-            Хаки
-          </div>
-          <div class="item">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none">
-              <rect width="16" height="16" fill="#F4C05A" />
-            </svg>
-            Желтый
-          </div>
-          <div class="item">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none">
-              <rect width="16" height="16" fill="#36EDE2" />
-            </svg>
-            Бирюзовый
-          </div>
-          <div class="item">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none">
-              <rect width="16" height="16" fill="#9E510B" />
-            </svg>
-            Коричневый
-          </div>
-          <div class="item">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none">
-              <rect width="16" height="16" fill="#DA11DE" /></svg   >Розовый
-          </div>
-          <div class="item">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none">
-              <rect width="16" height="16" fill="#707070" />
-            </svg>
-            Серый
-          </div>
-          <div class="item">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none">
-              <rect width="16" height="16" fill="#0400C2" />
-            </svg>
-            Синий
-          </div>
-        </div>
-        <a href="#" class="show_moree"> Показать ещё </a>
-      </div>
-    </div>
-    <div class="filter_item">
-      <a href="#" class="filter_item_btn accordion_link"
-        >Материалы <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
-      /></a>
-      <div class="filter_item_content accordion_content">
-        <div class="searching_material">  <input
-          type="text"
-          placeholder="Найти “Синтетику””"
-          name="search"
-          class="ordinary_input" />
-        <button class="button_black">Искать</button></div>
-        <div class="flex_wrapper">
-          <div class="item">
-            <input type="checkbox" name="" id="" /> Хлопок
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" />Кожа
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" />Шелк
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" />Лён
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" /> Шерсть
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" /> Синтетика
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" />Целюлоза
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" />Целюлоза
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" />Хлопок
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" /> Хлопок
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" /> Синтетика
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" />Целюлоза
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" />Шелк
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" />Шелк
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" /> Шерсть
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" />Шелк
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" /> Шерсть
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" />Целюлоза
-          </div>
-          <div class="item">
-            <input type="checkbox" name="" id="" />Целюлоза
+    <template x-for="option in filters?.options">
+      <div class="filter_item" 
+        @change="checkEnabled"
+        x-data="{
+          open: sessionStorage.getItem(`option-${option.id}`),
+          enabled: false,
+          init() {
+            this.checkEnabled()
+          },
+          onClick() {
+            this.open = !this.open
+            if (this.open) {
+              sessionStorage.setItem(`option-${option.id}`, true)
+            } else {
+              sessionStorage.removeItem(`option-${option.id}`)
+            }
+          },
+          checkEnabled() {
+            setTimeout(() => {
+              let inputs = this.$refs.values.querySelectorAll('input[checked]')
+              this.enabled = inputs.length > 0
+            }, 500)
+          },
+      }">
+        <button type="button" class="filter_item_btn accordion_link" @click="onClick" :class="open && 'active'">
+          <span x-text="option.title"></span> 
+          <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""/>
+          <div class="marker" x-show="enabled"></div>
+        </button>
+        <div class="filter_item_content accordion_content" :class="open && 'active'">
+          <div class="accordion_content__wrap">
+            <div class="flex_wrapper" x-ref="values">
+              <template x-for="value in option.values">
+                <label class="item">
+                  <input type="checkbox" :name="`options[${option.id}][]`" :value="value.id" :checked="value.selected" />
+                  <span x-text="`${value.title} (${value.products_count})`"></span>
+                </label>
+              </template>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="filter_item">
-      <a href="#" class="filter_item_btn accordion_link"
-        >Размер <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
-      /></a>
-      <div class="filter_item_content accordion_content">asdasddsa</div>
-    </div>
-    <div class="filter_item">
-      <a href="#" class="filter_item_btn accordion_link"
-        >Бренд <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
-      /></a>
-      <div class="filter_item_content accordion_content">asdasddsa</div>
-    </div>
-    <div class="filter_item">
-      <a href="#" class="filter_item_btn accordion_link"
-        >Цена <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
-      /></a>
-      <div class="filter_item_content accordion_content">
-        <div class="slider-range">
-          <div class="progress"></div>
-        </div>
-        <div class="range-input">
-          <input
-            type="range"
-            class="range-min"
-            min="0"
-            max="10000"
-            value="2500"
-            step="100" />
-          <input
-            type="range"
-            class="range-max"
-            min="0"
-            max="10000"
-            value="7500"
-            step="100" />
-        </div>
-        <div class="price-input">
-          <div class="field">
-            <input type="number" class="input-min" value="2500" />
-          </div>
-          <div class="separator"></div>
-          <div class="field">
-            <input type="number" class="input-max" value="7500" />
+    </template>
+
+    <template x-for="property in filters?.properties">
+      <div class="filter_item" 
+        @change="checkEnabled"
+        x-data="{
+          open: sessionStorage.getItem(`property-${property.id}`),
+          enabled: false,
+          init() {
+            this.checkEnabled()
+          },
+          onClick() {
+            this.open = !this.open
+            if (this.open) {
+              sessionStorage.setItem(`property-${property.id}`, true)
+            } else {
+              sessionStorage.removeItem(`property-${property.id}`)
+            }
+          },
+          checkEnabled() {
+            setTimeout(() => {
+              let inputs = this.$refs.values.querySelectorAll('input[checked]')
+              this.enabled = inputs.length > 0
+            }, 500)
+          },
+        }"
+      >
+        <button type="button" class="filter_item_btn accordion_link" @click="onClick" :class="open && 'active'">
+          <span x-text="property.title"></span> 
+          <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""/>
+          <div class="marker" x-show="enabled"></div>
+        </button>
+        <div class="filter_item_content accordion_content" :class="open && 'active'">
+          <div class="accordion_content__wrap">
+            <!-- <div class="searching_material">  
+              <input
+                type="text"
+                placeholder="Найти “Синтетику”"
+                class="ordinary_input" />
+              <button class="button_black">Искать</button>
+            </div> -->
+            <div class="flex_wrapper" x-ref="values">
+              <template x-for="characteristic in property.characteristics">
+                <label class="item">
+                  <input type="checkbox" :name="`characteristics[]`" :value="characteristic.id" :checked="characteristic['current?']" />
+                  <span x-text="`${characteristic.title} (${characteristic.products_count})`"></span>
+                </label>
+              </template>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="filter_item">
-      <a href="#" class="filter_item_btn accordion_link"
-        >Детали <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
-      /></a>
-      <div class="filter_item_content accordion_content">asdasddsa</div>
-    </div>
-    <div class="filter_item">
-      <a href="#" class="filter_item_btn accordion_link"
-        >Помогаю планете <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
-      /></a>
-      <div class="filter_item_content accordion_content">asdasddsa</div>
-    </div>
-    <div class="filter_item">
-      <a href="#" class="filter_item_btn accordion_link"
-        >Сезон <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
-      /></a>
-      <div class="filter_item_content accordion_content">asdasddsa</div>
+    </template>
+
+    
+    <div class="filter_bottom">
+      <button type="submit" class="button_black">Показать результат (<span x-text="filters?.count"></span>)</button>
+      <a :href="location.href.replace(/\?[^?]+$/, '')" class="clear_filter"><span>Очистить фильтры</span></a>
     </div>
   </form>
-  <div class="filter_bottom">
-    <a href="#" class="button_black">Показать результат</a>
-    <a href="#" class="clear_filter"><span>Очистить фильтры</span></a>
-  </div>
 </div>

@@ -39,9 +39,11 @@
       </div>
       <div class="catalog_inner">
         {% for product in collection.products %}
-          {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
-          {% assign saleNumber = priceDivision | minus: 100 %}
-          {% assign salePercent = saleNumber | round: 1 %}
+		      {% if product.old_price > 0 %}
+            {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+            {% assign saleNumber = priceDivision | minus: 100 %}
+            {% assign salePercent = saleNumber | round: 0 %}
+          {% endif %}
           <div class="product_slide_card">
             <div class="product_card_img">
               <a class="card_img__link" href="{{product.url}}">
@@ -49,7 +51,7 @@
               </a>
               <div class="labels">
                 {% if product.old_price > 0 %}
-                <div class="labe_discount">{{ salePercent }}%</div>
+                	<div class="labe_discount">{{ salePercent }}%</div>
                 {% endif %}
                 <!-- <div class="labe_premium">Premium</div> -->
               </div>
@@ -62,7 +64,7 @@
               <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
               <div class="product_card_prices">
                 <div class="product_card_price">{{ product.price | money }}</div>
-                {% if product.old_price != 0 %}
+                {% if product.old_price > 0 %}
                   <div class="product_card_old_price">{{ product.old_price | money }}</div>
                 {% endif %}
               </div>

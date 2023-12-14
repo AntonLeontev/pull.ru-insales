@@ -183,66 +183,32 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   // product-view swiper
 
-  var product_view_swiper_th = new Swiper(".product_view_swiper_th", {
-    spaceBetween: 10,
-    slidesPerView: 4,
-    freeMode: true,
-    watchSlidesProgress: true,
-    direction: "vertical",
-    autoHeight: true,
+  //   if (detectMob()) {
+  //     let linkMore = document.querySelector(".categories_swiper .link_more");
+  //     if (linkMore) {
+  //       linkMore.addEventListener("click", function (e) {
+  //         e.preventDefault();
+  //         this.classList.toggle("active");
+  //         if (this.classList.contains("active")) {
+  //           this.innerHTML = "<span>Скрыть</span> ";
+  //         } else {
+  //           this.innerHTML = "<span>Показать ещё</span>  ";
+  //         }
 
-    spaceBetween: 22,
-  });
-  var product_view_swiper = new Swiper(".product_view_swiper", {
-    spaceBetween: 10,
-    // direction: 'vertical',
-
-    navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev",
-    },
-    thumbs: {
-      swiper: product_view_swiper_th,
-    },
-    breakpoints: {
-      320: {
-        pagination: {
-          el: ".swiper-pagination",
-          clickable: true,
-        },
-      },
-      1241: {
-        pagination: false,
-      },
-    },
-  });
-
-  if (detectMob()) {
-    let linkMore = document.querySelector(".categories_swiper .link_more");
-    if (linkMore) {
-      linkMore.addEventListener("click", function (e) {
-        e.preventDefault();
-        this.classList.toggle("active");
-        if (this.classList.contains("active")) {
-          this.innerHTML = "<span>Скрыть</span> ";
-        } else {
-          this.innerHTML = "<span>Показать ещё</span>  ";
-        }
-
-        let slides = document.querySelectorAll(".categories-slide.mb_hide");
-        slides.forEach(function (slide) {
-          slide.classList.toggle("active");
-          if (slide.style.maxHeight) {
-            //this is if the accordion is open
-            slide.style.maxHeight = null;
-          } else {
-            //if the accordion is currently closed
-            slide.style.maxHeight = slide.scrollHeight + "px";
-          }
-        });
-      });
-    }
-  }
+  //         let slides = document.querySelectorAll(".categories-slide.mb_hide");
+  //         slides.forEach(function (slide) {
+  //           slide.classList.toggle("active");
+  //           if (slide.style.maxHeight) {
+  //             //this is if the accordion is open
+  //             slide.style.maxHeight = null;
+  //           } else {
+  //             //if the accordion is currently closed
+  //             slide.style.maxHeight = slide.scrollHeight + "px";
+  //           }
+  //         });
+  //       });
+  //     }
+  //   }
   let niceSelectS = document.querySelectorAll(".nice_select");
   if (niceSelectS) {
     niceSelectS.forEach(function (item) {

@@ -1,51 +1,131 @@
 <section class="section-product-view">
   <div class="container">
     <div class="product_inner">
-      <div class="product_info">
+      <div class="product_info" 
+        id="product_info"
+        @variant-change="changeVariant"
+        x-data="{
+          variant: null,
+          swiperMin: null,
+          swiperBig: null,
+		  
+          init() {
+            this.swiperMin = new Swiper('.product_view_swiper_th', {
+              spaceBetween: 10,
+              slidesPerView: 4,
+              freeMode: true,
+              watchSlidesProgress: true,
+              direction: 'vertical',
+              autoHeight: true,
+
+              spaceBetween: 22,
+            });
+            this.swiperBig = new Swiper('.product_view_swiper', {
+              spaceBetween: 10,
+
+              thumbs: {
+                swiper: this.swiperMin,
+              },
+              breakpoints: {
+                320: {
+                  pagination: {
+                  el: '.swiper-pagination',
+                  clickable: true,
+                  },
+                },
+                1241: {
+                  pagination: false,
+                },
+              },
+            });
+          },
+          changeVariant() {
+            this.variant = this.$event.detail
+            this.changeImage()
+          },
+          changeImage() {
+            let slide = this.$refs.swiperContainer.querySelector(`[data-id='${this.variant.first_image.id}']`)
+            if (_.isNil(slide) || _.isEmpty(slide)) return;
+
+            let slideNumber = slide.getAttribute('aria-label').match(/\d+/)[0]
+
+            this.swiperBig.slideTo(slideNumber - 1)
+          },
+          addToCart() {
+            let items = {}
+            items[this.variant?.id] = 1
+
+            ajaxAPI.cart.add(items, {})
+              .done(onDone => { this.$dispatch('cart-changed', onDone.items_count) })
+              .fail(onFail => { alert('Ошибка добавления товара в корзину') });
+          },
+        }"
+      >
         <div class="carousel">
-          <div thumbsSlider="" class="swiper product_view_swiper_th">
-            <div class="swiper-wrapper">
-              {% for image in product.images %}
-                <div class="swiper-slide">
-                  <img src="{{ image.thumb_url }}" alt="{{ image.title }}" />
-                </div>
-              {% endfor %}
+          {% if product.images.size > 0 %}
+            <div thumbsSlider="" class="swiper product_view_swiper_th">
+              <div class="swiper-wrapper">
+                {% for image in product.images %}
+                  <div class="swiper-slide" data-id="{{ image.id }}">
+                    <img src="{{ image.thumb_url }}" alt="{{ image.title }}" />
+                  </div>
+                {% endfor %}
+              </div>
             </div>
-          </div>
+          {% endif %}
 
-          <div class="swiper product_view_swiper">
-            <div class="swiper-wrapper">
-              {% for image in product.images %}
-                <div class="swiper-slide">
-                  <div class="rating">
-                    4.5
-                    <span>/</span>
-                    5
-
+          {% if product.images.size > 0 %}
+            <div class="swiper product_view_swiper">
+              <div class="swiper-wrapper" x-ref="swiperContainer">
+                {% for image in product.images %}
+                  <div class="swiper-slide" data-id="{{ image.id }}">
+                    <img src="{{ image.original_url | image_url: 954, format: 'webp' }}" alt="{{ image.title }}" />
+                  </div>
+                {% endfor %}
+                
+              </div>
+              <div class="swiper-pagination"></div>
+              {% if product.rating %}
+                <div class="rating">
+                  {{ product.rating }}
+                  <span>/</span>
+                  5
                   <img src="{{ 'Star_1.svg' | asset_url }}" alt="Иконка звездочки" />
                 </div>
-                  <img src="{{ image.original_url }}" alt="{{ image.title }}" />
-                </div>
-              {% endfor %}
-              <div class="swiper-button-next"></div>
-              <div class="swiper-button-prev"></div>
+              {% endif %}
             </div>
-            <div class="swiper-pagination"></div>
-          </div>
+          {% else %}
+            <div class="swiper product_view_swiper">
+              <div class="swiper-wrapper" x-ref="swiperContainer">
+                <div class="swiper-slide" data-id="{{ image.id }}">
+                  <img src="{{ product.first_image.original_url }}" alt="{{ image.title }}" />
+                </div>
+              </div>
+              <div class="swiper-pagination"></div>
+              {% if product.rating %}
+                <div class="rating">
+                  {{ product.rating }}
+                  <span>/</span>
+                  5
+                  <img src="{{ 'Star_1.svg' | asset_url }}" alt="Иконка звездочки" />
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
         </div>
 
         <div class="product_info_char">
           <div class="product_name">{{product.title}}</div>
           <div class="product_price">
-            <span>{{ product.price | money }} </span>
-            <div class="product_old_price">{{ product.old_price | money }}</div>
+            <span x-text="formatNumber(variant?.price ?? 0) + ' ₽'">{{ product.price | money }} </span>
+            <div class="product_old_price" x-text="formatNumber(variant?.old_price ?? 0) + ' ₽'">{{ product.old_price | money }}</div>
           </div>
           <div class="product_details">
 
             <form action="{{ cart_url }}" method="post" data-product-id="{{ product.id }}">
               {% if product.show_variants? %}
                 <div class="product-variants">
-                  <select name="variant_id" id="variant-select" class="nice_select select_ordinary" data-product-variants>
+                  <select name="variant_id" id="variant-select" class="select_ordinary" data-product-variants>
                     {% for variant in product.variants %}
                       <option value="{{ variant.id }}">{{ variant.title | escape }}</option>
                     {% endfor %}
@@ -55,28 +135,27 @@
                 <input type="hidden" name="variant_id" value="{{ product.variants.first.id }}" />
               {% endif %}
 
-            <!-- {% for option in product.options %}
-              <select
-                name="{{option.id}}"
-                id="select-{{option.id}}"
-                class="nice_select select_ordinary">
-                <option value="0" selected>Выберите {{option.title}}</option>
-                {% for value in option.values %}
-                  <option value="{{ value.id }}">{{ value.title | escape }}</option>
-                {% endfor %}
-              </select>
-            {% endfor %} -->
+              <div class="product_quantity">
+                <div class="product_quantity__title">Наличие на складе:</div>
+                <div class="product_quantity__body">
+                  <div class="quantity">Москва: <span x-text="formatNumber(variant?.quantity_at_warehouse0) + ' шт.'"></span></div>
+                  <div class="quantity">Казань: <span x-text="formatNumber(variant?.quantity_at_warehouse1) + ' шт.'"></span></div>
+                </div>
+              </div>
 
-              <div action="{{ cart_url }}" method="post" class="data">
-                  <button class="add_to_card button_black">Добавить в корзину</button>
+              <div class="data">
+                  <button type="button" class="add_to_card button_black" @click="addToCart">Добавить в корзину</button>
               </div>
             </form>
 
-
-
-            <a href="#" class="save_btn"
-              >В избранное <img src="{{ 'ICO-heart.svg' | asset_url }}" alt=""
-            /></a>
+            <button class="save_btn" data-ui-favorites-trigger="{{ product.id }}">
+              <span data-ui-favorites-trigger-added-text="В избранном"
+                data-ui-favorites-trigger-not-added-text="Добавить в избранное"
+              ></span>
+              <!-- <img src="{{ 'ICO-heart.svg' | asset_url }}" alt="" /> -->
+              <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+              <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+            </button>
             <div class="deleviry_info">
               <div class="info_item">
                 <div class="info_img">
@@ -107,35 +186,45 @@
       </div>
       <div class="product_tab">
         <div class="tab_header">
-          <a href="#" class="tab_header_item active" data-tab="info_tab"
-            >О товаре</a
-          >
-          <a href="#" class="tab_header_item" data-tab="review_tab"
-            >Отзывы ({{product.reviews_count}})</a
-          >
-          <a href="#" class="tab_header_item" data-tab="questions_tab"
-            >Вопросы (0)</a
-          >
+          <button class="tab_header_item active" data-tab="info_tab"
+            >О товаре
+          </button>
+          <button class="tab_header_item" data-tab="review_tab"
+            >Отзывы ({{product.reviews_count}})
+          </button>
+          <button class="tab_header_item" data-tab="questions_tab"
+            >Вопросы (0)
+          </button>
         </div>
         <div class="tab_body">
           <div class="tab_body_item info_tab active">
-            <div class="info_tab_list">
+            <div class="description">
+              <p>
+                {{product.description}}
+              </p>
+            </div>
+            <dl class="info_tab_list">
 
               {% for property in product.properties %}
 
                   <div class="list_item">
-                    <div class="item_label">{{property.name}}</div>
+                    <dt class="item_label">{{property.name}}</dt>
                      
-                    <div class="item_info">{% for item in property.characteristics %}{{item.name}},{% endfor %}</div>
+                    <dd class="item_info">
+                      {% for item in property.characteristics %}
+                        {% if forloop.last %}
+                          {{item.name}}
+                        {% else %}
+                          {{item.name}},
+                        {% endif %}
+                      {% endfor %}
+                    </dd>
                   </div>
 
               {% endfor %}
               
-            </div>
+            </dl>
           </div>
-          <!-- em - empty
-                    nem- not empty
-                -->
           <div class="tab_body_item review_tab nem">
             {% if account.reviews_enabled? %}
               
@@ -145,7 +234,7 @@
                 <div class="tab_item_innner">
                   <div class="tab_item_title">Нет отзывов</div>
                   <div class="subtitle">
-                    О нет! На данный товар пока никто не оставил свой отзыв.
+                    На данный товар пока никто не оставил свой отзыв.
                   </div>
                   <a href="#" class="btn">Оставить отзыв</a>
                 </div>
@@ -181,12 +270,12 @@
                         </div>
                       </div>
                       <!-- If we need navigation buttons -->
-                      <div class="swiper-button-next">
+                      <!-- <div class="swiper-button-next">
                         <img src="{{ 'ICO-next.svg' | asset_url }}" alt="Next" />
                       </div>
                       <div class="swiper-button-prev">
                         <img src="{{ 'ICO-back.svg' | asset_url }}" alt="previous" />
-                      </div>
+                      </div> -->
                     </div>
                   </div>
                   {% for review in product.reviews %}
@@ -304,35 +393,46 @@
         
       </div>
 
-      <div class="product_accordion mb">
-        <div class="accordion_item">
-          <a href="" class="accordion_link ">
+      <div class="product_accordion">
+        <div class="accordion_item" :class="open && 'active'" x-data="{open: false}">
+          <button class="accordion_link" @click="open = !open">
             О товаре <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
-          </a>
+          </button>
           <div class="accordion_content">
-            <div class="info_tab_list">
-
-              {% for property in product.properties %}
-              
-                <div class="list_item">
-                  <div class="item_label">{{property.name}}</div>
-                  <div class="item_info">{% for item in property.characteristics %}{{item.name}},{% endfor %}</div>
-                </div>
-
-              {% endfor %}
-
-            </div>
-
-            <div class="description">
-              {{product.description}}
+            <div class="accordion_content__wrap">
+              <div class="description">
+                {{product.description}}
+              </div>
+  
+              <dl class="info_tab_list">
+  
+                {% for property in product.properties %}
+                
+                  <div class="list_item">
+                    <dt class="item_label">{{property.name}}</dt>
+                    <dd class="item_info">
+                      {% for item in property.characteristics %}
+                          {% if forloop.last %}
+                            {{item.name}}
+                          {% else %}
+                            {{item.name}},
+                          {% endif %}
+                        {% endfor %}
+                    </dd>
+                  </div>
+  
+                {% endfor %}
+  
+              </dl>
             </div>
           </div>
 
-          <div class="accardion_footer">
-            <a href="" class="accordion_link_hide ">
-              <span>Скрыть</span> <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
-            </a>
-            
+          <div class="accordion_footer">
+            <div class="accordion_footer__wrap">
+              <button class="accordion_link_hide" @click="open = false">
+                <span>Скрыть</span> <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
+              </a>
+            </div>
           </div>
         </div>
         <div class="accordion_item">
@@ -343,7 +443,7 @@
             <div class="review_header">
 
               <div class="review_rating">
-                4.5
+                {{ product.rating }}
                 <div>
                   <img src="{{ 'star.svg' |asset_url }}" alt="" />
                   <a href="#" class="rating_text">Написать отзыв</a> 
@@ -362,92 +462,15 @@
                           alt="" /><span>Подробнее</span></a
                       >
                     </div>
-                    <div class="swiper-slide">
-                      <a href="#" class="moree_review"
-                        ><img
-                          src="{{ 'product-thumb.png' | asset_url }}"
-                          alt="" /><span>Подробнее</span></a
-                      >
-                    </div>
-                    <div class="swiper-slide">
-                      <a href="#" class="moree_review"
-                        ><img
-                          src="{{ 'product-thumb.png' | asset_url }}"
-                          alt="" /><span>Подробнее</span></a
-                      >
-                    </div>
-                    <div class="swiper-slide">
-                      <a href="#" class="moree_review"
-                        ><img
-                          src="{{ 'product-thumb.png' | asset_url }}"
-                          alt="" /><span>Подробнее</span></a
-                      >
-                    </div>
-                    <div class="swiper-slide">
-                      <a href="#" class="moree_review"
-                        ><img
-                          src="{{ 'product-thumb.png' | asset_url }}"
-                          alt="" /><span>Подробнее</span></a
-                      >
-                    </div>
-                    <div class="swiper-slide">
-                      <a href="#" class="moree_review"
-                        ><img
-                          src="{{ 'product-thumb.png' | asset_url }}"
-                          alt="" /><span>Подробнее</span></a
-                      >
-                    </div>
-                    <div class="swiper-slide">
-                      <a href="#" class="moree_review"
-                        ><img
-                          src="{{ 'product-thumb.png' | asset_url }}"
-                          alt="" /><span>Подробнее</span></a
-                      >
-                    </div>
-                    <div class="swiper-slide">
-                      <a href="#" class="moree_review"
-                        ><img
-                          src="{{ 'product-thumb.png' | asset_url }}"
-                          alt="" /><span>Подробнее</span></a
-                      >
-                    </div>
-                    <div class="swiper-slide">
-                      <a href="#" class="moree_review"
-                        ><img
-                          src="{{ 'product-thumb.png' | asset_url }}"
-                          alt="" /><span>Подробнее</span></a
-                      >
-                    </div>
-                    <div class="swiper-slide">
-                      <a href="#" class="moree_review"
-                        ><img
-                          src="{{ 'product-thumb.png' | asset_url }}"
-                          alt="" /><span>Подробнее</span></a
-                      >
-                    </div>
-                    <div class="swiper-slide">
-                      <a href="#" class="moree_review"
-                        ><img
-                          src="{{ 'product-thumb.png' | asset_url }}"
-                          alt="" /><span>Подробнее</span></a
-                      >
-                    </div>
-                    <div class="swiper-slide">
-                      <a href="#" class="moree_review"
-                        ><img
-                          src="{{ 'product-thumb.png' | asset_url }}"
-                          alt="" /><span>Подробнее</span></a
-                      >
-                    </div>
                   </div>
                 </div>
                 <!-- If we need navigation buttons -->
-                <div class="swiper-button-next">
+                <!-- <div class="swiper-button-next">
                   <img src="{{ 'ICO-next.svg' | asset_url }}" alt="" />
                 </div>
                 <div class="swiper-button-prev">
                   <img src="{{ 'ICO-back.svg' | asset_url }}" alt="" />
-                </div>
+                </div> -->
               </div>
             </div>
             {% if product.reviews_count > 0 %}
@@ -503,127 +526,55 @@
                 <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
               /></a>
             </div>
-            <div class="comment_item">
-              <div class="comment_name">Андрей Н.</div>
-              <div class="comment_text">
-                There are many variations of passages of Lorem Ipsum
-                available, but the majority have suffered alteration
-                in some form, by injected humour
-              </div>
-              <div class="accordion_content">
-                <div class="comment_info answer_title">Ответ</div>
-                <div class="comment_text">
-                  There are many variations of passages of Lorem Ipsum
-                  available, but the majority have suffered alteration
-                  in some form, by injected humour
-                </div>
-              </div>
-              <a href="#" class="comment_info accordion_link"
-                >Показать ответ
-                <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
-              /></a>
-            </div>
-            <div class="comment_item">
-              <div class="comment_name">Андрей Н.</div>
-              <div class="comment_text">
-                There are many variations of passages of Lorem Ipsum
-                available, but the majority have suffered alteration
-                in some form, by injected humour
-              </div>
-              <div class="accordion_content">
-                <div class="comment_info answer_title">Ответ</div>
-                <div class="comment_text">
-                  There are many variations of passages of Lorem Ipsum
-                  available, but the majority have suffered alteration
-                  in some form, by injected humour
-                </div>
-              </div>
-              <a href="#" class="comment_info accordion_link"
-                >Показать ответ
-                <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
-              /></a>
-            </div>
-            <div class="comment_item">
-              <div class="comment_name">Андрей Н.</div>
-              <div class="comment_text">
-                There are many variations of passages of Lorem Ipsum
-                available, but the majority have suffered alteration
-                in some form, by injected humour
-              </div>
-              <div class="accordion_content">
-                <div class="comment_info answer_title">Ответ</div>
-                <div class="comment_text">
-                  There are many variations of passages of Lorem Ipsum
-                  available, but the majority have suffered alteration
-                  in some form, by injected humour
-                </div>
-              </div>
-              <a href="#" class="comment_info accordion_link"
-                >Показать ответ
-                <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
-              /></a>
-            </div>
           </div>
         </div>
         
       </div>
-      <!-- <div class="pagination">
-        <ul class="pagination_list">
-          <li class="list_item">
-            <a href="#" class="list_link active">1</a>
-          </li>
-          <li class="list_item">
-            <a href="#" class="list_link">2</a>
-          </li>
-          <li class="list_item">
-            <a href="#" class="list_link">3</a>
-          </li>
-          <li class="list_item">
-            <a href="#" class="list_link">4</a>
-          </li>
-          <li class="list_item">
-            <a href="#" class="list_link"
-              ><svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="21"
-                height="20"
-                viewBox="0 0 21 20"
-                fill="none">
-                <path
-                  d="M6.37968 2.39402C6.49901 2.26917 6.64098 2.17007 6.79739 2.10244C6.95381 2.03482 7.12158 2 7.29103 2C7.46048 2 7.62825 2.03482 7.78467 2.10244C7.94108 2.17007 8.08305 2.26917 8.20238 2.39402L14.6203 9.05425C14.7406 9.17808 14.8361 9.3254 14.9013 9.48773C14.9664 9.65005 15 9.82415 15 10C15 10.1758 14.9664 10.35 14.9013 10.5123C14.8361 10.6746 14.7406 10.8219 14.6203 10.9458L8.20238 17.606C8.08305 17.7308 7.94109 17.8299 7.78467 17.8976C7.62825 17.9652 7.46048 18 7.29103 18C7.12158 18 6.95381 17.9652 6.79739 17.8976C6.64098 17.8299 6.49901 17.7308 6.37968 17.606C6.25938 17.4822 6.16388 17.3348 6.09872 17.1725C6.03355 17.0102 6 16.8361 6 16.6602C6 16.4844 6.03355 16.3103 6.09872 16.148C6.16388 15.9856 6.25937 15.8383 6.37968 15.7145L11.8991 10L6.37968 4.28552C6.25937 4.16169 6.16388 4.01437 6.09872 3.85204C6.03355 3.68972 6 3.51562 6 3.33977C6 3.16392 6.03355 2.98982 6.09872 2.8275C6.16388 2.66517 6.25937 2.51785 6.37968 2.39402Z"
-                  fill="#939393" /></svg></a>
-          </li>
-        </ul>
-      </div> -->
     </div>
-    <div class="same_links">
-      <a href="#" class="same_link">
-        <div class="same_link_img">
-          <img src="{{ 'IMG-blck.png' | asset_url }}" alt="" />
-        </div>
-        <div class="same_link_text">
-          <div class="same_link_name">
-            Все спротивные костюмы «BOSS»
-          </div>
-          <div class="same_link_subname">Бренд и категория</div>
-        </div>
-      </a>
-      <a href="#" class="same_link">
-        <div class="same_link_img">
-          <img src="{{ 'IMG-boss.svg' | asset_url }}" alt="" />
 
-        </div>
-        <div class="same_link_text">
-          <div class="same_link_name">Вся продукция «BOSS»</div>
-          <div class="same_link_subname">Бренд</div>
-        </div>
-      </a>
-      <a href="#" class="same_link">
+    {% assign collections = product.collections | sort: 'level' %}
+    {% assign collection = collections | last %}
+    {% assign gender_collection = collections | where: 'handle', 'muzhchinam' | first %}
+
+    {% unless gender_collection %}
+    {% assign gender_collection = collections | where: 'handle', 'zhenschinam' | first %}
+    {% endunless %}
+
+    {% assign brand_property = product.properties | where: 'handle', 'brand' | first %}
+
+    <div class="same_links">
+      {% if brand_property %}
+        {% assign brand = brand_property.characteristics | first %}
+
+        <a href="{{ collection.url | add_param: 'characteristics[]', brand.id }}" class="same_link">
+          <div class="same_link_img">
+            <img src="{{ collection.image.thumb_url }}" alt="{{ collection.title }}" />
+          </div>
+          <div class="same_link_text">
+            <div class="same_link_name">
+              Вся категория {{ collection.title | downcase }} бренда «{{ brand.title }}»
+            </div>
+            <div class="same_link_subname">Бренд и категория</div>
+          </div>
+        </a>
+        <a href="{{ gender_collection.url | add_param: 'characteristics[]', brand.id }}" class="same_link">
+          <div class="same_link_img">
+            <img src="{{ 'IMG-boss.svg' | asset_url }}" alt="{{ brand.title }}" />
+
+          </div>
+          <div class="same_link_text">
+            <div class="same_link_name">Вся продукция «{{ brand.title }}»</div>
+            <div class="same_link_subname">Бренд</div>
+          </div>
+        </a>
+      {% endif %}
+
+      <a href="{{ collection.url }}" class="same_link">
         <div class="same_link_img">
-          <img src="{{ 'IMG-blck.png' | asset_url }}" alt="" />
+          <img src="{{ collection.image.thumb_url }}" alt="{{ collection.title }}" />
         </div>
         <div class="same_link_text">
-          <div class="same_link_name">Все спортиные костюмы</div>
+          <div class="same_link_name">Вся категория {{ collection.title | downcase }}</div>
           <div class="same_link_subname">Категория</div>
         </div>
       </a>
@@ -666,7 +617,7 @@
 
                 <div class="labels">
                   <div class="labe_discount">-24%</div>
-                  <div class="labe_premium">-Premium</div>
+                  <!-- <div class="labe_premium">-Premium</div> -->
                 </div>
                 <div class="product_save_btn">
                   <a href="" class="img"
@@ -740,44 +691,9 @@
 <script>
   EventBus.subscribe('update_variant:insales:product', variant => {
     console.log(variant);
+    product_info.dispatchEvent(new CustomEvent('variant-change', {
+      detail: variant
+    }));
   })
 
-  // var in_stock_text = '<p class="in_stock">Товар есть в наличии</p>';
-  // var sold_out_text = '<p class="sold_out">Товар распродан</p>';
-  // var not_available_text = '<p class="not_available">Такой комплектации нет в наличии</p>';
-  // {% if product.available == false %}
-  //   $('.product_form .submit_bg').addClass('submit_bg_disabled');
-  //   $('.product_available').html(sold_out_text);
-  // {% endif %}
-
-  // var selectCallback = function(variant, selector) {
-
-  //   $('.add_button').removeAttr('disabled');
-  //   $('.product_form .submit_bg').removeClass('submit_bg_disabled');
-  //   $('.product_available').html(in_stock_text);
-  //   if(variant){
-  //     $('.product_price span').html(InSales.formatMoney(variant.price, "{{ money_with_currency_format }}"));
-  //     $('.product_price .product_old_price').html(InSales.formatMoney(variant.old_price, "{{ money_with_currency_format }}"));
-  //   }
-  //   if(variant && variant.available == true){
-  //     $('.product_price span').html(InSales.formatMoney(variant.price, "{{ money_with_currency_format }}"));
-  //     $('.product_price .product_old_price').html(InSales.formatMoney(variant.old_price, "{{ money_with_currency_format }}"));
-  //   }else{
-  //     if(variant){
-  //       $('.add_button').attr('disabled','disabled');
-  //       $('.product_form .submit_bg').addClass('submit_bg_disabled');
-  //       $('.product_available').html(sold_out_text);
-  //       $('#price-field').html(InSales.formatMoney(variant.price, "{{ money_with_currency_format }}"));
-  //       $('#old-price-field').html(InSales.formatMoney(variant.old_price, "{{ money_with_currency_format }}"));
-  //     }else{
-  //       $('.sku').html('<span>Артикул:</span> —');
-  //       $('.add_button').attr('disabled','disabled');
-  //       $('.product_form .submit_bg').addClass('submit_bg_disabled');
-  //       $('.product_available').html(not_available_text);
-  //       $('#price-field').html('—');
-  //       $('#old-price-field').html('');
-  //     }
-  //   }
-  // };
-  // new InSales.OptionSelectors('size-select', { product: {{ product | json }}, onVariantSelected: selectCallback });
 </script>

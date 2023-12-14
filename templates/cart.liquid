@@ -47,10 +47,10 @@
         })
       },
       makeOrder() {
-        // if (this.deliveryTariff === null || this.deliveryType === null || this.deliveryAddress === null) {
-        //   alert('Выбирите способ доставки')
-        //   return 
-        // }
+        if (this.deliveryTariff === null || this.deliveryType === null || this.deliveryAddress === null) {
+          alert('Выбирите способ доставки')
+          return 
+        }
 
         let paymentVarianId = $('[name=select_payment]').parent().find('.nice-select .list .selected').data('value')
         
@@ -127,7 +127,7 @@
                 {% for item in cart.items %}
                   <div class="product_item {{ cart_class }}" data-product-id="{{ item.product.id }}" data-item-id="{{ item.id }}">
                     <a href="{{item.product.canonical_url}}" class="product_img">
-                      <img src="{{ item.product.first_image.large_url }}" alt="">
+                      <img src="{{ item.variant.first_image.large_url }}" alt="">
                     </a>
                     <div class="product_text">
                       <div class="product_text_header">
@@ -321,7 +321,6 @@
 {% endif %}
 
 
-<script src="{{ 'cart.js' | asset_url }}"></script>
 <script>
   let emailField = $('[name=email]')
   let nameField = $('[name=name]')
@@ -344,15 +343,21 @@
   /*---------- Удаление товара из корзины ----------*/
 
   EventBus.subscribe('always:insales:cart', function (data) {
-    if (data.action.method === 'delete_items') {
+	  if (data.action.method === 'delete_items') {
       data.action.items.forEach(item => {
         $(`[data-item-id=${item}]`).remove()
       })
-    }
-
+	  }
+    
     cart_form.dispatchEvent(new CustomEvent('cart-event', {
       // bubbles: true,
       detail: data
+    }));
+    
+	  Cart.forceUpdate()
+    cart_form.dispatchEvent(new CustomEvent('cart-changed', {
+      bubbles: true,
+      detail: Cart.order.items_count
     }));
   });
 

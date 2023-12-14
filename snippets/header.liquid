@@ -1,6 +1,14 @@
-<header class="header" id="header" x-data="{
-  sidebar: false,
-}">
+<header class="header" id="header" 
+	@cart-changed.window="onCartChange" 
+  x-data="{
+    sidebar: false,
+    items: {{ cart.items_count }},
+
+    onCartChange() {
+      this.items = this.$event.detail
+    },
+  }"
+>
   <!-- <div class="header__top">
     <div class="container">
       <div class="header__top_inner">
@@ -28,11 +36,11 @@
             </button>
           </div>
           <div class="mb">
-            <button><img src="{{ 'ICO-search.svg' | asset_url }}" alt="" /></button>
+            <button><img src="{{ 'ICO-search.svg' | asset_url }}" alt="Поиск" /></button>
           </div>
         </div>
         <div class="header_logo">
-          <a href="/"><img src="{{ 'logo-black.png' | asset_url }}" alt="" /></a>
+          <a href="/"><img src="{{ 'logo-black.png' | asset_url }}" alt="Логотип" /></a>
         </div>
 
         <div class="header_search_bar">
@@ -47,7 +55,7 @@
         </div>
         <div class="header_account_actions">
           <a href="/cart_items">
-            <div class="cart-items">{{ cart.items_count }}</div>
+            <div class="cart-items" x-if="items > 0" x-text="items">{{ cart.items_count }}</div>
             <img src="{{ 'ICO-shop.svg' | asset_url }}" alt="Корзина" />
           </a>
           {% if client %}
@@ -84,29 +92,41 @@
               <div class="list_item">
                 <a href="/collection/all" class="list_link">Каталог</a>
 
+                {% if template contains 'product' %}	
+                  {% assign catalog = collections | where: 'title', 'Каталог' | first %}
+                  {% assign categories = catalog.subcollections %}
+                  {% assign men = categories | where: 'title', 'Мужчинам' | first %}
+                  {% assign women = categories | where: 'title', 'Женщинам' | first %}
+                {% else %}  
+                  {% assign men = collections.muzhchinam %}
+                  {% assign women = collections.zhenschinam %}
+                {% endif %}  
+
+
                 <nav class="header__categories">
                   <div class="container">
                   <nav class="categories__menu">
                     <ul class="menu__column">
-                    <li class="menu__item menu__item_title">
-                      <a class="menu__link" href="{{ collections.muzhchinam.url }}">{{ collections.muzhchinam.title }}</a>
-                    </li>
+                      <li class="menu__item menu__item_title">
+                        <a class="menu__link" href="{{ men.url }}">{{ men.title }}</a>
+                      </li>
 
-                    {% for collection in collections.muzhchinam.subcollections %}
+
+                    {% for collection in men.subcollections %}
                       <li class="menu__item"><a class="menu__link" href="{{ collection.url }}">{{ collection.title }}</a></li>
 
                       {% if collection.subcollections.size > 0 %}
                       <ul class="submenu">
                         {% for collection1 in collection.subcollections %}
-                        <li class="menu__item"><a href="{{ collection1.url }}" class="menu__link">{{ collection1.title }}</a></li>
+                          <li class="menu__item"><a href="{{ collection1.url }}" class="menu__link">{{ collection1.title }}</a></li>
 
-                        {% if collection1.subcollections.size > 0 %}
+                          {% if collection1.subcollections.size > 0 %}
                           <ul class="submenu">
                           {% for collection2 in collection1.subcollections %}
                             <li class="menu__item"><a href="{{ collection2.url }}" class="menu__link">{{ collection2.title }}</a></li>
                           {% endfor %}
                           </ul>
-                        {% endif %}
+                          {% endif %}
                         {% endfor %}
                       </ul>
                       {% endif %}
@@ -115,24 +135,24 @@
                     </ul>
                     <ul class="menu__column">
                     <li class="menu__item menu__item_title">
-                      <a class="menu__link" href="{{ collections.zhenschinam.url }}">{{ collections.zhenschinam.title }}</a>
+                      <a class="menu__link" href="{{ women.url }}">{{ women.title }}</a>
                     </li>
                     
-                    {% for collection in collections.zhenschinam.subcollections %}
+                    {% for collection in women.subcollections %}
                       <li class="menu__item"><a class="menu__link" href="{{ collection.url }}">{{ collection.title }}</a></li>
 
                       {% if collection.subcollections.size > 0 %}
                       <ul class="submenu">
                         {% for collection1 in collection.subcollections %}
-                        <li class="menu__item"><a href="{{ collection1.url }}" class="menu__link">{{ collection1.title }}</a></li>
+							<li class="menu__item"><a href="{{ collection1.url }}" class="menu__link">{{ collection1.title }}</a></li>
 
-                        {% if collection1.subcollections.size > 0 %}
-                          <ul class="submenu">
-                          {% for collection2 in collection1.subcollections %}
-                            <li class="menu__item"><a href="{{ collection2.url }}" class="menu__link">{{ collection2.title }}</a></li>
-                          {% endfor %}
-                          </ul>
-                        {% endif %}
+							{% if collection1.subcollections.size > 0 %}
+							<ul class="submenu">
+							{% for collection2 in collection1.subcollections %}
+								<li class="menu__item"><a href="{{ collection2.url }}" class="menu__link">{{ collection2.title }}</a></li>
+							{% endfor %}
+							</ul>
+							{% endif %}
                         {% endfor %}
                       </ul>
                       {% endif %}
@@ -187,7 +207,7 @@
     </div>
     <nav class="sidebar__menu-wrap">
       <ul class="sidebar__menu" x-show="tab === 'men'">
-        {% for collection in collections.muzhchinam.subcollections %}
+        {% for collection in men.subcollections %}
           {% if collection.subcollections.size > 0 %}
           <li class="menu__item" x-data="{show: false}">
             <div class="menu__button" :class="show && 'active'" @click="show = !show">{{ collection.title }}</div>
@@ -213,7 +233,7 @@
       </ul>
 
       <ul class="sidebar__menu" x-show="tab === 'women'">
-        {% for collection in collections.zhenschinam.subcollections %}
+        {% for collection in women.subcollections %}
           {% if collection.subcollections.size > 0 %}
           <li class="menu__item" x-data="{show: false}">
             <div class="menu__button" :class="show && 'active'" @click="show = !show">{{ collection.title }}</div>

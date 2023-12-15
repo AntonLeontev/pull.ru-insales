@@ -43,39 +43,40 @@
           {% assign block_new = blocks.with_template['system-collection'].kollektsiya-novinki-blok-1 %}
         {% endif %}
 
+
         {%for product in collections[block_new.collection.handle].products %}
-        <div class="swiper-slide">
-          <div class="product_slide_card">
-            <div class="product_card_img">
-              <a href="{{ product.url }}" class="link_more"
-                ><img src="{{ product.first_image.large_url }}" alt=""
-              /></a>
-            </div>
-            <div class="product_card_itext">
-              <a href="{{ product.url }}" class="product_card_name">
-                {{ product.title }}
-              </a>
-              <div class="product_card_prices">
-                <div class="product_card_price">
-                  {{ product.price | money }}
+          {% if product.old_price > 0 %}
+            {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+            {% assign saleNumber = priceDivision | minus: 100 %}
+            {% assign salePercent = saleNumber | round: 0 %}
+          {% endif %}
+          <div class="swiper-slide">
+            <div class="product_slide_card">
+              <div class="product_card_img">
+                <a class="card_img__link" href="{{product.url}}">
+                  <img class="card_img__image" src="{{product.first_image.large_url}}" alt="{{product.title}}" />
+                </a>
+                <div class="labels">
+                  {% if product.old_price > 0 %}
+                    <div class="labe_discount">{{ salePercent }}%</div>
+                  {% endif %}
                 </div>
-                <div class="product_card_old_price">
-                  {{ product.old_price | money }}
+                <button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
+                  <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+                  <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+                </button>
+              </div>
+              <div class="product_card_itext">
+                <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
+                <div class="product_card_prices">
+                  <div class="product_card_price">{{ product.price | money }}</div>
+                  {% if product.old_price > 0 %}
+                    <div class="product_card_old_price">{{ product.old_price | money }}</div>
+                  {% endif %}
                 </div>
               </div>
-              <!-- <div class="product_card_actions">
-                    <a href="{{ product.url }}" class="link_more">Подробнее</a>
-                    <a href="" class="save_btn">
-                      <svg
-xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path
-d="M14.4643 1.40625C12.6205 1.40625 11.0063 2.20136 10 3.54534C8.99375 2.20136 7.37946 1.40625 5.53571 1.40625C4.06806 1.40791 2.66099 1.99332 1.6232 3.03406C0.585411 4.0748 0.00165423 5.48587 0 6.95769C0 13.2254 9.26696 18.2987 9.66161 18.5083C9.76562 18.5644 9.88189 18.5938 10 18.5938C10.1181 18.5938 10.2344 18.5644 10.3384 18.5083C10.733 18.2987 20 13.2254 20 6.95769C19.9983 5.48587 19.4146 4.0748 18.3768 3.03406C17.339 1.99332 15.9319 1.40791 14.4643 1.40625ZM10 17.0577C8.36964 16.105 1.42857 11.7651 1.42857 6.95769C1.42999 5.86575 1.86316 4.81894 2.63309 4.04682C3.40302 3.2747 4.44687 2.8403 5.53571 2.83888C7.27232 2.83888 8.73036 3.76651 9.33929 5.25644C9.3931 5.38782 9.48465 5.50019 9.60229 5.57927C9.71994 5.65836 9.85837 5.70058 10 5.70058C10.1416 5.70058 10.2801 5.65836 10.3977 5.57927C10.5154 5.50019 10.6069 5.38782 10.6607 5.25644C11.2696 3.76382 12.7277 2.83888 14.4643 2.83888C15.5531 2.8403 16.597 3.2747 17.3669 4.04682C18.1368 4.81894 18.57 5.86575 18.5714 6.95769C18.5714 11.7579 11.6286 16.1041 10 17.0577Z" fill="#111111"></path>
-                      </svg>
-                    </a>
-                  </div> -->
             </div>
           </div>
-        </div>
         {% endfor %} 
       </div>
 

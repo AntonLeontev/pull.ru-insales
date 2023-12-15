@@ -67,7 +67,7 @@
               <div class="swiper-wrapper">
                 {% for image in product.images %}
                   <div class="swiper-slide" data-id="{{ image.id }}">
-                    <img src="{{ image.thumb_url }}" alt="{{ image.title }}" />
+                    <img src="{{ image.thumb_url | image_url: 100, format: 'webp' }}" alt="{{ image.title }}" />
                   </div>
                 {% endfor %}
               </div>
@@ -98,7 +98,7 @@
             <div class="swiper product_view_swiper">
               <div class="swiper-wrapper" x-ref="swiperContainer">
                 <div class="swiper-slide" data-id="{{ image.id }}">
-                  <img src="{{ product.first_image.original_url }}" alt="{{ image.title }}" />
+                  <img src="{{ product.first_image.original_url | image_url: 954, format: 'webp' }}" alt="{{ image.title }}" />
                 </div>
               </div>
               <div class="swiper-pagination"></div>
@@ -537,7 +537,7 @@
     {% assign gender_collection = collections | where: 'handle', 'muzhchinam' | first %}
 
     {% unless gender_collection %}
-    {% assign gender_collection = collections | where: 'handle', 'zhenschinam' | first %}
+      {% assign gender_collection = collections | where: 'handle', 'zhenschinam' | first %}
     {% endunless %}
 
     {% assign brand_property = product.properties | where: 'handle', 'brand' | first %}
@@ -545,6 +545,7 @@
     <div class="same_links">
       {% if brand_property %}
         {% assign brand = brand_property.characteristics | first %}
+		    {% assign brand_block = block_lists.with_template['system-banner-3'].brands-men.blocks | where: 'link', brand.handle | first %}
 
         <a href="{{ collection.url | add_param: 'characteristics[]', brand.id }}" class="same_link">
           <div class="same_link_img">
@@ -559,7 +560,7 @@
         </a>
         <a href="{{ gender_collection.url | add_param: 'characteristics[]', brand.id }}" class="same_link">
           <div class="same_link_img">
-            <img src="{{ 'IMG-boss.svg' | asset_url }}" alt="{{ brand.title }}" />
+            <img src="{{ brand_block.image }}" alt="{{ brand.title }}" />
 
           </div>
           <div class="same_link_text">
@@ -582,13 +583,13 @@
   </div>
 </section>
 
-{% if product.similar_products.size > 0 %}
+{% if product.related_products.size > 0 %}
 
 <!-- section-products-carousel-->
 <section class="section-products-carousel">
   <div class="container">
     <div class="products_header section_header">
-      <div class="section_title">Похожие</div>
+      <div class="section_title">С этим товаром покупают</div>
       <div class="slider_buttons">
         <div class="swiper-button-next">
           <img src="{{ 'ICO-next.svg' | asset_url }}" alt="" />
@@ -609,28 +610,36 @@
         <!-- Slides -->
 
         
-        {% for product in product.similar_products %}
+        {% for product in product.related_products  %}
           <div class="swiper-slide">
+            {% if product.old_price > 0 %}
+              {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+              {% assign saleNumber = priceDivision | minus: 100 %}
+              {% assign salePercent = saleNumber | round: 0 %}
+            {% endif %}
             <div class="product_slide_card">
-              <a href="{{ product.url }}" class="product_card_img">
-                <img src="{{ product.first_image.large_url }}" alt="" />
-
+              <div class="product_card_img">
+                <a class="card_img__link" href="{{product.url}}">
+                  <img class="card_img__image" src="{{product.first_image.large_url | image_url: 459, format: 'webp'}}" alt="{{product.title}}" />
+                </a>
                 <div class="labels">
-                  <div class="labe_discount">-24%</div>
-                  <!-- <div class="labe_premium">-Premium</div> -->
+                  {% if product.old_price > 0 %}
+                    <div class="labe_discount">{{ salePercent }}%</div>
+                  {% endif %}
+                  <!-- <div class="labe_premium">Premium</div> -->
                 </div>
-                <div class="product_save_btn">
-                  <a href="" class="img"
-                    ><img src="{{ 'ICO-heart.svg' | asset_url }}" alt=""
-                  /></a>
-                </div>
-              </a>
+                <button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
+                <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+                <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+                </button>
+              </div>
               <div class="product_card_itext">
-                <a href="{{ product.url }}" class="product_card_name">{{ product.title }}</a>
-                
+                <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
                 <div class="product_card_prices">
                   <div class="product_card_price">{{ product.price | money }}</div>
-                  <div class="product_card_old_price">{{ product.old_price | money }}</div>
+                  {% if product.old_price > 0 %}
+                    <div class="product_card_old_price">{{ product.old_price | money }}</div>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -644,6 +653,83 @@
       <!-- If we need navigation buttons -->
       <div class="swiper-button-prev"></div>
       <div class="swiper-button-next"></div>
+      <span
+        class="swiper-notification"
+        aria-live="assertive"
+        aria-atomic="true"></span>
+    </div>
+  </div>
+</section>
+
+{% endif %}
+
+{% if product.similar_products.size > 0 %}
+
+<!-- section-products-carousel-->
+<section class="section-sim-products-carousel">
+  <div class="container">
+    <div class="products_header section_header">
+      <div class="section_title">Похожие</div>
+      <div class="slider_buttons">
+        <div class="swiper-button-next">
+          <img src="{{ 'ICO-next.svg' | asset_url }}" alt="" />
+        </div>
+        <div class="swiper-button-prev">
+          <img src="{{ 'ICO-back.svg' | asset_url }}" alt="" />
+        </div>
+      </div>
+    </div>
+    <!-- Slider main container -->
+    <div
+      class="swiper similar_swiper swiper-initialized swiper-horizontal swiper-backface-hidden">
+      <!-- Additional required wrapper -->
+      <div
+        class="swiper-wrapper"
+        id="swiper-wrapper-cb1071e566d10864ee"
+        aria-live="polite">
+        <!-- Slides -->
+
+        
+        {% for product in product.similar_products %}
+          {% if product.old_price > 0 %}
+            {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+            {% assign saleNumber = priceDivision | minus: 100 %}
+            {% assign salePercent = saleNumber | round: 0 %}
+          {% endif %}
+          <div class="swiper-slide">
+            <div class="product_slide_card">
+              <div class="product_card_img">
+                <a class="card_img__link" href="{{product.url}}">
+                  <img class="card_img__image" src="{{product.first_image.large_url | image_url: 459, format: 'webp'}}" alt="{{product.title}}" />
+                </a>
+                <div class="labels">
+                  {% if product.old_price > 0 %}
+                    <div class="labe_discount">{{ salePercent }}%</div>
+                  {% endif %}
+                  <!-- <div class="labe_premium">Premium</div> -->
+                </div>
+                <button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
+                <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+                <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+                </button>
+              </div>
+              <div class="product_card_itext">
+                <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
+                <div class="product_card_prices">
+                  <div class="product_card_price">{{ product.price | money }}</div>
+                  {% if product.old_price > 0 %}
+                    <div class="product_card_old_price">{{ product.old_price | money }}</div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+
+        
+
+      </div>
+
       <span
         class="swiper-notification"
         aria-live="assertive"

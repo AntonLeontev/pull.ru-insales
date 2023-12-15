@@ -3,51 +3,30 @@
   <div class="container">
     <div class="accordeon">
       <div class="section-categories-carousel__inner">
-		{% if page.url contains 'page/muzh' %}
-			{% for category in collections.muzhchinam.subcollections %}
+        {% if page.url contains 'page/muzh' %}
+          {% assign product_categories = collections.muzhchinam.subcollections %}
+        {% elsif page.url contains 'page/zhen' %}
+          {% assign product_categories = collections.zhenschinam.subcollections %}
+        {% else %}
+          {% assign product_categories = collections.flatten %}
+        {% endif %}
 
-			<div class="categories-slide">
-				<div class="categories_slide_inner">
-				<a href="{{ category.url }}" class="categories_slide_img">
-					<img src="{{ category.image.medium_url | image_url: 280, format: 'webp' }}" alt="{{category.title}}" />
-				</a>
-				<a href="{{ category.url }}" class="categories_slide_label">{{category.title}}</a>
-				</div>
-			</div>
-			
-			{% endfor %}
-		{% elsif page.url contains 'page/zhen' %}
-			{% for category in collections.zhenschinam.subcollections %}
+        {% for category in product_categories %}
 
-			<div class="categories-slide">
-				<div class="categories_slide_inner">
-				<a href="{{ category.url }}" class="categories_slide_img">
-					<img src="{{ category.image.medium_url | image_url: 280, format: 'webp' }}" alt="{{category.title}}" />
-				</a>
-				<a href="{{ category.url }}" class="categories_slide_label">{{category.title}}</a>
-				</div>
-			</div>
-			
-			{% endfor %}
-		{% else %}
-			{% for category in collections.flatten %}
+          {% if category.title contains 'Муж' or category.title contains 'Жен' %}
+            {% continue %}
+          {% endif %}
 
-			{% if category.title contains 'Муж' or category.title contains 'Жен' %}
-				{% continue %}
-			{% endif %}
-
-
-			<div class="categories-slide">
-				<div class="categories_slide_inner">
-				<a href="{{ category.url }}" class="categories_slide_img">
-					<img src="{{ category.image.medium_url | image_url: 280, format: 'webp' }}" alt="{{category.title}}" />
-				</a>
-				<a href="{{ category.url }}" class="categories_slide_label">{{category.title}}</a>
-				</div>
-			</div>
-			
-			{% endfor %}
-		{% endif %}
+          <div class="categories-slide">
+            <div class="categories_slide_inner">
+            <a href="{{ category.url }}" class="categories_slide_img">
+              <img src="{{ category.image.medium_url | image_url: 280, format: 'webp' }}" alt="{{category.title}}" />
+            </a>
+            <a href="{{ category.url }}" class="categories_slide_label">{{category.title}}</a>
+            </div>
+          </div>
+        
+        {% endfor %}
       </div>
     </div>
 
@@ -73,7 +52,6 @@
   }
 
   function toggleCategories() {
-  console.log('test')
     if (itemHeight == accordeon.offsetHeight) {
       categoriesToggle.classList.add('active')
       accordeon.style.height = totalHeight + 'px'

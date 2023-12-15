@@ -55,7 +55,7 @@
         </div>
         <div class="header_account_actions">
           <a href="/cart_items">
-            <div class="cart-items" x-if="items > 0" x-text="items">{{ cart.items_count }}</div>
+            <div class="cart-items" x-show="items > 0" x-text="items">{{ cart.items_count }}</div>
             <img src="{{ 'ICO-shop.svg' | asset_url }}" alt="Корзина" />
           </a>
           {% if client %}

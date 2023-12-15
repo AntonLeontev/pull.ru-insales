@@ -4,18 +4,75 @@
     <div class="popular_inner">
       <div class="section_header">
         <div class="section_title">Популярные бренды</div>
-        <a href="#" class="all_link link">Все бренды</a>
+        <button class="all_link link all_link_top"><span>Все бренды</span></button>
       </div>
     </div>
-    <div class="brands">
-      {% for brand in block_lists.with_template['system-banner-3'].popular-brands.blocks %}
-      <div class="brand_item">
-        <a href="{{ brand.link }}"
-          ><img src="{{ brand.image }}" alt="{{ brand.title }}"
-        /></a>
+    <div class="accordeon">
+
+      <div class="brands">
+        {% if page.url contains 'page/zhen' %}	
+          {% assign brands = block_lists.with_template['system-banner-3'].brands-women.blocks %}
+          {% assign collection = collections.zhenschinam %}
+        {% elsif page.url contains 'page/muzh' %} 
+          {% assign brands = block_lists.with_template['system-banner-3'].brands-men.blocks %}
+          {% assign collection = collections.muzhchinam %}
+        {% else %} 
+          {% assign brands = block_lists.with_template['system-banner-3'].brands.blocks %}
+          {% assign collection = collections.all %}
+        {% endif %} 
+  
+        {% assign brand_property = collection.properties | where: 'handle', 'brand' | first %}
+        
+        {% for brand in brands %}
+          {% assign brand_char = brand_property.characteristics | where: 'handle', brand.link | first %}
+  
+          <div class="brand_item">
+            <a href="{{ collection.url | add_param: 'characteristics[]', brand_char.id }}">
+              <img src="{{ brand.image }}" alt="{{ brand.title }}"/>
+            </a>
+          </div>
+        {% endfor %}
+        
+        
       </div>
-      {% endfor %}
-      
+    </div>
+    <div class="show_toggler">
+      <button class="all_link link all_link_bottom"><span>Все бренды</span></button>
     </div>
   </div>
 </section>
+
+<script>
+  let brands = document.querySelector('.section-popular-brand')
+  let brandsAccordeon = brands.querySelector('.accordeon')
+  let brandsItemHeight = brands.querySelector('.brand_item').offsetHeight * 2
+  let brandsTotalHeight = brands.querySelector('.brands').offsetHeight
+
+  let brandsToggle = brands.querySelectorAll('.link')
+
+  if (brandsItemHeight >= brandsTotalHeight) {
+    brandsToggle.forEach(el => el.hidden = true)
+  } else {
+    brandsAccordeon.style.height = brandsItemHeight + 'px'
+    brands.addEventListener('click', e => {
+      if (! e.target.closest('.link')) {
+        return
+      }
+
+      toggleCategories(e.target.closest('.link'))
+    })
+  }
+
+  function toggleCategories(button) {
+    if (brandsItemHeight == brandsAccordeon.offsetHeight) {
+      categoriesToggle.classList.add('active')
+      brandsAccordeon.style.height = brandsTotalHeight + 'px'
+      button.querySelector('span').innerText = 'Скрыть бренды'
+      return
+    }
+
+    categoriesToggle.classList.remove('active')
+    brandsAccordeon.style.height = brandsItemHeight + 'px'
+    button.querySelector('span').innerText = 'Все бренды'
+  }
+</script>

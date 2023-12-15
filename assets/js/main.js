@@ -78,6 +78,42 @@ document.addEventListener("DOMContentLoaded", function () {
       prevEl: ".section-products-carousel .products_header .swiper-button-prev",
     },
   });
+  const similarProductSwiper = new Swiper(".similar_swiper", {
+    // Optional parameters
+
+    loop: true,
+    slidesPerView: 4,
+    spaceBetween: 24,
+    breakpoints: {
+      320: {
+        slidesPerView: 2,
+        spaceBetween: 24,
+      },
+      767: {
+        slidesPerView: 2.3,
+        spaceBetween: 24,
+      },
+      999: {
+        slidesPerView: 3,
+        spaceBetween: 40,
+      },
+      1241: {
+        slidesPerView: 4,
+        spaceBetween: 40,
+      },
+      1441: {
+        slidesPerView: 4,
+        spaceBetween: 40,
+      },
+    },
+    // Navigation arrows
+    navigation: {
+      nextEl:
+        ".section-sim-products-carousel .products_header .swiper-button-next",
+      prevEl:
+        ".section-sim-products-carousel .products_header .swiper-button-prev",
+    },
+  });
   const productSwiper2 = new Swiper(".products_swiper_2", {
     // Optional parameters
 

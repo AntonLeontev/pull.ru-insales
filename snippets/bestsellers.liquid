@@ -40,25 +40,37 @@
         {% endif %}
 
         {% for product in collections[hits_block.collection.handle].products %}
+          {% if product.old_price > 0 %}
+            {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+            {% assign saleNumber = priceDivision | minus: 100 %}
+            {% assign salePercent = saleNumber | round: 0 %}
+          {% endif %}
           <div class="swiper-slide">
-          <div class="product_slide_card">
-            <div class="product_card_img">
-              <a href="{{product.url}}">
-              <img src="{{product.first_image.large_url}}" alt="{{product.title}}" />
-              </a>
+            <div class="product_slide_card">
+              <div class="product_card_img">
+                <a class="card_img__link" href="{{product.url}}">
+                  <img class="card_img__image" src="{{product.first_image.large_url}}" alt="{{product.title}}" />
+                </a>
+                <div class="labels">
+                  {% if product.old_price > 0 %}
+                    <div class="labe_discount">{{ salePercent }}%</div>
+                  {% endif %}
+                </div>
+                <button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
+                  <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+                  <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+                </button>
+              </div>
+              <div class="product_card_itext">
+                <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
+                <div class="product_card_prices">
+                  <div class="product_card_price">{{ product.price | money }}</div>
+                  {% if product.old_price > 0 %}
+                    <div class="product_card_old_price">{{ product.old_price | money }}</div>
+                  {% endif %}
+                </div>
+              </div>
             </div>
-            <div class="product_card_itext">
-            <a href="{{product.url}}" class="product_card_name">
-              {{product.title}}
-            </a>
-            <div class="product_card_prices">
-              <div class="product_card_price">{{ product.price | money }}</div>
-              {% if product.old_price_varies? %}
-              <div class="product_card_old_price">{{product.old_price | money}}</div>
-              {% endif %}
-            </div>
-            </div>
-          </div>
           </div>
         {% endfor %}
       </div>

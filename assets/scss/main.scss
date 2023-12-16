@@ -2894,6 +2894,49 @@ input[type="range"] {
 		}
 	}
 }
+.toasts {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	padding: 0 20px 20px 20px;
+	width: 320px;
+	display: flex;
+	flex-direction: column;
+	row-gap: 5px;
+
+	.alert {
+		padding: 10px;
+		transition: opacity 0.3s ease;
+		opacity: 0;
+
+		&-showing {
+			opacity: 1;
+		}
+
+		&-show {
+			opacity: 1;
+		}
+
+		&-hiding {
+			opacity: 0;
+		}
+
+		&-info {
+			background-color: $secondary_light;
+			color: $primary;
+		}
+
+		&-error {
+			background-color: $danger;
+			color: $white;
+		}
+
+		&-success {
+			background-color: $primary;
+			color: $white;
+		}
+	}
+}
 @media (min-width: 300px) {
 	.container {
 		max-width: 100%;

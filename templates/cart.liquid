@@ -26,6 +26,7 @@
           this.cart = done
         })
         this.$dispatch('order-changed')
+        this.$dispatch('toast-success', {message: 'Успешно обнавлена корзина'})
       },
       setDelivery() {
         this.deliveryType = this.$event.detail.type

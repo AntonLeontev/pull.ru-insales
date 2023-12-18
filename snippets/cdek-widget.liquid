@@ -2,6 +2,8 @@
   #cdekmap {
     width: 100%;
     height: 550px;
+	  margin-top: 24px;
+    margin-bottom: 70px;
   }
   ymaps {
     position: static;
@@ -22,12 +24,28 @@
 
 <div class="info_card" 
   @order-changed.window="recalculate"
+  @click="initiate"
   x-data="{
-    show: false,
+    show: true,
     widget: null,
     initiated: false,
 
     init() {
+      $.ajax({
+        url: 'https://kladr.insales.ru/current_location.json',
+        type: 'get',
+        dataType: 'jsonp',
+        timeout: 2000,
+      })
+      .done(resp => this.initWidget(resp.city))
+      .fail((fail) => {
+        this.initWidget('Москва')
+      })
+    },
+    initWidget(location) {
+      if (location == null || location == '') {
+        location = 'Москва'
+      }
       this.widget = new window.CDEKWidget({ 
         from: {
           code: 44,
@@ -35,22 +53,25 @@
         root: 'cdekmap', 
         canChoose: true,
         apiKey: 'd61a22ab-67bc-4adc-8397-e65d01be70dc', 
-        servicePath: 'https://api.pull.ru/webhooks/delivery/widget', 
-        defaultLocation: 'Москва',
+        servicePath: 'https://app.pull.ru/webhooks/delivery/widget', 
+        defaultLocation: location,
+        fixBounds: 'country',
+        debug: false,
         tariffs: {
           office: [483, 62, 136, 234],
           door: [482, 122, 137, 233],
           pickup: [368, 378],
         },
-      onCalculate(tariff, address) {
-        cdekmap.dispatchEvent(new CustomEvent('delivery-calculated', {
+        onCalculate(tariff, address) {
+          console.log('calculated');
+          cdekmap.dispatchEvent(new CustomEvent('delivery-calculated', {
             bubbles: true,
             detail: {
-              tariff: tariff,
-              address: address,
+            tariff: tariff,
+            address: address,
             }
           }));
-      },
+        },
         onChoose(type, tariff, address) {
           cdekmap.dispatchEvent(new CustomEvent('delivery-chosen', {
             bubbles: true,
@@ -106,17 +127,19 @@
     },
   }"
 >
-  <div class="card_name" @click="toggle">
+  <div class="card_name" @click="toggle()">
     <span>Доставка</span>
     <img class="icon" width="30px" src="{{ 'down.svg' | asset_url }}" alt="icon down" :class="show && 'rotated'">
   </div>
-  <div class="card_content" x-show="show" x-transition>
-    <div id="cdekmap"></div>
-	<div class="delivery__additional" x-show="deliveryType === 'door'">
-		<input class="ordinary_input" name="entrance" placeholder="Подъезд" x-ref="entrance">
-		<input class="ordinary_input" name="floor" placeholder="Этаж" x-ref="floor">
-		<input class="ordinary_input" name="apartment" placeholder="Квартира" x-ref="apartment">
-		<input class="ordinary_input" name="intercom" placeholder="Код домофона" x-ref="intercom">
+  <div class="card_content" :class="show && 'active'">
+	<div class="card_content_wrap">
+		<div id="cdekmap"></div>
+		<div class="delivery__additional" x-show="deliveryType === 'door'">
+			<input class="ordinary_input" name="entrance" placeholder="Подъезд" x-ref="entrance">
+			<input class="ordinary_input" name="floor" placeholder="Этаж" x-ref="floor">
+			<input class="ordinary_input" name="apartment" placeholder="Квартира" x-ref="apartment">
+			<input class="ordinary_input" name="intercom" placeholder="Код домофона" x-ref="intercom">
+		</div>
 	</div>
   </div>
 </div>

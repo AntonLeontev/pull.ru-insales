@@ -13,7 +13,6 @@ html {
 	font-size: 100%;
 	vertical-align: baseline;
 	background: transparent;
-	scroll-behavior: smooth;
 	&::-webkit-scrollbar {
 		background-color: transparent;
 		width: 5px;
@@ -35,6 +34,7 @@ body {
 	line-height: 1;
 	height: 100%;
 	overflow-x: hidden;
+	scroll-behavior: smooth;
 }
 div {
 	margin: 0;

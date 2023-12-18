@@ -217,34 +217,7 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     },
   });
-  // product-view swiper
 
-  //   if (detectMob()) {
-  //     let linkMore = document.querySelector(".categories_swiper .link_more");
-  //     if (linkMore) {
-  //       linkMore.addEventListener("click", function (e) {
-  //         e.preventDefault();
-  //         this.classList.toggle("active");
-  //         if (this.classList.contains("active")) {
-  //           this.innerHTML = "<span>Скрыть</span> ";
-  //         } else {
-  //           this.innerHTML = "<span>Показать ещё</span>  ";
-  //         }
-
-  //         let slides = document.querySelectorAll(".categories-slide.mb_hide");
-  //         slides.forEach(function (slide) {
-  //           slide.classList.toggle("active");
-  //           if (slide.style.maxHeight) {
-  //             //this is if the accordion is open
-  //             slide.style.maxHeight = null;
-  //           } else {
-  //             //if the accordion is currently closed
-  //             slide.style.maxHeight = slide.scrollHeight + "px";
-  //           }
-  //         });
-  //       });
-  //     }
-  //   }
   let niceSelectS = document.querySelectorAll(".nice_select");
   if (niceSelectS) {
     niceSelectS.forEach(function (item) {
@@ -270,96 +243,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  //   const accordionBtns = document.querySelectorAll(".accordion_link");
-  //   const accordionHideBtns = document.querySelectorAll(".accordion_link_hide");
-
-  //   accordionBtns.forEach((accordion) => {
-  //     accordion.addEventListener("click", function (e) {
-  //       e.preventDefault();
-  //       this.classList.toggle("active");
-
-  //       let content = this.parentElement.querySelector(".accordion_content");
-
-  //       if (content.style.maxHeight) {
-  //         //this is if the accordion is open
-  //         content.style.maxHeight = null;
-  //         content.classList.toggle("active");
-  //         this.parentElement.classList.toggle("active");
-  //       } else {
-  //         //if the accordion is currently closed
-  //         content.style.maxHeight = content.scrollHeight + "px";
-  //         content.classList.toggle("active");
-  //         this.parentElement.classList.toggle("active");
-  //       }
-  //     });
-  //   });
-  //   accordionHideBtns.forEach((accordion) => {
-  //     accordion.addEventListener("click", function (e) {
-  //       e.preventDefault();
-  //       this.parentElement.parentElement
-  //         .querySelector(".accordion_link")
-  //         .classList.toggle("active");
-
-  //       let content =
-  //         this.parentElement.parentElement.querySelector(".accordion_content");
-
-  //       if (content.style.maxHeight) {
-  //         //this is if the accordion is open
-  //         content.style.maxHeight = null;
-  //         content.classList.toggle("active");
-  //         this.parentElement.parentElement.classList.toggle("active");
-  //       } else {
-  //         //if the accordion is currently closed
-  //         content.style.maxHeight = content.scrollHeight + "px";
-  //         content.classList.toggle("active");
-  //         this.parentElement.parentElement.classList.toggle("active");
-  //       }
-  //     });
-  //   });
-
-  // range slider
-
-  //   const rangeInput = document.querySelectorAll(".range-input input"),
-  //     priceInput = document.querySelectorAll(".price-input input"),
-  //     range = document.querySelector(".slider .progress");
-  //   let priceGap = 1000;
-
-  //   priceInput.forEach((input) => {
-  //     input.addEventListener("input", (e) => {
-  //       let minPrice = parseInt(priceInput[0].value),
-  //         maxPrice = parseInt(priceInput[1].value);
-
-  //       if (maxPrice - minPrice >= priceGap && maxPrice <= rangeInput[1].max) {
-  //         if (e.target.className === "input-min") {
-  //           rangeInput[0].value = minPrice;
-  //           range.style.left = (minPrice / rangeInput[0].max) * 100 + "%";
-  //         } else {
-  //           rangeInput[1].value = maxPrice;
-  //           range.style.right = 100 - (maxPrice / rangeInput[1].max) * 100 + "%";
-  //         }
-  //       }
-  //     });
-  //   });
-
-  //   rangeInput.forEach((input) => {
-  //     input.addEventListener("input", (e) => {
-  //       let minVal = parseInt(rangeInput[0].value),
-  //         maxVal = parseInt(rangeInput[1].value);
-
-  //       if (maxVal - minVal < priceGap) {
-  //         if (e.target.className === "range-min") {
-  //           rangeInput[0].value = maxVal - priceGap;
-  //         } else {
-  //           rangeInput[1].value = minVal + priceGap;
-  //         }
-  //       } else {
-  //         priceInput[0].value = minVal;
-  //         priceInput[1].value = maxVal;
-  //         range.style.left = (minVal / rangeInput[0].max) * 100 + "%";
-  //         range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
-  //       }
-  //     });
-  //   });
 
   let productSaveBtn = document.querySelectorAll(".product_save_btn a");
   productSaveBtn.forEach(function (btn) {

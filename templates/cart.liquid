@@ -1,3 +1,5 @@
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cdek-it/widget@3/dist/cdek-widget.umd.js" charset="utf-8"></script>
+
 
 {% if cart.items == empty %}
     <div class="container">
@@ -9,24 +11,28 @@
     @delivery-chosen="setDelivery"
     @delivery-calculated="updateDelivery"
     @cart-event="update"
+    @client-detected="fillClient"
     @submit.prevent="makeOrder"
     x-data="{
       deliveryType: null,
+      freeToPoint: {{ blocks.with_template['system-single-text'].v-punkt-vydachi.text }},
+      freeToCourier: {{ blocks.with_template['system-single-text'].kurierom.text }},
       deliveryTariff: null,
       deliveryAddress: null,
+      email: null,
+      name: null,
+      phone: null,
       cart: null,
 
       init() {
-        ajaxAPI.cart.get().done(done => {
-          this.cart = done
-        })
+        ajaxAPI.cart.get()
+          .done(cart => this.cart = cart)
       },
       update() {
         ajaxAPI.cart.get().done(done => {
           this.cart = done
         })
         this.$dispatch('order-changed')
-        this.$dispatch('toast-success', {message: 'Успешно обнавлена корзина'})
       },
       setDelivery() {
         this.deliveryType = this.$event.detail.type
@@ -48,25 +54,57 @@
         })
       },
       makeOrder() {
+        if (this.name === null || this.email === null || this.phone === null) {
+          this.$dispatch('toast-error', {message: 'Заполните данные получателя', delay: 2000})
+          document.querySelector('#customer').scrollIntoView({behavior: 'smooth'})
+          return 
+        }
+
+        if (this.name === '' || this.email === '' || this.phone === '') {
+          this.$dispatch('toast-error', {message: 'Заполните данные получателя', delay: 2000})
+          document.querySelector('#customer').scrollIntoView({behavior: 'smooth'})
+          return 
+        }
+        
         if (this.deliveryTariff === null || this.deliveryType === null || this.deliveryAddress === null) {
-          alert('Выбирите способ доставки')
+          this.$dispatch('toast-error', {message: 'Выберите способ доставки', delay: 2000})
+          document.querySelector('#cdekmap').scrollIntoView({behavior: 'smooth'})
           return 
         }
 
         let paymentVarianId = $('[name=select_payment]').parent().find('.nice-select .list .selected').data('value')
         
+        let address = this.deliveryAddress.address ?? this.deliveryAddress.name
+        if ($('[name=\'apartment\']').val() != '') {
+          address += ', кв. ' + $('[name=\'apartment\']').val()
+        }
+        if ($('[name=\'floor\']').val() != '') {
+          address += ', этаж ' + $('[name=\'floor\']').val()
+        }
+        if ($('[name=\'entrance\']').val() != '') {
+          address += ', подъезд ' + $('[name=\'entrance\']').val()
+        }
+        if ($('[name=\'intercom\']').val() != '') {
+          address += ', домофон ' + $('[name=\'intercom\']').val()
+        }
+
         $.post('/fast_checkout.json', {
           client: {
-            email: this.$refs.email.value,
-            name: this.$refs.name.value,
-            phone: this.$refs.phone.value,
+            email: this.email,
+            name: this.name,
+            phone: this.phone,
             consent_to_personal_data: true,
           },
           order: {
             delivery_variant_id: 7921162,
             payment_gateway_id: paymentVarianId,
-            delivery_price: this.deliveryTariff.delivery_sum,
+            delivery_price: this.deliveryPrice(),
           },
+          shipping_address: {
+            phone: this.phone,
+            city: this.deliveryAddress.city,
+            address: address,
+          }
         })
         .done((response) => {
           if (response.status == 'ok') {
@@ -86,12 +124,42 @@
             $.post('https://api.pull.ru/webhooks/insales/orders_create', order)
               .done(response => location.href = '/page/order-success')
           } else {
-            console.log(response);
+            console.log('else', response);
+
+            let messages = []
+            if (response.errors.hasOwnProperty('shipping_address.phone')) {
+              response.errors['shipping_address.phone'].forEach(el => messages.push(el))
+            }
+            if (response.errors.hasOwnProperty('order_lines.quantity')) {
+              response.errors['order_lines.quantity'].forEach(el => messages.push(el))
+            }
+            let message = messages.join('<br><br>')
+            if (message == '') {
+              message = 'Ошибка оформления заказа'
+            }
+			      this.$dispatch('toast-error', {message})
           }
         })
         .fail((fail) => {
-          console.log(fail);
+			    this.$dispatch('toast-error', {message: 'Ошибка оформления заказа'})
+          console.log(fail.errors);
         })
+      },
+      fillClient() {
+        this.name = this.$event.detail.name
+        this.phone = this.$event.detail.phone
+        this.email = this.$event.detail.email
+      },
+      deliveryPrice() {
+        if (this.deliveryType === 'office' && this.cart?.total_price > this.freeToPoint) {
+          return 0
+        }
+
+        if (this.deliveryType === 'door' && this.cart?.total_price > this.freeToCourier) {
+          return 0
+        }
+
+        return this.deliveryTariff?.delivery_sum ?? 0
       },
     }"
   >
@@ -228,13 +296,13 @@
                       <div class="label">
                         <span>Доставка</span>
                       </div>
-                      <div class="info" x-text="deliveryTariff ? formatNumber(deliveryTariff?.delivery_sum) + ' ₽' : ''"></div>
+                      <div class="info" x-text="deliveryTariff ? deliveryPrice() + ' ₽' : 'Не выбрана'"></div>
                   </li>
                 </ul>
                 <div class="total_sum">
                     <div class="sum_label">Итого к оплате:</div>
                     <!-- <div class="sum" data-cart-full-total-price>{{ cart.total_price | money }}</div> -->
-                    <div class="sum" x-text="formatNumber(cart?.total_price + (deliveryTariff?.delivery_sum ?? 0)) + ' ₽'"></div>
+                    <div class="sum" x-text="formatNumber(cart?.total_price + deliveryPrice()) + ' ₽'"></div>
                     <!-- <div class="sum_info sub_info">
                       Без учета возможной стоимости доставки
                     </div> -->
@@ -246,7 +314,7 @@
                   class="nice_select select_ordinary">
                     <option value="">Способ оплаты</option>
                     {% for payment_variant in account.payment_gateways %}
-                      <option selected value="{{payment_variant.id}}">{{payment_variant.id}} - {{payment_variant.title}}</option>
+                      <option selected value="{{payment_variant.id}}">{{payment_variant.title}}</option>
                     {% endfor %}
                   </select>
                     <button type="submit" class="disabled_payment_button" data-cart-submit>Оформить заказ</button>
@@ -287,22 +355,20 @@
     <div class="section-order-info">
       <div class="container">
         <div class="order_info_inner">
-          <div class="info_card">
-            <div class="card_name">Получатель</div>
+          <div class="info_card" x-data="{show: false}" id="customer">
+            <div class="card_name" @click="show = !show">
+              <span>Получатель</span>
+              <img class="icon" width="30px" src="{{ 'down.svg' | asset_url }}" alt="icon down" :class="show && 'rotated'">
+            </div>
           
-            <div class="card_content">
-              <a href="#" class="card_link open_order_form">Добавить получателя</a>
-
-              <div class="order_form" hidden style="display:none;">
-                  <input class="ordinary_input" required name="email" placeholder="E-mail" x-ref="email">
-                  <input class="ordinary_input" required name="name" placeholder="Имя" x-ref="name">
-                  <input class="ordinary_input" required name="phone" placeholder="Телефон" x-ref="phone">
-
-                  <!-- <input class="ordinary_input" required name="address" placeholder="Адрес" value=""> -->
-
-                  
+            <div class="card_content" :class="show && 'active'">
+              <div class="card_content_wrap">
+                <div class="order_form">
+                    <input class="ordinary_input" name="email" placeholder="E-mail" x-ref="email" x-model="email">
+                    <input class="ordinary_input" name="name" placeholder="Имя" x-ref="name" x-model="name">
+                    <input class="ordinary_input" name="phone" placeholder="Телефон" x-ref="phone" x-model="phone">
+                </div>
               </div>
-
             </div>
           </div>
 
@@ -323,24 +389,6 @@
 
 
 <script>
-  let emailField = $('[name=email]')
-  let nameField = $('[name=name]')
-  let phoneField = $('[name=phone]')
-  let addressField = $('[name=address]')
-
-
-  $('.open_order_form').on('click',function(e){
-    e.preventDefault();
-    $(this).slideUp();
-    $('.delivery_text').slideUp();
-    $('.order_form').slideDown();
-  })
-
-  $('#cart_form').on('submit', function(e){
-    e.preventDefault();
-    
-  })
-
   /*---------- Удаление товара из корзины ----------*/
 
   EventBus.subscribe('always:insales:cart', function (data) {
@@ -351,7 +399,6 @@
 	  }
     
     cart_form.dispatchEvent(new CustomEvent('cart-event', {
-      // bubbles: true,
       detail: data
     }));
     
@@ -361,16 +408,16 @@
       detail: Cart.order.items_count
     }));
   });
-
-  /*---------- Заполнение данных клиента, если залогинен ----------*/
-
-  {% if client %}
+</script>
+{% if client %}
+  <script>
+    /*---------- Заполнение данных клиента, если залогинен ----------*/
+    
     ajaxAPI.shop.client.get()
       .done(function (client) { 
-        emailField.val(client.email)
-        nameField.val(client.name)
-        phoneField.val(client.phone)
+        cart_form.dispatchEvent(new CustomEvent('client-detected', {
+          detail: {name: client.name, email: client.email, phone: client.phone}
+        }));
       })
-  {% endif %}
-
-</script>
+  </script>
+{% endif %}

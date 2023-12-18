@@ -1920,6 +1920,7 @@ input[type="range"] {
 			display: flex;
 			gap: 24px;
 			width: 746px;
+			flex-shrink: 0;
 		}
 		.product_view_swiper {
 			max-width: 636px;
@@ -2640,7 +2641,6 @@ input[type="range"] {
 	.info_card {
 		display: flex;
 		flex-direction: column;
-		row-gap: 24px;
 		background: $bg-light;
 		padding: 24px;
 		&:not(:last-child) {
@@ -2656,11 +2656,26 @@ input[type="range"] {
 		font-style: normal;
 		font-weight: 600;
 		line-height: 100%;
+		cursor: pointer;
 		.icon {
 			transition: transform .3s;
 		}
 		.icon.rotated {
 			transform: rotate(180deg);
+		}
+	}
+	.card_content {
+		display: grid;
+		grid-template-rows: 0fr;
+		transition: grid-template-rows .3s ease;
+		overflow: hidden;
+
+		&.active {
+			grid-template-rows: 1fr;
+		}
+
+		.card_content_wrap {
+			overflow: hidden;
 		}
 	}
 	.card_text {

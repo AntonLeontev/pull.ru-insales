@@ -52,7 +52,7 @@
         </li>
 
         <li class="breadcrumb_item">
-          <span class="breadcrumb_link">{{ blog.title }}</span>
+          <span class="breadcrumb_link current">{{ blog.title }}</span>
         </li>
       
       {% when 'article' %}
@@ -66,7 +66,7 @@
         </li>
 
         <li class="breadcrumb_item">
-          <span class="breadcrumb_link">{{ article.title }}</span>
+          <span class="breadcrumb_link current">{{ article.title }}</span>
         </li>
 
       {% when 'page' %}
@@ -76,7 +76,7 @@
         </li>
 
         <li class="breadcrumb_item">
-          <span class="breadcrumb_link">{{ page.title }}</span>
+          <span class="breadcrumb_link current">{{ page.title }}</span>
         </li>
 
       {% when '404' %}
@@ -86,7 +86,7 @@
         </li>
 
         <li class="breadcrumb_item">
-          <span class="breadcrumb_link">Страница не найдена</span>
+          <span class="breadcrumb_link current">Страница не найдена</span>
         </li>
 
       {% when 'search' %}
@@ -96,7 +96,7 @@
         </li>
 
         <li class="breadcrumb_item">
-          <span class="breadcrumb_link">Поиск по каталогу</span>
+          <span class="breadcrumb_link current">Поиск по каталогу</span>
         </li>
 
       {% when 'cart' %}
@@ -106,7 +106,7 @@
         </li>
 
         <li class="breadcrumb_item">
-          <span class="breadcrumb_link">Ваша корзина</span>
+          <span class="breadcrumb_link current">Ваша корзина</span>
         </li>
 
       {% when 'compare' %}
@@ -116,7 +116,7 @@
         </li>
 
         <li class="breadcrumb_item">
-          <span class="breadcrumb_link">Сравнение товаров</span>
+          <span class="breadcrumb_link current">Сравнение товаров</span>
         </li>
 
       {% else %}

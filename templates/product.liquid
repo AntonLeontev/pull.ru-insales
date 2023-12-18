@@ -56,8 +56,11 @@
             items[this.variant?.id] = 1
 
             ajaxAPI.cart.add(items, {})
-              .done(onDone => { this.$dispatch('cart-changed', onDone.items_count) })
-              .fail(onFail => { alert('Ошибка добавления товара в корзину') });
+              .done(onDone => { 
+                this.$dispatch('cart-changed', onDone.items_count) 
+                this.$dispatch('toast-success', {message: 'Товар добавлен в корзину', delay: 1500}) 
+              })
+              .fail(onFail => this.$dispatch('toast-error', {message: 'Ошибка добавления товара', delay: 2500}));
           },
         }"
       >
@@ -118,7 +121,10 @@
           <div class="product_name">{{product.title}}</div>
           <div class="product_price">
             <span x-text="formatNumber(variant?.price ?? 0) + ' ₽'">{{ product.price | money }} </span>
-            <div class="product_old_price" x-text="formatNumber(variant?.old_price ?? 0) + ' ₽'">{{ product.old_price | money }}</div>
+            <div class="product_old_price" 
+              x-show="variant?.old_price && +variant?.old_price > +variant?.price" 
+              x-text="formatNumber(variant?.old_price ?? 0) + ' ₽'"
+            >{{ product.old_price | money }}</div>
           </div>
           <div class="product_details">
 
@@ -166,7 +172,7 @@
                 <div>
                   B пункты <span>выдачи заказов</span> с примеркой,
                   бесплатно при покупке <br />
-                  от 3 500 ₽
+                  от {{ blocks.with_template['system-single-text'].v-punkt-vydachi.text }} ₽
                 </div>
               </div>
               <div class="info_item">
@@ -177,7 +183,7 @@
                 </div>
                 <div>
                   По адресу, <span>курьером</span> — с примеркой,
-                  бесплатно при покупке <br />от 4 500 ₽
+                  бесплатно при покупке <br />от {{ blocks.with_template['system-single-text'].kurierom.text }} ₽
                 </div>
               </div>
             </div>

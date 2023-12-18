@@ -47,7 +47,7 @@
           <div class="product_slide_card">
             <div class="product_card_img">
               <a class="card_img__link" href="{{product.url}}">
-                <img class="card_img__image" src="{{ product.first_image.large_url | image_url: 459, format: 'webp'}}" alt="{{product.title}}" />
+                <img class="card_img__image" src="{{ product.first_image.large_url}}" alt="{{product.title}}" />
               </a>
               <div class="labels">
                 {% if product.old_price > 0 %}

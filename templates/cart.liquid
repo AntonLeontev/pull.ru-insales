@@ -7,7 +7,7 @@
     </div>
 {% endif %}
 {% if cart.items != empty %}
-  <form data-reload-on-coupon="false" id="cart_form" data-cart-form action="/cart_items" method="post" class="cart_section" 
+  <form id="cart_form" data-cart-form action="/cart_items" method="post" class="cart_section" 
     @delivery-chosen="setDelivery"
     @delivery-calculated="updateDelivery"
     @cart-event="update"
@@ -23,6 +23,7 @@
       name: null,
       phone: null,
       cart: null,
+      coupon: '{{ cart.coupon }}',
 
       init() {
         ajaxAPI.cart.get()
@@ -109,7 +110,7 @@
         .done((response) => {
           if (response.status == 'ok') {
             let order = response.order
-            order.delivery_info.price = this.deliveryTariff.delivery_sum
+            order.delivery_info.price = this.deliveryPrice()
             order.delivery_info.tariff_id = this.deliveryTariff.tariff_code
             order.delivery_info.title = this.deliveryTariff.tariff_name
             order.delivery_info.description = this.deliveryTariff.tariff_description
@@ -161,6 +162,10 @@
 
         return this.deliveryTariff?.delivery_sum ?? 0
       },
+      setCoupon() {
+        Cart.setCoupon({coupon: this.coupon})
+        console.log('coupon');
+      },
     }"
   >
 
@@ -173,7 +178,7 @@
               <div class="section_title flex_100">
                 У вас есть промокод?
               </div>
-              <div action="#">
+              <div>
                 <input
                   type="text"
                   placeholder="Ваш промокод"
@@ -186,7 +191,7 @@
             </div>
           </div>
 
-        <div id="cartform">
+        <div id="cartform" class="cartform">
           <div class="content">
             <div class="section_header">
               <div class="section_title flex_100">
@@ -279,11 +284,11 @@
                         {% if cart.discounts.size > 0 %}
                           {% for discount in cart.discounts %}
                           <div class="discount">
-                          <div class="discount-title">
+                          <div class="discount-title" x-text="cart?.discount_description">
                             {{ discount.description }}
                           </div>
                               <div class="discount-prices prices">
-                                <span class="prices-current">
+                                <span class="prices-current" x-text="'- ' + cart?.discounts[0].amount + ' ₽'">
                                   - {{ discount.amount | money }}
                                 </span>
                               </div>
@@ -317,7 +322,7 @@
                       <option selected value="{{payment_variant.id}}">{{payment_variant.title}}</option>
                     {% endfor %}
                   </select>
-                    <button type="submit" class="disabled_payment_button" data-cart-submit>Оформить заказ</button>
+                    <button type="submit" class="disabled_payment_button">Оформить заказ</button>
                     <div class="sum_info sub_info">
                       Укажите способ оплаты
                     </div>
@@ -339,12 +344,16 @@
                 <input
                   type="text"
                   placeholder="Ваш промокод"
-                  name="search"
-                  class="ordinary_input" />
-                <button class="button_black">
+                  name="cart[coupon]"
+                  value="{{ cart.coupon }}"
+                  class="ordinary_input" 
+                  x-model="coupon"
+                />
+                <button type="button" class="button_black" @click="setCoupon">
                   Применить
                 </button>
               </div>
+              <div class="promo-error" data-cart-discounts-error></div>
             </div>
           </div>
         </div>

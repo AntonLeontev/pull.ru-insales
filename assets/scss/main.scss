@@ -2467,6 +2467,10 @@ input[type="range"] {
 	flex: 0 0 100%;
 }
 .section-cart {
+	.cartform {
+		flex-basis: 60%;
+		flex-shrink: 0;
+	}
 	.catalog_buttons {
 		justify-content: space-between;
 		.buttons_left {
@@ -2730,6 +2734,12 @@ input[type="range"] {
 		input {
 			width: 100%;
 			flex: 1 1 auto;
+		}
+
+		.promo-error {
+			margin-top: 5px;
+			padding: 10px 2px;
+			color: $danger;
 		}
 	}
 	.product_items {
@@ -3050,6 +3060,7 @@ input[type="range"] {
 		.promo {
 			flex: 0 0 100%;
 			margin-bottom: 28px;
+			width: 100%;
 		}
 	}
 	.section-cart {

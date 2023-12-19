@@ -3,6 +3,7 @@
   x-data="{
     sidebar: false,
     items: {{ cart.items_count }},
+    search: false,
 
     onCartChange() {
       this.items = this.$event.detail
@@ -36,18 +37,18 @@
             </button>
           </div>
           <div class="mb">
-            <button><img src="{{ 'ICO-search.svg' | asset_url }}" alt="Поиск" /></button>
+            <button @click="search = !search"><img src="{{ 'ICO-search.svg' | asset_url }}" alt="Поиск" /></button>
           </div>
         </div>
         <div class="header_logo">
           <a href="/"><img src="{{ 'logo-black.png' | asset_url }}" alt="Логотип" /></a>
         </div>
 
-        <div class="header_search_bar">
+        <div class="header_search_bar" :class="search && 'active'">
           <form action="/search">
             <input
               type="text"
-              placeholder="Искать “Женское пальто”"
+              placeholder="Поиск товаров"
               name="q"
               class="ordinary_input" />
             <!-- <button class="button_black">Искать</button> -->

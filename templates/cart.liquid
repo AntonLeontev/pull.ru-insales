@@ -288,7 +288,9 @@
                             {{ discount.description }}
                           </div>
                               <div class="discount-prices prices">
-                                <span class="prices-current" x-text="'- ' + cart?.discounts[0].amount + ' ₽'">
+                                <span class="prices-current" 
+                                  x-show="cart?.discounts[0]?.amount"
+                                  x-text="'- ' + cart?.discounts[0]?.amount + ' ₽'">
                                   - {{ discount.amount | money }}
                                 </span>
                               </div>

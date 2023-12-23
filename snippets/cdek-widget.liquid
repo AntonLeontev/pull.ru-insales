@@ -62,6 +62,12 @@
           door: [482, 122, 137, 233],
           pickup: [368, 378],
         },
+		hideFilters: {
+			type: true,
+		},
+		forceFilters: {
+			allowed_cod: true,
+		},
         onCalculate(tariff, address) {
           console.log('calculated');
           cdekmap.dispatchEvent(new CustomEvent('delivery-calculated', {

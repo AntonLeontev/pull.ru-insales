@@ -59,19 +59,19 @@
         return
       }
 
-      toggleCategories(e.target.closest('.link'))
+      toggleBrands(e.target.closest('.link'))
     })
   }
 
-  function toggleCategories(button) {
+  function toggleBrands(button) {
     if (brandsItemHeight == brandsAccordeon.offsetHeight) {
-      categoriesToggle.classList.add('active')
+    //   brandsToggle.classList.add('active')
       brandsAccordeon.style.height = brandsTotalHeight + 'px'
       button.querySelector('span').innerText = 'Скрыть бренды'
       return
     }
 
-    categoriesToggle.classList.remove('active')
+    // brandsToggle.classList.remove('active')
     brandsAccordeon.style.height = brandsItemHeight + 'px'
     button.querySelector('span').innerText = 'Все бренды'
   }

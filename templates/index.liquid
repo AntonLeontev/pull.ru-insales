@@ -1,18 +1,24 @@
-{% include "banners" %}
-
-{% include "categories" %}
-
-{% include "bestsellers" %}
-
-{% include "big_black_banner" %}
+<div class="main-choice">
+	<div class="container">
+		<h2 class="main-choice__title">Выбирите раздел</h2>
+		<div class="main-choice__choices">
+			<div class="choice">
+				<a class="choice__link" href="/page/zhenschinam">
+					<img class="choice__image" src="{{ 'women.png' | asset_url }}" alt="Женщинам">
+					<div class="choice__title">Женщинам</div>
+				</a>
+			</div>
+			<div class="choice">
+				<a class="choice__link" href="/page/muzhchinam">
+					<img class="choice__image" src="{{ 'men.png' | asset_url }}" alt="Мужчинам">
+					<div class="choice__title">Мужчинам</div>
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
 
 {% include "popular_brands" %}
-
-{% include "collection_new" %}
-
-{% include "section_blog" %}
-
-{% include "section_apps_block" %}
 
 {% for widgetDrop in widget_lists.index-list.widgets %}
   {% widget widgetDrop %}

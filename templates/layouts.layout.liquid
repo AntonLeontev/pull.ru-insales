@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="ru">
   <head>
+    {% if template contains 'index' %}
+      <script>
+        if (localStorage.getItem('gender') === 'men') {
+          location.replace('/page/muzhchinam')
+        }
+        if (localStorage.getItem('gender') === 'women') {
+          location.replace('/page/zhenschinam')
+        }
+      </script>
+    {% endif %}
+
     {% include "head" %}
   </head>
   <body id="body" :class="overflow || 'ovhidden'" x-data="{overflow: true}">

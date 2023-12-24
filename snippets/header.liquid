@@ -94,11 +94,12 @@
                 <a href="/collection/all" class="list_link">Каталог</a>
 
                 {% if template contains 'product' %}	
-                  {% assign catalog = collections | where: 'title', 'Каталог' | first %}
+					        {% assign catalog = collections | where: 'title', 'Каталог' | first %}
                   {% assign categories = catalog.subcollections %}
                   {% assign men = categories | where: 'title', 'Мужчинам' | first %}
                   {% assign women = categories | where: 'title', 'Женщинам' | first %}
                 {% else %}  
+                  {% assign catalog = collections.all %}
                   {% assign men = collections.muzhchinam %}
                   {% assign women = collections.zhenschinam %}
                 {% endif %}  
@@ -106,62 +107,75 @@
 
                 <nav class="header__categories">
                   <div class="container">
-                  <nav class="categories__menu">
-                    <ul class="menu__column">
-                      <li class="menu__item menu__item_title">
-                        <a class="menu__link" href="{{ men.url }}">{{ men.title }}</a>
-                      </li>
+                    <nav class="categories__menu">
+                      <ul class="menu__column">
+                        <li class="menu__item menu__item_title">
+                          <a class="menu__link" href="{{ men.url }}">{{ men.title }}</a>
+                        </li>
 
 
-                    {% for collection in men.subcollections %}
-                      <li class="menu__item"><a class="menu__link" href="{{ collection.url }}">{{ collection.title }}</a></li>
+                        {% for collection in men.subcollections %}
+                          <li class="menu__item"><a class="menu__link" href="{{ collection.url }}">{{ collection.title }}</a></li>
 
-                      {% if collection.subcollections.size > 0 %}
-                      <ul class="submenu">
-                        {% for collection1 in collection.subcollections %}
-                          <li class="menu__item"><a href="{{ collection1.url }}" class="menu__link">{{ collection1.title }}</a></li>
-
-                          {% if collection1.subcollections.size > 0 %}
+                          {% if collection.subcollections.size > 0 %}
                           <ul class="submenu">
-                          {% for collection2 in collection1.subcollections %}
-                            <li class="menu__item"><a href="{{ collection2.url }}" class="menu__link">{{ collection2.title }}</a></li>
-                          {% endfor %}
+                            {% for collection1 in collection.subcollections %}
+                              <li class="menu__item"><a href="{{ collection1.url }}" class="menu__link">{{ collection1.title }}</a></li>
+
+                              {% if collection1.subcollections.size > 0 %}
+                              <ul class="submenu">
+                              {% for collection2 in collection1.subcollections %}
+                                <li class="menu__item"><a href="{{ collection2.url }}" class="menu__link">{{ collection2.title }}</a></li>
+                              {% endfor %}
+                              </ul>
+                              {% endif %}
+                            {% endfor %}
                           </ul>
                           {% endif %}
+
                         {% endfor %}
                       </ul>
-                      {% endif %}
+                      <ul class="menu__column">
+                        <li class="menu__item menu__item_title">
+                          <a class="menu__link" href="{{ women.url }}">{{ women.title }}</a>
+                        </li>
+                      
+                        {% for collection in women.subcollections %}
+                          <li class="menu__item"><a class="menu__link" href="{{ collection.url }}">{{ collection.title }}</a></li>
 
-                    {% endfor %}
-                    </ul>
-                    <ul class="menu__column">
-                    <li class="menu__item menu__item_title">
-                      <a class="menu__link" href="{{ women.url }}">{{ women.title }}</a>
-                    </li>
-                    
-                    {% for collection in women.subcollections %}
-                      <li class="menu__item"><a class="menu__link" href="{{ collection.url }}">{{ collection.title }}</a></li>
+                          {% if collection.subcollections.size > 0 %}
+                          <ul class="submenu">
+                            {% for collection1 in collection.subcollections %}
+                              <li class="menu__item"><a href="{{ collection1.url }}" class="menu__link">{{ collection1.title }}</a></li>
 
-                      {% if collection.subcollections.size > 0 %}
-                      <ul class="submenu">
-                        {% for collection1 in collection.subcollections %}
-							<li class="menu__item"><a href="{{ collection1.url }}" class="menu__link">{{ collection1.title }}</a></li>
+                              {% if collection1.subcollections.size > 0 %}
+                              <ul class="submenu">
+                              {% for collection2 in collection1.subcollections %}
+                                <li class="menu__item"><a href="{{ collection2.url }}" class="menu__link">{{ collection2.title }}</a></li>
+                              {% endfor %}
+                              </ul>
+                              {% endif %}
+                            {% endfor %}
+                          </ul>
+                          {% endif %}
 
-							{% if collection1.subcollections.size > 0 %}
-							<ul class="submenu">
-							{% for collection2 in collection1.subcollections %}
-								<li class="menu__item"><a href="{{ collection2.url }}" class="menu__link">{{ collection2.title }}</a></li>
-							{% endfor %}
-							</ul>
-							{% endif %}
                         {% endfor %}
                       </ul>
-                      {% endif %}
 
-                    {% endfor %}
-                    </ul>
-                    
-                  </nav>
+                      <ul class="menu__column">
+                        <li class="menu__item menu__item_title">
+                          <span class="menu__link">Бренды</span>
+                        </li>
+                        {% assign brand_list = catalog.properties | where: 'handle', 'brand' | first %}
+
+                        {% for brand in brand_list.characteristics %}
+                          <li class="menu__item">
+                            <a class="menu__link brand-link" href="{{ catalog.url | add_param: 'characteristics[]', brand.id }}">{{ brand.name }}</a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                      
+                    </nav>
                   </div>
                 </nav>
               </div>
@@ -272,3 +286,23 @@
   </div>
 
 </header>
+
+<script>
+  let gender = localStorage.getItem('gender')
+
+  if (gender) {
+    let links = header.querySelectorAll('.brand-link')
+    links.forEach(link => {
+      let url = new URL(link.href)
+
+      let pathname = gender === 'men' 
+        ? '/collection/muzhchinam'
+        : '/collection/zhenschinam'
+
+      url.pathname = pathname
+
+      link.href = url.toString()
+    })
+  }
+
+</script>

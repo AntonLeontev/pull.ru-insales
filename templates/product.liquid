@@ -12,29 +12,42 @@
           init() {
             this.swiperMin = new Swiper('.product_view_swiper_th', {
               spaceBetween: 10,
-              slidesPerView: 4,
-              freeMode: true,
+              slidesPerView: 6,
+              freeMode: {
+                enabled: true,
+                sticky: true,
+              },
+              mousewheel: true,
               watchSlidesProgress: true,
               direction: 'vertical',
               autoHeight: true,
-
-              spaceBetween: 22,
+              centeredSlides: true,
+              centeredSlidesBounds: true,
             });
             this.swiperBig = new Swiper('.product_view_swiper', {
               spaceBetween: 10,
+              effect: 'fade',
+              fadeEffect: {
+                crossFade: true
+              },
 
               thumbs: {
                 swiper: this.swiperMin,
+                autoScrollOffset: 1,
               },
               breakpoints: {
                 320: {
                   pagination: {
-                  el: '.swiper-pagination',
-                  clickable: true,
+                    el: '.swiper-pagination',
+                    clickable: true,
                   },
                 },
                 1241: {
                   pagination: false,
+                  keyboard: {
+                    enabled: true,
+                    onlyInViewport: false,
+                  },
                 },
               },
             });
@@ -69,7 +82,7 @@
             <div thumbsSlider="" class="swiper product_view_swiper_th">
               <div class="swiper-wrapper">
                 {% for image in product.images %}
-                  <div class="swiper-slide" data-id="{{ image.id }}">
+                  <div class="swiper-slide swiper-vertical-slide" data-id="{{ image.id }}">
                     <img src="{{ image.thumb_url | image_url: 100, format: 'webp' }}" alt="{{ image.title }}" />
                   </div>
                 {% endfor %}

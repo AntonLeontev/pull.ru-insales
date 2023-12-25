@@ -56,18 +56,18 @@
                 <!-- <div class="labe_premium">Premium</div> -->
               </div>
               <button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
-              <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
-              <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+                <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+                <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
               </button>
             </div>
             <div class="product_card_itext">
-              <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
-              <div class="product_card_prices">
-                <div class="product_card_price">{{ product.price | money }}</div>
-                {% if product.old_price > 0 %}
-                  <div class="product_card_old_price">{{ product.old_price | money }}</div>
-                {% endif %}
-              </div>
+            </div>
+            <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
+            <div class="product_card_prices">
+              <div class="product_card_price">{{ product.price | money }}</div>
+              {% if product.old_price > 0 %}
+                <div class="product_card_old_price">{{ product.old_price | money }}</div>
+              {% endif %}
             </div>
           </div>
         {% endfor %}

@@ -211,9 +211,6 @@
           <button class="tab_header_item" data-tab="review_tab"
             >Отзывы ({{product.reviews_count}})
           </button>
-          <button class="tab_header_item" data-tab="questions_tab"
-            >Вопросы (0)
-          </button>
         </div>
         <div class="tab_body">
           <div class="tab_body_item info_tab active">
@@ -247,6 +244,151 @@
           <div class="tab_body_item review_tab nem">
             {% if account.reviews_enabled? %}
               
+            <form
+              data-reviews-form-wrapper="{
+                'reviews_moderated': {{ account.reviews_moderated? }},
+                'url': '{{ product.url }}'
+              }"
+              class="review-form"
+              method="post"
+              action="{{ product.url }}"
+              enctype="multipart/form-data"
+            >
+              {% assign success_message = messages.review_is_added %}
+              {% if account.reviews_moderated? %}
+                {% assign success_message = messages.review_is_added_moderated %}
+              {% endif %}
+
+              <div
+                id="review_form"
+                class="reviews-wrapper {% unless review.errors.size > 0 %}is-hide{% endunless%}"
+                x-data="{show: false}"
+              >
+                <div class="reviews-form">
+                  <div class="reviews-form__header" :class="show && 'active'" @click="show = !show">
+                    <div class="reviews-form__title">Оставить отзыв</div>
+                    <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="вниз">
+                  </div>
+
+                  <div class="reviews-form__content" :class="show && 'active'">
+                    <div class="reviews-form__content-wrapper">
+                      <div class="form-field reviews-form__rating">
+                        <div data-reviews-form-field-area class="star-rating-wrapper">
+                          <div class="rating-area">
+                            <input type="radio" id="star-5" name="review[rating]" value="5">
+                            <label for="star-5" title="Оценка «5»"></label>	
+                            <input type="radio" id="star-4" name="review[rating]" value="4">
+                            <label for="star-4" title="Оценка «4»"></label>    
+                            <input type="radio" id="star-3" name="review[rating]" value="3">
+                            <label for="star-3" title="Оценка «3»"></label>  
+                            <input type="radio" id="star-2" name="review[rating]" value="2">
+                            <label for="star-2" title="Оценка «2»"></label>    
+                            <input type="radio" id="star-1" name="review[rating]" value="1">
+                            <label for="star-1" title="Оценка «1»"></label>
+                          </div>
+                          <!-- <div class="star-rating">
+                            {% assign r = 5 %}
+                            {% for i in (1..5) %}
+                              <input
+                                data-reviews-form-field
+                                name="review[rating]"
+                                id="star{{ r }}-{{ product.id }}"
+                                type="radio"
+                                name="reviewStars"
+                                class="star-radio"
+                                value="{{ r }}" />
+                              <label
+                                title="{{ r }}"
+                                for="star{{ r }}-{{ product.id }}"
+                                class="star-label icon icon-star"></label>
+                              {% assign r = r | minus: 1 %}
+                            {% endfor %}
+                          </div> -->
+                          <div data-reviews-form-field-error class="form__field-error"></div>
+                        </div>
+                      </div>
+                      <div
+                        data-reviews-form-field-area
+                        class="form-field is-required {% if review.errors contains 'author' %}is-error{% endif %}"
+                      >
+                        <input
+                          data-reviews-form-field='{
+                            "isRequired": true,
+                            "errorMessage": "{{ messages.name_error | escape }}"
+                          }'
+                          name="review[author]"
+                          placeholder="{{ messages.name }}"
+                          value="{{ review.author }}"
+                          type="text"
+                          class="ordinary_input" />
+                        <div data-reviews-form-field-error class="form__field-error"></div>
+                      </div>
+                      <div data-reviews-form-field-area class="form-field is-required {% if review.errors contains 'email' %}is-error{% endif %}">
+                        <input
+                          data-reviews-form-field='{
+                            "isRequired": true,
+                            "errorMessage": "{{ messages.email_error | escape}}"
+                          }'
+                          name="review[email]"
+                          placeholder="{{ messages.field_email }}"
+                          value="{{ review.email }}"
+                          type="text"
+                          class="ordinary_input"
+                        />
+                        <div data-reviews-form-field-error class="form__field-error"></div>
+                      </div>
+                      <div
+                        data-reviews-form-field-area
+                        class="form-field form-comment is-required {% if review.errors contains 'content' %}is-error{% endif %}">
+                        <textarea
+                          data-reviews-form-field='{
+                            "isRequired": true,
+                            "errorMessage": "{{ messages.please_enter_message | escape }}"
+                          }'
+                          name="review[content]"
+                          placeholder="{{ messages.review }}*"
+                          class="review__text"
+                        >{{ review.content }}</textarea>
+                        <div data-reviews-form-field-error class="form__field-error"></div>
+                      </div>
+                      {% if account.reviews_images_enabled? %}
+                        <div
+                          data-reviews-form-field-area
+                          class="form-field form-file is-required {% if review.errors contains 'image.image' %} input--error{% endif %}"
+                        >
+                          <label class="form-label icon icon-camera">
+                            <span class="load-review-image-name">{{ messages.add_photo }}</span>
+                            <input
+                              data-reviews-form-image
+                              type="file"
+                              class="ordinary_input"
+                              name="review[image_attributes][image]" />
+                          </label>
+                          <div data-reviews-form-field-error class="form__field-error"></div>
+                        </div>
+                      {% endif %}
+                      <div
+                        data-reviews-form-success='{
+                          "showTime": 10000,
+                          "message": "{{ success_message }}",
+                          "reloadPage": false
+                        }'
+                        class="notice-success"
+                      ></div>
+                      <div class="form-field form-field_conctrols">
+                        <button type="submit" class="review-form__button">{{ messages.give_feedback }}</button>
+                      </div>
+                      {% if account.reviews_moderated? %}
+                        <div class="reviews-form__moderation-info">
+                          {{ messages.reviews_are_moderated }}
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <hr>
               
               {% if product.reviews == empty %}
                 
@@ -255,68 +397,51 @@
                   <div class="subtitle">
                     На данный товар пока никто не оставил свой отзыв.
                   </div>
-                  <a href="#" class="btn">Оставить отзыв</a>
                 </div>
 
               {% else %}
 
                 <div class="not_empty">
                   <div class="review_header">
-                    <div class="review_rating">
-                      4.5
-                      <img src="{{ 'star.svg' | asset_url }}" alt="" />
-                      <div class="rating_text">Суммарная оценка</div>
-                    </div>
-                    <div class="review_header_slider_wr">
-                      <div class="swiper review_header_slider">
-                        <!-- Additional required wrapper -->
-                        <div class="swiper-wrapper">
-                          <!-- Slides -->
-                          <div class="swiper-slide">
-                            <a href="#" class="moree_review"
-                              ><img
-                                src="{{ 'product-thumb.png' | asset_url }}"
-                                alt="" /><span>Подробнее</span></a
-                            >
+                    {% if product.rating > 1 %}
+                      <div class="review_rating">
+                        {{ product.rating }}
+                        <div class="rating-stars">
+                          <div class="background" style="width: {{ product.rating | times: 100 | divided_by: 5 }}%"></div>
+                          <img src="{{ 'star-mask.png' | asset_url }}" alt="Рейтинг товара {{ product.rating }}">
+                        </div>
+                        <div class="rating_text">Суммарная оценка</div>
+                      </div>
+                    {% endif %}
+                  </div>
+                  <div class="reviews-wrap">
+                    {% for review in product.reviews %}
+                      <div class="comment_item">
+                        <div class="comment_name">
+                          <span>{{ review.author }}</span>
+                          <span>{{ review.created_at | date: "%d.%m.%Y" }}</span>
+                        </div>
+                        {% if review.rating %}
+                          <div class="comment_rating">
+                            <div class="rating-stars">
+                              <div class="background" style="width: {{ review.rating | times: 100 | divided_by: 5 }}%"></div>
+                              <img src="{{ 'star-mask-white.png' | asset_url }}" alt="Оценка товара {{ review.rating }}">
+                            </div>
                           </div>
-                          <div class="swiper-slide">
-                            <a href="#" class="moree_review"
-                              ><img
-                                src="{{ 'product-thumb.png' | asset_url }}"
-                                alt="" /><span>Подробнее</span></a
-                            >
-                          </div>
+                        {% endif %}
+                        
+                        <div class="comment_text">
+                          {{ review.content | newline_to_br }}
                         </div>
                       </div>
-                      <!-- If we need navigation buttons -->
-                      <!-- <div class="swiper-button-next">
-                        <img src="{{ 'ICO-next.svg' | asset_url }}" alt="Next" />
-                      </div>
-                      <div class="swiper-button-prev">
-                        <img src="{{ 'ICO-back.svg' | asset_url }}" alt="previous" />
-                      </div> -->
-                    </div>
+                    {% endfor %}
                   </div>
-                  {% for review in product.reviews %}
-                    <div class="comment_item">
-                      <div class="comment_name">Андрей Н.</div>
-                      <div class="comment_text">
-                        There are many variations of passages of Lorem Ipsum
-                        available, but the majority have suffered alteration
-                        in some form, by injected humour
-                      </div>
-                      <div class="comment_rating">
-                        <img src="{{ 'star__1.svg' | asset_url }}" alt="" />
-                      </div>
-                      <div class="comment_info">Отличный товар</div>
-                    </div>
-                  {% endfor %}
                 </div>
 
               {% endif %}
             {% endif %}
           </div>
-          <div class="tab_body_item questions_tab em">
+          <!-- <div class="tab_body_item questions_tab em">
             <div class="tab_item_innner empty">
               <div class="tab_item_title">Нет вопросов</div>
               <div class="subtitle">
@@ -406,7 +531,7 @@
                 /></a>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
 
         
@@ -454,73 +579,214 @@
             </div>
           </div>
         </div>
-        <div class="accordion_item">
-          <a href="" class="accordion_link ">
+        <div class="accordion_item" :class="open && 'active'" x-data="{open: false}">
+          <button class="accordion_link" @click="open = !open">
             Отзывы ({{product.reviews_count}}) <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
-          </a>
+          </button>
           <div class="accordion_content">
-            <div class="review_header">
+            <div class="accordion_content__wrap">
+              {% if account.reviews_enabled? %}
+                
+              <form
+                data-reviews-form-wrapper="{
+                  'reviews_moderated': {{ account.reviews_moderated? }},
+                  'url': '{{ product.url }}'
+                }"
+                class="review-form"
+                method="post"
+                action="{{ product.url }}"
+                enctype="multipart/form-data"
+              >
+                {% assign success_message = messages.review_is_added %}
+                {% if account.reviews_moderated? %}
+                  {% assign success_message = messages.review_is_added_moderated %}
+                {% endif %}
 
-              <div class="review_rating">
-                {{ product.rating }}
-                <div>
-                  <img src="{{ 'star.svg' |asset_url }}" alt="" />
-                  <a href="#" class="rating_text">Написать отзыв</a> 
-                </div>
-              </div>
+                <div
+                  id="review_form"
+                  class="reviews-wrapper {% unless review.errors.size > 0 %}is-hide{% endunless%}"
+                  x-data="{show: false}"
+                >
+                  <div class="reviews-form">
+                    <div class="reviews-form__header" :class="show && 'active'" @click="show = !show">
+                      <div class="reviews-form__title">Оставить отзыв</div>
+                      <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="вниз">
+                    </div>
 
-              <div class="review_header_slider_wr">
-                <div class="swiper review_header_slider">
-                  <!-- Additional required wrapper -->
-                  <div class="swiper-wrapper">
-                    <!-- Slides -->
-                    <div class="swiper-slide">
-                      <a href="#" class="moree_review"
-                        ><img
-                          src="{{ 'product-thumb.png' | asset_url }}"
-                          alt="" /><span>Подробнее</span></a
-                      >
+                    <div class="reviews-form__content" :class="show && 'active'">
+                      <div class="reviews-form__content-wrapper">
+                        <div class="form-field reviews-form__rating">
+                          <div data-reviews-form-field-area class="star-rating-wrapper">
+                            <div class="rating-area">
+                              <input type="radio" id="star-5" name="review[rating]" value="5">
+                              <label for="star-5" title="Оценка «5»"></label>	
+                              <input type="radio" id="star-4" name="review[rating]" value="4">
+                              <label for="star-4" title="Оценка «4»"></label>    
+                              <input type="radio" id="star-3" name="review[rating]" value="3">
+                              <label for="star-3" title="Оценка «3»"></label>  
+                              <input type="radio" id="star-2" name="review[rating]" value="2">
+                              <label for="star-2" title="Оценка «2»"></label>    
+                              <input type="radio" id="star-1" name="review[rating]" value="1">
+                              <label for="star-1" title="Оценка «1»"></label>
+                            </div>
+                            <!-- <div class="star-rating">
+                              {% assign r = 5 %}
+                              {% for i in (1..5) %}
+                                <input
+                                  data-reviews-form-field
+                                  name="review[rating]"
+                                  id="star{{ r }}-{{ product.id }}"
+                                  type="radio"
+                                  name="reviewStars"
+                                  class="star-radio"
+                                  value="{{ r }}" />
+                                <label
+                                  title="{{ r }}"
+                                  for="star{{ r }}-{{ product.id }}"
+                                  class="star-label icon icon-star"></label>
+                                {% assign r = r | minus: 1 %}
+                              {% endfor %}
+                            </div> -->
+                            <div data-reviews-form-field-error class="form__field-error"></div>
+                          </div>
+                        </div>
+                        <div
+                          data-reviews-form-field-area
+                          class="form-field is-required {% if review.errors contains 'author' %}is-error{% endif %}"
+                        >
+                          <input
+                            data-reviews-form-field='{
+                              "isRequired": true,
+                              "errorMessage": "{{ messages.name_error | escape }}"
+                            }'
+                            name="review[author]"
+                            placeholder="{{ messages.name }}"
+                            value="{{ review.author }}"
+                            type="text"
+                            class="ordinary_input" />
+                          <div data-reviews-form-field-error class="form__field-error"></div>
+                        </div>
+                        <div data-reviews-form-field-area class="form-field is-required {% if review.errors contains 'email' %}is-error{% endif %}">
+                          <input
+                            data-reviews-form-field='{
+                              "isRequired": true,
+                              "errorMessage": "{{ messages.email_error | escape}}"
+                            }'
+                            name="review[email]"
+                            placeholder="{{ messages.field_email }}"
+                            value="{{ review.email }}"
+                            type="text"
+                            class="ordinary_input"
+                          />
+                          <div data-reviews-form-field-error class="form__field-error"></div>
+                        </div>
+                        <div
+                          data-reviews-form-field-area
+                          class="form-field form-comment is-required {% if review.errors contains 'content' %}is-error{% endif %}">
+                          <textarea
+                            data-reviews-form-field='{
+                              "isRequired": true,
+                              "errorMessage": "{{ messages.please_enter_message | escape }}"
+                            }'
+                            name="review[content]"
+                            placeholder="{{ messages.review }}*"
+                            class="review__text"
+                          >{{ review.content }}</textarea>
+                          <div data-reviews-form-field-error class="form__field-error"></div>
+                        </div>
+                        {% if account.reviews_images_enabled? %}
+                          <div
+                            data-reviews-form-field-area
+                            class="form-field form-file is-required {% if review.errors contains 'image.image' %} input--error{% endif %}"
+                          >
+                            <label class="form-label icon icon-camera">
+                              <span class="load-review-image-name">{{ messages.add_photo }}</span>
+                              <input
+                                data-reviews-form-image
+                                type="file"
+                                class="ordinary_input"
+                                name="review[image_attributes][image]" />
+                            </label>
+                            <div data-reviews-form-field-error class="form__field-error"></div>
+                          </div>
+                        {% endif %}
+                        <div
+                          data-reviews-form-success='{
+                            "showTime": 10000,
+                            "message": "{{ success_message }}",
+                            "reloadPage": false
+                          }'
+                          class="notice-success"
+                        ></div>
+                        <div class="form-field form-field_conctrols">
+                          <button type="submit" class="review-form__button">{{ messages.give_feedback }}</button>
+                        </div>
+                        {% if account.reviews_moderated? %}
+                          <div class="reviews-form__moderation-info">
+                            {{ messages.reviews_are_moderated }}
+                          </div>
+                        {% endif %}
+                      </div>
                     </div>
                   </div>
                 </div>
-                <!-- If we need navigation buttons -->
-                <!-- <div class="swiper-button-next">
-                  <img src="{{ 'ICO-next.svg' | asset_url }}" alt="" />
-                </div>
-                <div class="swiper-button-prev">
-                  <img src="{{ 'ICO-back.svg' | asset_url }}" alt="" />
-                </div> -->
-              </div>
+              </form>
+              <hr>
+                
+                {% if product.reviews == empty %}
+                  
+                  <div class="tab_item_innner">
+                    <div class="tab_item_title">Нет отзывов</div>
+                    <div class="subtitle">
+                      На данный товар пока никто не оставил свой отзыв.
+                    </div>
+                  </div>
+
+                {% else %}
+
+                  <div class="not_empty">
+                    <div class="review_header">
+                      {% if product.rating > 1 %}
+                        <div class="review_rating">
+                          {{ product.rating }}
+                          <div class="rating-stars">
+                            <div class="background" style="width: {{ product.rating | times: 100 | divided_by: 5 }}%"></div>
+                            <img src="{{ 'star-mask.png' | asset_url }}" alt="Рейтинг товара {{ product.rating }}">
+                          </div>
+                          <div class="rating_text">Суммарная оценка</div>
+                        </div>
+                      {% endif %}
+                    </div>
+                    <div class="reviews-wrap">
+                      {% for review in product.reviews %}
+                        <div class="comment_item">
+                          <div class="comment_name">
+                            <span>{{ review.author }}</span>
+                            <span>{{ review.created_at | date: "%d.%m.%Y" }}</span>
+                          </div>
+                          {% if review.rating %}
+                            <div class="comment_rating">
+                              <div class="rating-stars">
+                                <div class="background" style="width: {{ review.rating | times: 100 | divided_by: 5 }}%"></div>
+                                <img src="{{ 'star-mask-white.png' | asset_url }}" alt="Оценка товара {{ review.rating }}">
+                              </div>
+                            </div>
+                          {% endif %}
+                          
+                          <div class="comment_text">
+                            {{ review.content | newline_to_br }}
+                          </div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+
+                {% endif %}
+              {% endif %}
             </div>
-            {% if product.reviews_count > 0 %}
-              {% for review in product.reviews %}
-
-                <div class="comment_item">
-                  <div class="comment_name">{{ review.author }}</div>
-                  <div class="comment_text">
-                    {{ review.content | newline_to_br }}
-                  </div>
-                  <div class="comment_rating">
-                    <img src="{{ 'star.svg' | asset_url }}" alt="" />
-                  </div>
-                  <div class="comment_info">{{ review.rating }}</div>
-                </div>
-
-              {% endfor %}
-            {% endif %}
-
           </div>
-
-          <div class="accardion_footer p-0">
-            <a href="#" class="more_link">Больше отзывов</a>
-            <a href="#" class="accordion_link_hide ">
-              <span>Скрыть</span> <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
-            </a>
-            
-          </div>
-          
         </div>
-        <div class="accordion_item">
+        <!-- <div class="accordion_item">
           <a href="" class="accordion_link ">
             Вопросы (12) <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
           </a>
@@ -546,7 +812,7 @@
               /></a>
             </div>
           </div>
-        </div>
+        </div> -->
         
       </div>
     </div>

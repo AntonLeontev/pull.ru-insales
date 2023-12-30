@@ -32,16 +32,48 @@
       update() {
         ajaxAPI.cart.get().done(done => {
           this.cart = done
+          this.$dispatch('order-changed')
         })
-        this.$dispatch('order-changed')
+      },
+      isAllowedRegion(event) {
+        if (event.detail.type != 'door') {
+          return true;
+        }
+
+        let isAllowed = false
+        event.detail.address.components.forEach(component => {
+          if (component.kind != 'province') return
+
+          if (sessionStorage.getItem('allowed_regions').includes(component.name)) {
+            isAllowed = true
+          }
+        })
+
+        return isAllowed
       },
       setDelivery() {
+        if (! this.isAllowedRegion(this.$event)) {
+          this.$dispatch('toast-error', {message: 'Доставка в выбранный регион временно невозможна', delay: 4000})
+          this.deliveryType = null
+          this.deliveryTariff = null
+          this.deliveryAddress = null
+          return
+        }
+
         this.deliveryType = this.$event.detail.type
         this.deliveryTariff = this.$event.detail.tariff
         this.deliveryAddress = this.$event.detail.address
       },
       updateDelivery() {
         if (this.deliveryTariff === null) {
+          return
+        }
+
+        if (! this.isAllowedRegion(this.$event)) {
+          this.$dispatch('toast-error', {message: 'Доставка в выбранный регион временно невозможна', delay: 4000})
+          this.deliveryType = null
+          this.deliveryTariff = null
+          this.deliveryAddress = null
           return
         }
 
@@ -134,11 +166,14 @@
             if (response.errors.hasOwnProperty('order_lines.quantity')) {
               response.errors['order_lines.quantity'].forEach(el => messages.push(el))
             }
+            if (response.errors.hasOwnProperty('payment_gateway_id')) {
+              response.errors['payment_gateway_id'].forEach(el => messages.push(el))
+            }
             let message = messages.join('<br><br>')
             if (message == '') {
               message = 'Ошибка оформления заказа'
             }
-			      this.$dispatch('toast-error', {message})
+			      this.$dispatch('toast-error', {message, delay: 4000})
           }
         })
         .fail((fail) => {
@@ -172,24 +207,6 @@
     <div class="section-order section-cart">
         <div class="container">
          
-
-          <div class="promo mb">
-            <div class="section_header">
-              <div class="section_title flex_100">
-                У вас есть промокод?
-              </div>
-              <div>
-                <input
-                  type="text"
-                  placeholder="Ваш промокод"
-                  name="search"
-                  class="ordinary_input" />
-                <button class="button_black">
-                  Применить
-                </button>
-              </div>
-            </div>
-          </div>
 
         <div id="cartform" class="cartform">
           <div class="content">
@@ -256,6 +273,68 @@
                   </div>
                 {% endfor %}
               </div>
+
+              <div class="order_info_inner">
+                {% include 'cdek-widget' %}
+                
+                <div class="info_card" x-data="{show: {% if client %} false {% else %} true {% endif %} }" id="customer">
+                  <div class="card_name" @click="show = !show">
+                    <span>Получатель</span>
+                    <img class="icon" width="30px" src="{{ 'down.svg' | asset_url }}" alt="icon down" :class="show && 'rotated'">
+                  </div>
+                
+                  <div class="card_content" :class="show && 'active'">
+                    <div class="card_content_wrap">
+                      <div class="order_form">
+                          <input class="ordinary_input" name="email" placeholder="E-mail" x-ref="email" x-model="email" inputmode="email">
+                          <input class="ordinary_input" name="name" placeholder="Имя" x-ref="name" x-model="name">
+                          <input class="ordinary_input" name="phone" placeholder="Телефон" x-ref="phone" x-model="phone" inputmode="tel">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="info_button">
+                  <div class="sum_info sub_info">
+                    Укажите способ оплаты
+                  </div>
+                  <select
+                  name="select_payment"
+                  id=""
+                  class="nice_select select_ordinary">
+                  <option selected value="">Способ оплаты</option>
+                  {% for payment_variant in account.payment_gateways %}
+                    <option value="{{payment_variant.id}}">{{payment_variant.title}}</option>
+                  {% endfor %}
+                  </select>
+                  
+                </div>
+
+                
+                <div class="promo">
+                  <div class="section_header">
+                    <!-- <div class="section_title flex_100">
+                      У вас есть промокод?
+                    </div> -->
+                    <div class="" style="display: flex;width: 100%;">
+                      <input
+                        type="text"
+                        placeholder="Ваш промокод"
+                        name="cart[coupon]"
+                        value="{{ cart.coupon }}"
+                        class="ordinary_input" 
+                        x-model="coupon"
+                      />
+                      <button type="button" class="button_black" @click="setCoupon">
+                        Применить
+                      </button>
+                    </div>
+                    <div class="promo-error" data-cart-discounts-error></div>
+                  </div>
+                </div>
+
+                <button type="submit" class="button_black" style="width: 100%;">Оформить заказ</button>
+              </div>
             </div>
           </div>
           
@@ -278,7 +357,7 @@
                         <div class="label">Цена</div>
                         <div class="info"><span x-text="formatNumber(cart?.total_price)"></span> ₽</div>
                     </li>
-                    <li class="list_item">
+                    <li class="list_item" x-show="cart?.discounts[0]?.amount">
                       <div class="label">Скидка</div>
                       <div class="info">
                         {% if cart.discounts.size > 0 %}
@@ -305,59 +384,22 @@
                       </div>
                       <div class="info" x-text="deliveryTariff ? deliveryPrice() + ' ₽' : 'Не выбрана'"></div>
                   </li>
+                  <li class="list_item">
+                      <div class="label">Итого к оплате:</div>
+                      <div class="info"><span x-text="formatNumber(cart?.total_price + deliveryPrice())"></span> ₽</div>
+                  </li>
                 </ul>
                 <div class="total_sum">
                     <div class="sum_label">Итого к оплате:</div>
-                    <!-- <div class="sum" data-cart-full-total-price>{{ cart.total_price | money }}</div> -->
                     <div class="sum" x-text="formatNumber(cart?.total_price + deliveryPrice()) + ' ₽'"></div>
-                    <!-- <div class="sum_info sub_info">
-                      Без учета возможной стоимости доставки
-                    </div> -->
                 </div>
-                <div class="info_button">
-                  <select
-                  name="select_payment"
-                  id=""
-                  class="nice_select select_ordinary">
-                    <option value="">Способ оплаты</option>
-                    {% for payment_variant in account.payment_gateways %}
-                      <option selected value="{{payment_variant.id}}">{{payment_variant.title}}</option>
-                    {% endfor %}
-                  </select>
-                    <button type="submit" class="disabled_payment_button">Оформить заказ</button>
-                    <div class="sum_info sub_info">
-                      Укажите способ оплаты
-                    </div>
-                </div>
+                
 
                 
               </div>
           </div>
 
           
-
-          
-          <div class="promo ds">
-            <div class="section_header">
-              <div class="section_title flex_100">
-                У вас есть промокод?
-              </div>
-              <div class="" style="display: flex;width: 100%;">
-                <input
-                  type="text"
-                  placeholder="Ваш промокод"
-                  name="cart[coupon]"
-                  value="{{ cart.coupon }}"
-                  class="ordinary_input" 
-                  x-model="coupon"
-                />
-                <button type="button" class="button_black" @click="setCoupon">
-                  Применить
-                </button>
-              </div>
-              <div class="promo-error" data-cart-discounts-error></div>
-            </div>
-          </div>
         </div>
         </div>
     </div>
@@ -365,37 +407,13 @@
 
     <div class="section-order-info">
       <div class="container">
-        <div class="order_info_inner">
-          <div class="info_card" x-data="{show: false}" id="customer">
-            <div class="card_name" @click="show = !show">
-              <span>Получатель</span>
-              <img class="icon" width="30px" src="{{ 'down.svg' | asset_url }}" alt="icon down" :class="show && 'rotated'">
-            </div>
-          
-            <div class="card_content" :class="show && 'active'">
-              <div class="card_content_wrap">
-                <div class="order_form">
-                    <input class="ordinary_input" name="email" placeholder="E-mail" x-ref="email" x-model="email">
-                    <input class="ordinary_input" name="name" placeholder="Имя" x-ref="name" x-model="name">
-                    <input class="ordinary_input" name="phone" placeholder="Телефон" x-ref="phone" x-model="phone">
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {% include 'cdek-widget' %}
-      </div>
+        
 
 
     </div>
 
   </form>
   
-  <div class="success_section" style="display:none;">
-    <div class="container">
-      <h3>Ваш заказ был успешно оформлен! Благодарим вас за заказ!</h3>
-    </div>
-  </div>
 {% endif %}
 
 

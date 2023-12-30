@@ -16,6 +16,7 @@
 	document.addEventListener('alpine:init', () => {
 		Alpine.data('toasts', () => ({
 			toasts: [],
+			indexAI: 1,
 
 			typeObject(toast) {
 				return {
@@ -28,29 +29,32 @@
 				}
 			},
 			push(mesage, type, delay = 0) {
-				let id = this.toasts.push({
-					id: this.toasts.length + 1,
+				this.toasts.push({
+					id: this.indexAI++,
 					message: mesage,
 					type: type,
 				})
 
 				this.$nextTick(() => {
-					let alert = this.$root.querySelector(`[data-id='${id}']`)
+					let alert = this.$root.querySelector(`[data-id='${this.indexAI - 1}']`)
 					alert.addEventListener('transitionend', (e) => {
-						this.toasts[id - 1].state = 'show'
+						this.get(this.indexAI - 1).state = 'show'
 					}, {once: true})
 
-					this.toasts[id - 1].state = 'showing'
+					this.get(this.indexAI - 1).state = 'showing'
 				})
+
 
 				if (delay > 0) {
 					setTimeout(() => {
-						this.remove(id);
+						this.remove(this.indexAI - 1);
 					}, delay);
 				}
 			},
 			remove(id) {
-				this.toasts.splice(id - 1, 1);
+				let toast = this.get(id)
+				let index = this.toasts.indexOf(toast)
+				this.toasts.splice(index, 1);
 			},
 			add() {
 				this.push(

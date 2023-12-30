@@ -19,6 +19,9 @@
 	row-gap: 20px;
 	margin-top: 20px;
   }
+  .cdek-hlhf5b[data-v-3c8861b9] {
+	z-index: 10 !important;
+  }
 </style>
 
 
@@ -69,7 +72,6 @@
 			allowed_cod: true,
 		},
         onCalculate(tariff, address) {
-          console.log('calculated');
           cdekmap.dispatchEvent(new CustomEvent('delivery-calculated', {
             bubbles: true,
             detail: {

@@ -433,6 +433,12 @@
                         <div class="comment_text">
                           {{ review.content | newline_to_br }}
                         </div>
+                        {% if review.replied? %}
+                          <div class="comment_reply">
+                            <div class="reply_admin">Ответ администрации:</div>
+                            <div class="reply_text">{{ review.manager_reply }}</div>
+                          </div>
+                        {% endif %}
                       </div>
                     {% endfor %}
                   </div>
@@ -538,7 +544,7 @@
       </div>
 
       <div class="product_accordion">
-        <div class="accordion_item" :class="open && 'active'" x-data="{open: false}">
+        <div class="accordion_item" :class="open && 'active'" x-data="{open: true}">
           <button class="accordion_link" @click="open = !open">
             О товаре <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
           </button>
@@ -776,6 +782,12 @@
                           <div class="comment_text">
                             {{ review.content | newline_to_br }}
                           </div>
+                          {% if review.replied? %}
+                            <div class="comment_reply">
+                              <div class="reply_admin">Ответ администрации:</div>
+                              <div class="reply_text">{{ review.manager_reply }}</div>
+                            </div>
+                          {% endif %}
                         </div>
                       {% endfor %}
                     </div>

@@ -283,3 +283,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+// Получение списка разрешенных регионов для доставки
+if (!sessionStorage.getItem('allowed_regions')) {
+	$.get('https://app.pull.ru/api/allowed_regions')
+		.success(response => sessionStorage.setItem('allowed_regions', response))
+}

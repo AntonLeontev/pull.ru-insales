@@ -2085,6 +2085,29 @@ textarea:focus-visible
 		}
 	}
 }
+.loading-cover {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: block;
+	background-color: $white;
+	opacity: 1;
+	transition: opacity 0.4s ease;
+	z-index: 20;
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.spin {
+		transform-origin: center;
+		animation: spin 2s linear infinite;
+	}	
+}
 .comment_item_img {
 	display: flex;
 	overflow-x: scroll;
@@ -2335,6 +2358,7 @@ textarea:focus-visible
 		background-color: $primary;
 	}
 	.product_info_char {
+		position: relative;
 		flex-basis: 100%;
 
 		.product_quantity {
@@ -2820,6 +2844,7 @@ textarea:focus-visible
 		}
 	}
 	.payment_content_list {
+		position: relative;
 		margin-bottom: 22px;
 
 		.list_item {

@@ -23,11 +23,15 @@
       name: null,
       phone: null,
       cart: null,
+      cartReady: false,
       coupon: '{{ cart.coupon }}',
 
       init() {
         ajaxAPI.cart.get()
-          .done(cart => this.cart = cart)
+          .done(cart => {
+            this.cart = cart
+            this.cartReady = true
+          })
       },
       update() {
         ajaxAPI.cart.get().done(done => {
@@ -348,6 +352,13 @@
                 
               </div>
               <div class="payment_content">
+                <div class="loading-cover" x-show="!cartReady" x-transition.opacity.duration.600ms.delay.100ms>
+                  <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+                  <circle class="spin" cx="400" cy="400" fill="none"
+                  r="40" stroke-width="13" stroke="#111111"
+                  stroke-dasharray="202 1400" />
+                  </svg>
+                </div>
                 <ul class="payment_content_list">
                     <li class="list_item">
                         <div class="label">Всего товаров</div>

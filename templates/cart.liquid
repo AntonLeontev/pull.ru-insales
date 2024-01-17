@@ -159,7 +159,14 @@
             
 
             $.post('https://api.pull.ru/webhooks/insales/orders_create', order)
-              .done(response => location.href = '/page/order-success')
+              .done(response => {
+                if (response.redirect) {
+                  location.replace(response.redirect)
+                  return
+                }
+
+                location.href = '/page/order-success'
+              })
           } else {
             console.log('else', response);
 

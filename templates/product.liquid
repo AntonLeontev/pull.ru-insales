@@ -168,12 +168,14 @@
                 <div class="product-variants" x-ref="productOptions">
                   {% for option_name in product.options %}
                     {% if option_name.title != "Цвет товара" %}
+					            <div>{{ option_name.title }}</div>
                       <select class="select_ordinary nice_select _option_name" data-option-name-id="{{ option_name.id }}" @change="changeVariant">
                         {% for option_value in option_name.values %}
                           <option value="{{ option_value.id }}" {% if forloop.first %} selected {% endif %}>{{ option_value.title | escape }}</option>
                         {% endfor %}
                       </select>
                     {% else %}
+                      <div>{{ option_name.title }}</div>
                       <select id="variant-select" class="select_ordinary nice_select _option_name"
                         data-option-name-id="{{ option_name.id }}"
                         @change="change"

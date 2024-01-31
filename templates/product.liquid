@@ -309,14 +309,32 @@
             {% if account.reviews_enabled? %}
               
             <form
-              data-reviews-form-wrapper="{
-                'reviews_moderated': {{ account.reviews_moderated? }},
-                'url': '{{ product.url }}'
+            class="review-form"
+              @submit.prevent="submit"
+              x-data="{
+                show: false,
+                active: true,
+                errors: [],
+                success: false,
+
+                submit() {
+                  if (!this.active) return
+
+                  this.active = false
+                  this.errors = []
+                  let data = new FormData(this.$event.target)
+                  $.post('{{ product.url }}/reviews.json', Object.fromEntries(data.entries()))
+                    .done(res => {
+                      if (res.errors) {
+                        this.errors = res.errors.content
+                        return
+                      }
+
+                      this.success = true
+                    })
+                    .always(() => this.active = true)
+                },
               }"
-              class="review-form"
-              method="post"
-              action="{{ product.url }}"
-              enctype="multipart/form-data"
             >
               {% assign success_message = messages.review_is_added %}
               {% if account.reviews_moderated? %}
@@ -326,7 +344,6 @@
               <div
                 id="review_form"
                 class="reviews-wrapper {% unless review.errors.size > 0 %}is-hide{% endunless%}"
-                x-data="{show: false}"
               >
                 <div class="reviews-form">
                   <div class="reviews-form__header" :class="show && 'active'" @click="show = !show">
@@ -350,24 +367,6 @@
                             <input type="radio" id="star-1" name="review[rating]" value="1">
                             <label for="star-1" title="Оценка «1»"></label>
                           </div>
-                          <!-- <div class="star-rating">
-                            {% assign r = 5 %}
-                            {% for i in (1..5) %}
-                              <input
-                                data-reviews-form-field
-                                name="review[rating]"
-                                id="star{{ r }}-{{ product.id }}"
-                                type="radio"
-                                name="reviewStars"
-                                class="star-radio"
-                                value="{{ r }}" />
-                              <label
-                                title="{{ r }}"
-                                for="star{{ r }}-{{ product.id }}"
-                                class="star-label icon icon-star"></label>
-                              {% assign r = r | minus: 1 %}
-                            {% endfor %}
-                          </div> -->
                           <div data-reviews-form-field-error class="form__field-error"></div>
                         </div>
                       </div>
@@ -376,26 +375,16 @@
                         class="form-field is-required {% if review.errors contains 'author' %}is-error{% endif %}"
                       >
                         <input
-                          data-reviews-form-field='{
-                            "isRequired": true,
-                            "errorMessage": "{{ messages.name_error | escape }}"
-                          }'
                           name="review[author]"
-                          placeholder="{{ messages.name }}"
-                          value="{{ review.author }}"
+                          placeholder="{{ messages.name }} *"
                           type="text"
                           class="ordinary_input" />
                         <div data-reviews-form-field-error class="form__field-error"></div>
                       </div>
                       <div data-reviews-form-field-area class="form-field is-required {% if review.errors contains 'email' %}is-error{% endif %}">
                         <input
-                          data-reviews-form-field='{
-                            "isRequired": true,
-                            "errorMessage": "{{ messages.email_error | escape}}"
-                          }'
                           name="review[email]"
-                          placeholder="{{ messages.field_email }}"
-                          value="{{ review.email }}"
+                          placeholder="{{ messages.field_email }} *"
                           type="text"
                           class="ordinary_input"
                         />
@@ -405,15 +394,13 @@
                         data-reviews-form-field-area
                         class="form-field form-comment is-required {% if review.errors contains 'content' %}is-error{% endif %}">
                         <textarea
-                          data-reviews-form-field='{
-                            "isRequired": true,
-                            "errorMessage": "{{ messages.please_enter_message | escape }}"
-                          }'
                           name="review[content]"
                           placeholder="{{ messages.review }}*"
                           class="review__text"
                         >{{ review.content }}</textarea>
-                        <div data-reviews-form-field-error class="form__field-error"></div>
+                        <template x-for="error in errors">
+                          <div style="margin-top: 10px;" class="form__field-error" x-text="error"></div>
+                        </template>
                       </div>
                       {% if account.reviews_images_enabled? %}
                         <div
@@ -432,15 +419,16 @@
                         </div>
                       {% endif %}
                       <div
-                        data-reviews-form-success='{
-                          "showTime": 10000,
-                          "message": "{{ success_message }}",
-                          "reloadPage": false
-                        }'
                         class="notice-success"
                       ></div>
                       <div class="form-field form-field_conctrols">
-                        <button type="submit" class="review-form__button">{{ messages.give_feedback }}</button>
+                        <button 
+                          type="submit" 
+                          class="review-form__button"
+                          :class="success && 'success'" 
+                          :disabled="success" 
+                          x-text="success ? 'Отзыв успешно отправлен' : '{{ messages.give_feedback }}'"
+                        ></button>
                       </div>
                       {% if account.reviews_moderated? %}
                         <div class="reviews-form__moderation-info">

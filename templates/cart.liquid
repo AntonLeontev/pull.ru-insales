@@ -32,6 +32,17 @@
             this.cart = cart
             this.cartReady = true
           })
+        $.getJSON('/client_account/contacts.json',
+          function(data){
+            if (data.message === 'Not authorized') return
+
+            if (data.status === 'ok') {
+              this.email = data.client.email
+              this.phone = data.client.phone
+              this.name = data.client.contact_name
+            }
+          }
+        );
       },
       update() {
         ajaxAPI.cart.get().done(done => {
@@ -168,8 +179,6 @@
                 location.href = '/page/order-success'
               })
           } else {
-            console.log('else', response);
-
             let messages = []
             if (response.errors.hasOwnProperty('shipping_address.phone')) {
               response.errors['shipping_address.phone'].forEach(el => messages.push(el))
@@ -288,7 +297,7 @@
               <div class="order_info_inner">
                 {% include 'cdek-widget' %}
                 
-                <div class="info_card" x-data="{show: {% if client %} false {% else %} true {% endif %} }" id="customer">
+                <div class="info_card" x-data="{show: true}" id="customer">
                   <div class="card_name" @click="show = !show">
                     <span>Получатель</span>
                     <img class="icon" width="30px" src="{{ 'down.svg' | asset_url }}" alt="icon down" :class="show && 'rotated'">

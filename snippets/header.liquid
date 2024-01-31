@@ -167,7 +167,6 @@
                           <span class="menu__link">Бренды</span>
                         </li>
                         {% assign brand_list = catalog.properties | where: 'handle', 'brand' | first %}
-
                         {% for brand in brand_list.characteristics %}
                           <li class="menu__item">
                             <a class="menu__link brand-link" href="{{ catalog.url | add_param: 'characteristics[]', brand.id }}">{{ brand.name }}</a>
@@ -287,7 +286,7 @@
 
 </header>
 
-<script>
+<!-- <script>
   let gender = localStorage.getItem('gender')
 
   if (gender) {
@@ -305,4 +304,4 @@
     })
   }
 
-</script>
+</script> -->

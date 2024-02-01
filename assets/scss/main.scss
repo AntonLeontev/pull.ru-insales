@@ -3397,9 +3397,10 @@ textarea:focus-visible
 	z-index: 100;
 
 	.alert {
-		padding: 10px;
+		padding: 15px;
 		transition: opacity 0.3s ease;
 		opacity: 0;
+		font-size: 19px;
 
 		&-showing {
 			opacity: 1;
@@ -3424,7 +3425,7 @@ textarea:focus-visible
 		}
 
 		&-success {
-			background-color: $primary;
+			background-color: $success;
 			color: $white;
 		}
 	}

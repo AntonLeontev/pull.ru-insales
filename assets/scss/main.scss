@@ -248,7 +248,7 @@ textarea:focus-visible
 			.rating-area {
 				display: flex;
 				flex-direction: row-reverse;
-				justify-content: start;
+				justify-content: flex-start;
 				overflow: hidden;
 			}
 			.rating-area:not(:checked) > input {
@@ -3176,7 +3176,7 @@ textarea:focus-visible
 	.sub_info {
 		margin-top: 24px;
 		color: $secondary;
-		font-size: 16px;
+		font-size: 22px;
 		font-style: normal;
 		font-weight: 400;
 		line-height: 100%;
@@ -3427,6 +3427,44 @@ textarea:focus-visible
 		&-success {
 			background-color: $success;
 			color: $white;
+		}
+	}
+}
+.payment-variants {
+	margin-top: 15px;
+	display: flex;
+	flex-direction: column;
+	row-gap: 10px;
+
+	&__item {
+
+		label {
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+			column-gap: 5px;
+			cursor: pointer;
+			font-size: 19px;
+		}
+
+		input[type="radio"] {
+			width: 0;
+			height: 0;
+			overflow: hidden;
+			visibility: hidden;
+		}
+
+		.check {
+			position: relative;
+			width: 25px;
+			height: 25px;
+			border: $border-color_4 solid 1px;
+			transition: all .3s ease;
+		}
+
+		input[type="radio"]:checked + .check {
+			background: $primary;
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='#f7f7f7'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m4.5 12.75 6 6 9-13.5' /%3E%3C/svg%3E%0A");
 		}
 	}
 }

@@ -19,6 +19,8 @@
       freeToCourier: {{ blocks.with_template['system-single-text'].kurierom.text }},
       deliveryTariff: null,
       deliveryAddress: null,
+      paymentTypeId: '5982078',
+      deliveryVariantId: '7921162',
       email: null,
       name: null,
       phone: null,
@@ -103,25 +105,23 @@
       },
       makeOrder() {
         if (this.name === null || this.email === null || this.phone === null) {
-          this.$dispatch('toast-error', {message: 'Заполните данные получателя', delay: 2000})
+          this.$dispatch('toast-error', {message: 'Заполните данные получателя', delay: 3000})
           document.querySelector('#customer').scrollIntoView({behavior: 'smooth'})
           return 
         }
 
         if (this.name === '' || this.email === '' || this.phone === '') {
-          this.$dispatch('toast-error', {message: 'Заполните данные получателя', delay: 2000})
+          this.$dispatch('toast-error', {message: 'Заполните данные получателя', delay: 3000})
           document.querySelector('#customer').scrollIntoView({behavior: 'smooth'})
           return 
         }
         
         if (this.deliveryTariff === null || this.deliveryType === null || this.deliveryAddress === null) {
-          this.$dispatch('toast-error', {message: 'Выберите способ доставки', delay: 2000})
+          this.$dispatch('toast-error', {message: 'Выберите способ доставки', delay: 3000})
           document.querySelector('#cdekmap').scrollIntoView({behavior: 'smooth'})
           return 
         }
 
-        let paymentVarianId = $('[name=select_payment]').parent().find('.nice-select .list .selected').data('value')
-        
         let address = this.deliveryAddress.address ?? this.deliveryAddress.name
         if ($('[name=\'apartment\']').val() != '') {
           address += ', кв. ' + $('[name=\'apartment\']').val()
@@ -144,8 +144,8 @@
             consent_to_personal_data: true,
           },
           order: {
-            delivery_variant_id: 7921162,
-            payment_gateway_id: paymentVarianId,
+            delivery_variant_id: this.deliveryVariantId,
+            payment_gateway_id: this.paymentTypeId,
             delivery_price: this.deliveryPrice(),
           },
           shipping_address: {
@@ -316,17 +316,33 @@
 
                 <div class="info_button">
                   <div class="sum_info sub_info">
-                    Укажите способ оплаты
+                    Выберите способ оплаты
                   </div>
-                  <select
+                  <div class="payment-variants">
+                    {% for payment_variant in account.payment_gateways %}
+                      <div class="payment-variants__item">
+                        <label>
+                          <input 
+                            type="radio" 
+                            name="select_payment" 
+                            value="{{payment_variant.id}}"
+                            x-model="paymentTypeId"
+                          >
+                          <div class="check"></div>
+                          {{payment_variant.title}}
+                        </label>
+                      </div>
+                    {% endfor %}
+                  </div>
+                  <!-- <select
                   name="select_payment"
                   id=""
                   class="nice_select select_ordinary">
-                  <option selected value="">Способ оплаты</option>
-                  {% for payment_variant in account.payment_gateways %}
-                    <option value="{{payment_variant.id}}">{{payment_variant.title}}</option>
-                  {% endfor %}
-                  </select>
+                    <option selected value="">Способ оплаты</option>
+                    {% for payment_variant in account.payment_gateways %}
+                      <option value="{{payment_variant.id}}">{{payment_variant.title}}</option>
+                    {% endfor %}
+                  </select> -->
                   
                 </div>
 

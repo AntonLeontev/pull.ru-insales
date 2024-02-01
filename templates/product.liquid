@@ -107,7 +107,7 @@
 
           {% if product.images.size > 0 %}
             <div class="swiper product_view_swiper">
-              <div class="swiper-wrapper" x-ref="swiperContainer">
+              <div class="swiper-wrapper" x-ref="swiperContainer" @click="$dispatch('show-gallary')">
                 {% for image in product.images %}
                   <div class="swiper-slide" data-id="{{ image.id }}">
                     <img src="{{ image.original_url | image_url: 954, format: 'webp' }}" alt="{{ image.title }}" />
@@ -1014,110 +1014,142 @@
 
 {% if product.similar_products.size > 0 %}
 
-<!-- section-products-carousel-->
-<section class="section-sim-products-carousel">
-  <div class="container">
-    <div class="products_header section_header">
-      <div class="section_title">Похожие</div>
-      <div class="slider_buttons">
-        <div class="swiper-button-next">
-          <img src="{{ 'ICO-next.svg' | asset_url }}" alt="" />
-        </div>
-        <div class="swiper-button-prev">
-          <img src="{{ 'ICO-back.svg' | asset_url }}" alt="" />
+  <!-- section products carousel-->
+  <section class="section-sim-products-carousel">
+    <div class="container">
+      <div class="products_header section_header">
+        <div class="section_title">Похожие</div>
+        <div class="slider_buttons">
+          <div class="swiper-button-next">
+            <img src="{{ 'ICO-next.svg' | asset_url }}" alt="" />
+          </div>
+          <div class="swiper-button-prev">
+            <img src="{{ 'ICO-back.svg' | asset_url }}" alt="" />
+          </div>
         </div>
       </div>
-    </div>
-    <!-- Slider main container -->
-    <div
-      class="swiper similar_swiper swiper-initialized swiper-horizontal swiper-backface-hidden">
-      <!-- Additional required wrapper -->
+      <!-- Slider main container -->
       <div
-        class="swiper-wrapper"
-        id="swiper-wrapper-cb1071e566d10864ee"
-        aria-live="polite">
-        <!-- Slides -->
+        class="swiper similar_swiper swiper-initialized swiper-horizontal swiper-backface-hidden">
+        <!-- Additional required wrapper -->
+        <div
+          class="swiper-wrapper"
+          id="swiper-wrapper-cb1071e566d10864ee"
+          aria-live="polite">
+          <!-- Slides -->
 
-        
-        {% for product in product.similar_products %}
-          {% if product.old_price > 0 %}
-            {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
-            {% assign saleNumber = priceDivision | minus: 100 %}
-            {% assign salePercent = saleNumber | round: 0 %}
-          {% endif %}
-          <div class="swiper-slide">
-            <div class="product_slide_card">
-              <div class="product_card_img">
-                <a class="card_img__link" href="{{product.url}}">
-                  <img class="card_img__image" src="{{product.first_image.large_url | image_url: 459, format: 'webp'}}" alt="{{product.title}}" />
-                </a>
-                <div class="labels">
-                  {% if product.old_price > 0 %}
-                    <div class="labe_discount">{{ salePercent }}%</div>
-                  {% endif %}
-                  <!-- <div class="labe_premium">Premium</div> -->
+          
+          {% for product in product.similar_products %}
+            {% if product.old_price > 0 %}
+              {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+              {% assign saleNumber = priceDivision | minus: 100 %}
+              {% assign salePercent = saleNumber | round: 0 %}
+            {% endif %}
+            <div class="swiper-slide">
+              <div class="product_slide_card">
+                <div class="product_card_img">
+                  <a class="card_img__link" href="{{product.url}}">
+                    <img class="card_img__image" src="{{product.first_image.large_url | image_url: 459, format: 'webp'}}" alt="{{product.title}}" />
+                  </a>
+                  <div class="labels">
+                    {% if product.old_price > 0 %}
+                      <div class="labe_discount">{{ salePercent }}%</div>
+                    {% endif %}
+                    <!-- <div class="labe_premium">Premium</div> -->
+                  </div>
+                  <button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
+                  <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+                  <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+                  </button>
                 </div>
-                <button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
-                <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
-                <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
-                </button>
-              </div>
-              <div class="product_card_itext">
-                <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
-                <div class="product_card_prices">
-                  <div class="product_card_price">{{ product.price | money }}</div>
-                  {% if product.old_price > 0 %}
-                    <div class="product_card_old_price">{{ product.old_price | money }}</div>
-                  {% endif %}
+                <div class="product_card_itext">
+                  <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
+                  <div class="product_card_prices">
+                    <div class="product_card_price">{{ product.price | money }}</div>
+                    {% if product.old_price > 0 %}
+                      <div class="product_card_old_price">{{ product.old_price | money }}</div>
+                    {% endif %}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        {% endfor %}
+          {% endfor %}
 
-        
+          
 
+        </div>
+
+        <span
+          class="swiper-notification"
+          aria-live="assertive"
+          aria-atomic="true"></span>
       </div>
-
-      <span
-        class="swiper-notification"
-        aria-live="assertive"
-        aria-atomic="true"></span>
     </div>
-  </div>
-</section>
+  </section>
 
 {% endif %}
-<!-- 
-<section class="section-products-recent">
-  <div class="container">
-    <div class="products_header section_header">
-      <div class="section_title">Недавно смотрели</div>
-    </div>
-    
-    <div class="product_slide_card">
-      <a href="#" class="product_card_img">
-        <img src="media/product-card.png" alt="" />
 
-        <div class="labels">
-          <div class="labe_discount">-24%</div>
-          <div class="labe_premium">-Premium</div>
-        </div>
-        <div class="product_save_btn">
-          <a href="" class="img"
-            ><img src="media/ICO-heart.svg" alt=""
-          /></a>
-        </div>
-      </a>
-      <div class="product_card_itext">
-        <a href="#" class="product_card_name"
-          >Спортивный костюм “BOSS”</a
-        >
-        <div class="product_card_prices">
-          <div class="product_card_price">2 931,65 ₽</div>
-          <div class="product_card_old_price">2 931,65 ₽</div>
+{% if product.images.size > 0 %}
+  <div class="gallary" 
+    style="display: none;" 
+    x-data="{show: false}" 
+    x-show="show" 
+    x-transition.opacity
+    @show-gallary.window="show = true"
+  >
+    <div class="gallary__cover">
+      <div class="container">
+        <div class="carousel">
+          <div thumbsSlider="" class="swiper gallary_product_view_swiper_th">
+            <div class="swiper-wrapper">
+              {% for image in product.images %}
+                <div class="swiper-slide swiper-vertical-slide" data-id="{{ image.id }}">
+                  <img src="{{ image.thumb_url | image_url: 100, format: 'webp' }}" alt="{{ image.title }}" />
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+  
+          <div class="swiper gallary_product_view_swiper">
+            <div class="swiper-wrapper" x-ref="swiperContainer">
+              {% for image in product.images %}
+                <div class="swiper-slide" data-id="{{ image.id }}">
+                  <img src="{{ image.original_url | image_url: 954, format: 'webp' }}" alt="{{ image.title }}" />
+                </div>
+              {% endfor %}
+              
+            </div>
+            <div class="swiper-pagination"></div>
+            <button class="swiper-button swiper-button-next">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="50px" height="50px">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+              </svg>
+            </button>
+            <button class="swiper-button swiper-button-prev">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="50px" height="50px">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+              </svg>
+            </button>
+          </div>
+
+          <button class="swiper-button swiper-button-desc swiper-button-desc-next">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="50px" height="50px">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+          <button class="swiper-button swiper-button-desc swiper-button-desc-prev">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="50px" height="50px">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+
+          <button type="button" class="close" @click="show = false">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
   </div>
-</section> -->
+{% endif %}

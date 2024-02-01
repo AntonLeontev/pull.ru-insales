@@ -218,6 +218,52 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   });
 
+  const gallaryMin = new Swiper(".gallary_product_view_swiper_th", {
+    spaceBetween: 10,
+    slidesPerView: 7,
+    freeMode: {
+      enabled: true,
+      sticky: true,
+    },
+    mousewheel: true,
+    watchSlidesProgress: true,
+    direction: "vertical",
+    autoHeight: true,
+    centeredSlides: true,
+    centeredSlidesBounds: true,
+  });
+  const gallaryBig = new Swiper(".gallary_product_view_swiper", {
+    spaceBetween: 10,
+    effect: "slide",
+    // fadeEffect: {
+    //   crossFade: true
+    // },
+
+    thumbs: {
+      swiper: gallaryMin,
+      autoScrollOffset: 1,
+    },
+    breakpoints: {
+      320: {
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: false,
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+      },
+      999: {
+        pagination: false,
+        navigation: {
+          nextEl: ".swiper-button-desc-next",
+          prevEl: ".swiper-button-desc-prev",
+        },
+      },
+    },
+  });
+
   let niceSelectS = document.querySelectorAll(".nice_select");
   if (niceSelectS) {
     niceSelectS.forEach(function (item) {
@@ -242,7 +288,6 @@ document.addEventListener("DOMContentLoaded", function () {
       targetTab.classList.add("active");
     });
   });
-
 
   let productSaveBtn = document.querySelectorAll(".product_save_btn a");
   productSaveBtn.forEach(function (btn) {

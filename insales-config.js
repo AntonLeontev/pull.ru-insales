@@ -7,7 +7,7 @@ module.exports = {
   account: {
     id: "1dd41c0e636a0d1034d9e19d063a4d36",
     token: "6192b219a1ac01c9bbdc6e4597db6633",
-    url: "pull.ru",
+    url: "limmite.ru",
     http: true,
   },
   theme: {

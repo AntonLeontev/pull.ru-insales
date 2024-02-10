@@ -61,7 +61,7 @@
     </div> -->
 
 	  <div class="filter_item" id="price_filter" x-data="{
-      open: false,
+      open: true,
       minVal: 0,
       maxVal: 0,
 
@@ -103,11 +103,11 @@
           </div>
           <div class="price-input">
             <div class="field">
-              <input type="number" class="input-min" name="price_min" @input="updateRange" x-model="priceMin" />
+              <input type="number" class="input-min" name="price_min" step="0.01" @input="updateRange" x-model="priceMin" />
             </div>
             <div class="separator">&mdash;</div>
             <div class="field">
-              <input type="number" class="input-max" name="price_max" @input="updateRange" x-model="priceMax" />
+              <input type="number" class="input-max" name="price_max" step="0.01" @input="updateRange" x-model="priceMax" />
             </div>
           </div>
         </div>

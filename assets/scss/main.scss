@@ -1075,7 +1075,7 @@ textarea:focus-visible
 		}
 	}
 	.header__navbar {
-		background-color: $white;
+		background-color: $primary;
 
 		.header__navbar_actions {
 			padding: 24px 0;
@@ -3725,7 +3725,7 @@ textarea:focus-visible
 			.header__navbar_actions {
 				.header_logo {
 					img {
-						width: 83px;
+						width: auto;
 						height: 26px;
 					}
 				}

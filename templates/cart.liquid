@@ -169,7 +169,7 @@
             order.delivery_info.address.intercom = $('[name=\'intercom\']').val()
             
 
-            $.post('https://api.limmite.ru/webhooks/insales/orders_create', order)
+            $.post('https://app.limmite.ru/webhooks/insales/orders_create', order)
               .done(response => {
                 if (response.redirect) {
                   location.replace(response.redirect)

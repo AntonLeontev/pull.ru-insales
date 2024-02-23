@@ -10,23 +10,6 @@
     },
   }"
 >
-  <!-- <div class="header__top">
-    <div class="container">
-      <div class="header__top_inner">
-        <div class="adress">
-          <a href="#" class="address_link header_link">
-            <img src="{{ 'ICO-GPS.svg' | asset_url }}" alt="" /> Укажите адрес
-            доставки</a
-          >
-        </div>
-        <div class="payment">
-          <a href="#" class="payment_link header_link"
-            >Доставка и оплата</a
-          >
-        </div>
-      </div>
-    </div>
-  </div> -->
   <div class="header__navbar">
     <div class="container">
       <div class="header__navbar_actions">
@@ -40,30 +23,31 @@
             <button @click="search = !search"><img src="{{ 'ICO-search.svg' | asset_url }}" alt="Поиск" /></button>
           </div>
         </div>
-        <div class="header_logo">
-          <a href="/"><img src="{{ 'logo-white-gold.png' | asset_url }}" alt="Логотип" /></a>
-        </div>
 
         <div class="header_search_bar" :class="search && 'active'">
-          <form action="/search">
+          <form>
             <input
               type="text"
               placeholder="Поиск товаров"
               name="q"
-              class="ordinary_input" />
-            <!-- <button class="button_black">Искать</button> -->
+              class="ordinary_input" 
+            />
+
+            <img src="{{ 'ICO-search.svg' | asset_url }}" alt="Поиск" />
           </form>
         </div>
+
+        <div class="header_logo">
+          <a href="/"><img src="{{ 'logo-white-gold.png' | asset_url }}" alt="Логотип" /></a>
+        </div>
+
+        
         <div class="header_account_actions">
+          <!-- <img src="{{ 'ICO-map.svg' | asset_url }}" alt="Геолокация" /> -->
           <a href="/cart_items">
             <div class="cart-items" x-show="items > 0" x-text="items">{{ cart.items_count }}</div>
             <img src="{{ 'ICO-shop.svg' | asset_url }}" alt="Корзина" />
           </a>
-          {% if client %}
-            <a href="/client_account/orders"><img src="{{ 'ICO-profil.svg' | asset_url }}" alt="Личный кабинет" /></a>
-          {% else %}
-            <a href="/client_account/login"><img src="{{ 'ICO-profil.svg' | asset_url }}" alt="Личный кабинет" /></a>
-          {% endif %}
         </div>
       </div>
     </div>

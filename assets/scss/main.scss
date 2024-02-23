@@ -1050,6 +1050,7 @@ textarea:focus-visible
 }
 .header {
 	position: relative;
+	z-index: 20;
 	
 	.header__top {
 		background: $primary;
@@ -1075,47 +1076,133 @@ textarea:focus-visible
 		}
 	}
 	.header__navbar {
+		display: flex;
+		align-items: center;
+		height: 117px;
 		background-color: $primary;
+
+		@media (max-width: 1309px) {
+			height: 75px;
+		}
 
 		.header__navbar_actions {
 			padding: 24px 0;
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
+
 			.header_logo {
 				img {
-					max-width: 127px;
+					width: auto;
+					height: 57px;
+
+					@media (max-width: 1309px) {
+						height: 38px;
+					}
+
+					@media (max-width: 567px) {
+						height: 34px;
+					}
+				}
+
+				@media (max-width: 1309px) {
+					padding: 20px 0;
 				}
 			}
 			.header_search_bar {
-				flex: 1 1 auto;
-				margin: 0 108px 0 95px;
+				max-width: 220px;
+
 				form {
+					position: relative;
 					display: flex;
+					align-items: center;
+
+					img {
+						position: absolute;
+						right: 0;
+
+					}
+
+					.ordinary_input {
+						flex: 1 1 auto;
+						padding: 15px 0;
+						background-color: $primary;
+						color: $white;
+						font-weight: 300;
+						font-size: 1rem;
+						border-bottom: solid 1px $border-color_4;
+
+					}
+
+					.ordinary_input::placeholder {
+						color: $white;
+					}
+				}
+			}
+
+			.header_account_actions {
+				display: flex;
+				justify-items: center;
+				justify-content: end;
+				gap: 1.5rem;
+				min-width: 220px;
+				
+				@media (max-width:1309px) {
+					min-width: 110px;
+				}
+
+				@media (max-width:567px) {
+					min-width: 73px;
+				}
+
+				a {
+					position: relative;
+					width: 32px;
+					height: 32px;
+
+					@media (max-width:1309px) {
+						width: 26px;
+						height: 26px;
+					}
+
+					img {
+						max-width: 100%;
+						max-height: 100%;
+					}
+
+					.cart-items {
+						position: absolute;
+						top: -5px;
+						right: -10px;
+						background-color: $danger;
+						border-radius: 11px;
+						padding: 2px 3px;
+						z-index: 1;
+						min-width: 22px;
+						text-align: center;
+						color: $white;
+					}
 				}
 			}
 		}
 	}
-	.header_search_bar {
-		.ordinary_input {
-			flex: 1 1 auto;
-			padding: 15px;
-		}
-	}
+	
 	.header__category {
 		position: relative;
-		background: $bg-light;
+		background: #15151599;
 		padding: 0;
-		z-index: 2;
+		z-index: 3;
+		backdrop-filter: blur(5px);
 
 		@media(max-width: 1309px) {
-			z-index: 1;
+			z-index: 2;
 		}
 
 		
 		.category_inner {
 			display: flex;
 			align-items: center;
+			justify-content: space-between;
 			gap: 100px;
 
 			@media(max-width: 1309px) {
@@ -1141,12 +1228,12 @@ textarea:focus-visible
 					align-items: center;
 					gap: 8px;
 					.list_link {
-						color: $primary;
-						font-size: 18px;
+						color: $white;
+						font-size: 14px;
 						font-style: normal;
-						font-weight: 400;
+						font-weight: 500;
 						line-height: 100%;
-						border-bottom: 1px solid $primary;
+						text-transform: uppercase;
 						opacity: 0.6;
 					}
 	
@@ -1183,19 +1270,19 @@ textarea:focus-visible
 						display: none;
 					}
 				}
+
 				a {
-					color: $primary;
-					font-size: 18px;
+					color: $white;
+					font-size: 14px;
 					font-style: normal;
 					font-weight: 300;
 					line-height: 100%;
-					border-bottom: 1px solid $primary;
 					text-transform: uppercase;
 					opacity: 0.6;
 				}
 				.delimiter {
-					color: $primary;
-					font-size: 18px;
+					color: $white;
+					font-size: 14px;
 					font-style: normal;
 					font-weight: 300;
 					line-height: 100%;
@@ -1204,7 +1291,7 @@ textarea:focus-visible
 				}
 				.active {
 					border: none;
-					color: $primary;
+					color: $white;
 					opacity: 1;
 					font-style: normal;
 					font-weight: 500;
@@ -1224,8 +1311,9 @@ textarea:focus-visible
 			right: 0;
 			display: none;
 			padding: 15px 0;
-			background-color: $white;
-			box-shadow: 0px 1px 27px 0px $secondary_light;
+			background-color: #111111ce;
+			// box-shadow: 0px 1px 27px 0px #111111;
+			backdrop-filter: blur(5px);
 			z-index: 1;
 
 			.categories__menu {
@@ -1244,11 +1332,16 @@ textarea:focus-visible
 					&_title {
 						font-weight: 600;
 						margin-bottom: 10px;
+						font-size: 14px !important;
+						text-transform: uppercase;
 					}
 	
 					.menu__link {
-						color: $secondary_dark;
+						color: $white;
 						text-decoration: none;
+						text-transform: uppercase;
+						line-height: 120%;
+						font-size: 12px;
 					}
 				}
 	
@@ -1270,7 +1363,8 @@ textarea:focus-visible
 		left: 0;
 		height: 100dvh;
 		width: 270px;
-		background-color: $white;
+		background-color: #111111cc;
+		backdrop-filter: blur(5px);
 		transform: translateX(-360px);
 		transition: transform .3s ease;
 		z-index: 50;
@@ -1300,7 +1394,8 @@ textarea:focus-visible
 			justify-content: center;
 			align-items: center;
 			padding: 28px 0;
-			background-color: $bg-light;
+			background-color: #111111cc;
+			backdrop-filter: blur(5px);
 
 			.switch__button {
 				position: relative;
@@ -1308,9 +1403,10 @@ textarea:focus-visible
 				font-weight: 300;
 				line-height: 100%;
 				text-transform: uppercase;
-				text-decoration: underline;
-				text-decoration-thickness: 1px;
+				// text-decoration: underline;
+				// text-decoration-thickness: 1px;
 				opacity: .5;
+				color: $white;
 
 				&.active {
 					font-weight: 500;
@@ -1344,13 +1440,14 @@ textarea:focus-visible
 	
 					.menu__link {
 						width: 100%;
-						font-size: 18px;
-						color: $secondary_dark;
+						font-size: 14px;
+						text-transform: uppercase;
+						color: $white;
 						padding: 8px 0;
 	
 						&_small {
-							color: $secondary;
-							font-size: 14px;
+							color: $white;
+							font-size: 12px;
 						}
 					}
 	
@@ -1373,8 +1470,9 @@ textarea:focus-visible
 				.menu__button {
 					position: relative;
 					padding: 8px 20px 8px 0;
-					font-size: 18px;
-					color: $secondary_dark;
+					font-size: 14px;
+					color: $white;
+					text-transform: uppercase;
 					cursor: pointer;
 	
 					&::after {
@@ -1397,7 +1495,7 @@ textarea:focus-visible
 			padding-left: 25px;
 			padding-right: 10px;
 			padding-bottom: 30px;
-			border-top: $secondary 1px solid;
+			border-top: $white 1px solid;
 
 			.personal-menu {
 				display: flex;
@@ -1405,7 +1503,7 @@ textarea:focus-visible
 				gap: 36px;
 				.menu__item {
 					.menu__link{
-						color: $primary;
+						color: $white;
 						font-size: 18px;
 						text-transform: uppercase;
 						text-decoration: underline;
@@ -1901,25 +1999,7 @@ textarea:focus-visible
 	flex-direction: column;
 	justify-content: flex-end;
 }
-.header_account_actions {
-	a {
-		position: relative;
-		width: 50px;
-		height: 50px;
-		.cart-items {
-			position: absolute;
-			top: 0;
-			right: 0;
-			background-color: $danger;
-			border-radius: 11px;
-			padding: 2px 3px;
-			z-index: 1;
-			min-width: 22px;
-			text-align: center;
-			color: $white;
-		}
-	}
-}
+
 .section-not-found {
 	.not_inner {
 		display: flex;
@@ -3721,20 +3801,6 @@ textarea:focus-visible
 		padding: 22px 14px;
 	}
 	.header {
-		.header__navbar {
-			.header__navbar_actions {
-				.header_logo {
-					img {
-						width: auto;
-						height: 26px;
-					}
-				}
-				padding: 20px 0;
-				.header_account_actions {
-					flex: 0 0 110px;
-				}
-			}
-		}
 		.category_inner {
 			>.category_pol {
 				
@@ -3869,17 +3935,17 @@ textarea:focus-visible
 	.reklama_card_item.mb {
 		display: block;
 	}
-	.header_account_actions {
-		a {
-			width: 35px;
-			height: 35px;
-			img {
-				width: 100%;
-				height: 100%;
-			}
-		}
-		display: flex;
-	}
+	// .header_account_actions {
+	// 	a {
+	// 		width: 35px;
+	// 		height: 35px;
+	// 		img {
+	// 			width: 100%;
+	// 			height: 100%;
+	// 		}
+	// 	}
+	// 	display: flex;
+	// }
 	.mb_header_buttons {
 		img {
 			width: 100%;
@@ -4403,12 +4469,6 @@ textarea:focus-visible
 			right: 0;
 			z-index: 30;
 			box-shadow: 0px -6px 10px #111;
-
-			.header__navbar_actions {
-				.header_account_actions {
-					flex: 0 0 auto;
-				}
-			}
 		}
 
 		.header__category {

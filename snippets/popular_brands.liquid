@@ -41,38 +41,3 @@
     </div>
   </div>
 </section>
-
-<script>
-  let brands = document.querySelector('.section-popular-brand')
-  let brandsAccordeon = brands.querySelector('.accordeon')
-  let brandsItemHeight = brands.querySelector('.brand_item').offsetHeight * 2
-  let brandsTotalHeight = brands.querySelector('.brands').offsetHeight
-
-  let brandsToggle = brands.querySelectorAll('.link')
-
-  if (brandsItemHeight >= brandsTotalHeight) {
-    brandsToggle.forEach(el => el.hidden = true)
-  } else {
-    brandsAccordeon.style.height = brandsItemHeight + 'px'
-    brands.addEventListener('click', e => {
-      if (! e.target.closest('.link')) {
-        return
-      }
-
-      toggleBrands(e.target.closest('.link'))
-    })
-  }
-
-  function toggleBrands(button) {
-    if (brandsItemHeight == brandsAccordeon.offsetHeight) {
-    //   brandsToggle.classList.add('active')
-      brandsAccordeon.style.height = brandsTotalHeight + 'px'
-      button.querySelector('span').innerText = 'Скрыть бренды'
-      return
-    }
-
-    // brandsToggle.classList.remove('active')
-    brandsAccordeon.style.height = brandsItemHeight + 'px'
-    button.querySelector('span').innerText = 'Все бренды'
-  }
-</script>

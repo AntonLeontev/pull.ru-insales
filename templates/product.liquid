@@ -14,7 +14,11 @@
             $.get('{{ product.url }}.json')
               .done(resp => {
                 this.variants = resp.product.variants
-                this.changeVariant()
+                if (this.variants.length > 1) {
+                  this.changeVariant()
+                } else {
+                  this.variant = this.variants[0]
+                }
                 this.productReady = true
               })
             this.swiperMin = new Swiper('.product_view_swiper_th', {

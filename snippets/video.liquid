@@ -22,14 +22,9 @@
     background-color: #111;
   }
 
-  .running_line .swiper-container {
-      /* width: 100%;
-      height: 100%;
-      position: relative; */
-    
-  }
   .running_line .swiper-wrapper{
-    -webkit-transition-timing-function:linear!important;    transition-timing-function:linear!important; 
+    -webkit-transition-timing-function:linear!important;    
+    transition-timing-function:linear!important; 
     position: relative;
   }
   .running_line .swiper-slide {
@@ -54,11 +49,11 @@
 <div class="video__wrap">
   <video 
     class="video" 
-    preload="metadata"
+    preload="none"
     muted
     autoplay
   >
-    <source src="" type="video/mp4">
+    <source src="https://static.insales-cdn.com/files/1/5283/33502371/original/01.mp4" type="video/mp4">
   </video>
   <div class="running_line swiper">
     <div class="swiper-wrapper">
@@ -90,11 +85,11 @@
 <script>
   let playlist
   const playlistDesc = [
-    'https://static.insales-cdn.com/files/1/6219/33495115/original/02.mp4',
+    // 'https://static.insales-cdn.com/files/1/6219/33495115/original/02.mp4',
     'https://static.insales-cdn.com/files/1/6218/33495114/original/01.mp4',
   ]
   const playlistMob = [
-    'https://static.insales-cdn.com/files/1/5283/33502371/original/02mob.mp4',
+    // 'https://static.insales-cdn.com/files/1/5283/33502371/original/02mob.mp4',
     'https://static.insales-cdn.com/files/1/5282/33502370/original/01mob.mp4',
   ]
 
@@ -108,18 +103,18 @@
   const source = player.querySelector('source')
   let playingIndex = 0
 
-  source.setAttribute('src', playlist[playingIndex])
-  player.addEventListener('ended', playNextInPlaylist)
+//   source.setAttribute('src', playlist[playingIndex])
+//   player.addEventListener('ended', playNextInPlaylist)
 
-  function playNextInPlaylist() {
-    if (playingIndex == playlist.length - 1) {
-      playingIndex = -1
-    }
+//   function playNextInPlaylist() {
+//     if (playingIndex == playlist.length - 1) {
+//       playingIndex = -1
+//     }
     
-    playingIndex++
-    source.setAttribute('src', playlist[playingIndex])
-    player.load()
-  }
+//     playingIndex++
+//     source.setAttribute('src', playlist[playingIndex])
+//     player.load()
+//   }
 </script>
 
 <script>

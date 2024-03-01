@@ -1325,6 +1325,14 @@ textarea:focus-visible
 					flex-direction: column;
 					row-gap: $menu_items_gap;
 				}
+
+				.brands_body {
+					display: grid;
+					grid-template-columns: 1fr 1fr;
+					grid-template-rows: auto;
+					column-gap: 100px;
+					row-gap: 12px;
+				}
 	
 				.menu__item {
 					max-width: 200px;

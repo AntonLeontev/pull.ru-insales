@@ -37,6 +37,11 @@
     padding: 0 36px;
   }
 
+  .brand-logo {
+    height: 16px;
+    width: auto;
+  }
+
   @media (max-width: 1309px) {
     .video {
       height: calc(100dvh - 75px);
@@ -52,8 +57,13 @@
     preload="none"
     muted
     autoplay
+	  loop
   >
-    <source src="https://static.insales-cdn.com/files/1/5283/33502371/original/01.mp4" type="video/mp4">
+    {% if page.url contains 'page/muzh' %}
+      <source src="{{ 'men.mp4' | file_url }}" type="video/mp4">
+    {% elsif page.url contains 'page/zhen' %}
+      <source src="{{ '01.mp4' | file_url }}" type="video/mp4">
+    {% endif %}
   </video>
   <div class="running_line swiper">
     <div class="swiper-wrapper">
@@ -75,7 +85,7 @@
   
           <div class="swiper-slide">
             <a href="{{ collection.url | add_param: 'characteristics[]', brand_char.id }}">
-              <img src="{{ brand.image }}" alt="{{ brand.title }}"/>
+              <img class="brand-logo" src="{{ brand.image }}" alt="{{ brand.title }}"/>
             </a>
           </div>
         {% endfor %}

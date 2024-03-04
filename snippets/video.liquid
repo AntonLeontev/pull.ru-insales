@@ -148,9 +148,9 @@
       <div class="banner__title"><span>Outlet</span></div>
       <div class="banner__text">Скидки до 50% на коллекции мировых брендов</div>
       {% if page.url contains 'page/muzh' %}
-        <a href="/collection/muzhchinam" class="btn banner__button">Перейти в каталог</a>
+        <a href="/collection/muzhchinam" tabindex="-1" class="btn banner__button">Перейти в каталог</a>
       {% elsif page.url contains 'page/zhen' %}
-        <a href="/collection/zhenschinam" class="btn banner__button">Перейти в каталог</a>
+        <a href="/collection/zhenschinam" tabindex="-1" class="btn banner__button">Перейти в каталог</a>
       {% endif %}
     </div>
   </div>

@@ -27,6 +27,7 @@
       cart: null,
       cartReady: false,
       coupon: '{{ cart.coupon }}',
+      agree: true,
 
       init() {
         ajaxAPI.cart.get()
@@ -105,20 +106,25 @@
       },
       makeOrder() {
         if (this.name === null || this.email === null || this.phone === null) {
-          this.$dispatch('toast-error', {message: 'Заполните данные получателя', delay: 3000})
+          this.$dispatch('toast-error', {message: 'Заполните данные получателя', delay: 4000})
           document.querySelector('#customer').scrollIntoView({behavior: 'smooth'})
           return 
         }
 
         if (this.name === '' || this.email === '' || this.phone === '') {
-          this.$dispatch('toast-error', {message: 'Заполните данные получателя', delay: 3000})
+          this.$dispatch('toast-error', {message: 'Заполните данные получателя', delay: 4000})
           document.querySelector('#customer').scrollIntoView({behavior: 'smooth'})
           return 
         }
         
         if (this.deliveryTariff === null || this.deliveryType === null || this.deliveryAddress === null) {
-          this.$dispatch('toast-error', {message: 'Выберите способ доставки', delay: 3000})
+          this.$dispatch('toast-error', {message: 'Выберите способ доставки', delay: 4000})
           document.querySelector('#cdekmap').scrollIntoView({behavior: 'smooth'})
+          return 
+        }
+
+        if (!this.agree) {
+          this.$dispatch('toast-error', {message: 'Нужно принять условия пользования', delay: 4000})
           return 
         }
 
@@ -334,16 +340,6 @@
                       </div>
                     {% endfor %}
                   </div>
-                  <!-- <select
-                  name="select_payment"
-                  id=""
-                  class="nice_select select_ordinary">
-                    <option selected value="">Способ оплаты</option>
-                    {% for payment_variant in account.payment_gateways %}
-                      <option value="{{payment_variant.id}}">{{payment_variant.title}}</option>
-                    {% endfor %}
-                  </select> -->
-                  
                 </div>
 
                 
@@ -370,6 +366,19 @@
                 </div>
 
                 <button type="submit" class="button_black" style="width: 100%;">Оформить заказ</button>
+
+                <div class="radio-check mt-24">
+                  <label>
+                    <input 
+                      type="checkbox" 
+                      x-model="agree"
+                    >
+                    <div class="check"></div>
+                    <span>
+                      Вы подтверждаете, что вы ознакомились и принимаете <a href="https://static.insales-cdn.com/files/1/3327/33565951/original/terms_of_use.pdf" target="_blank" class="text-danger inline">условия пользовательского соглашения</a>, осознаёте что <a class="text-danger inline" @click.prevent="$dispatch('law-info')">Limmite не участвует в непосредственной продаже товаров</a>
+                    </span>
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -436,29 +445,43 @@
                     <div class="sum_label">Итого к оплате:</div>
                     <div class="sum" x-text="formatNumber(cart?.total_price + deliveryPrice()) + ' ₽'"></div>
                 </div>
-                
-
-                
               </div>
           </div>
-
-          
         </div>
         </div>
     </div>
 
 
-    <div class="section-order-info">
-      <div class="container">
-        
-
-
-    </div>
 
   </form>
   
 {% endif %}
 
+<div class="modal" 
+  style="display: none;" 
+  x-show="show" 
+  @law-info.window="show = true"
+  x-transition.opacity
+  x-data="{show: false}"
+>
+  <div class="modal__window" @click.outside="show = false">
+    <div class="modal__header">
+      <div class="modal__title">Обязательно к ознакомлению!</div>
+      <div class="modal__close" @click="show = false">
+        <img src="{{ 'ICO-close-white.svg' | asset_url }}" alt="закрыть окно">
+      </div>
+    </div>
+    <div class="modal__body">
+      <p class="text-secondary">
+        Limmite не участвует в непосредственной продаже товаров, их доставке и приеме платежей. Все товары представлены в наш каталог продавцами Limmite.
+      </p>
+      <p class="text-secondary">
+        Оплата заказанного товара производится без участия Limmite с использованием авторизованной процессинговой компании, выбранной продавцом.
+        Доставка товара осуществляется также процессинговой компанией.
+      </p>
+    </div>
+  </div>
+</div>
 
 <script>
   /*---------- Удаление товара из корзины ----------*/

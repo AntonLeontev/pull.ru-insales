@@ -1,0 +1,33 @@
+.ds {
+	display: block;
+}
+.mb {
+	display: none;
+}
+.w-full {
+	width: 100%;
+}
+.text-secondary {
+	color: $secondary;
+}
+.text-primary {
+	color: $primary;
+}
+.text-danger {
+	color: $danger;
+}
+.inline {
+	display: inline;
+}
+.mt-24 {
+	margin-top: 24px;
+}
+.mb-24 {
+	margin-bottom: 24px;
+}
+.ml-24 {
+	margin-left: 24px;
+}
+.mr-24 {
+	margin-right: 24px;
+}

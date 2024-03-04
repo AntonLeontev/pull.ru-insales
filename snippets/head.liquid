@@ -5,11 +5,9 @@
 
 <!-- Предзагрузка видео на главной -->
 {% if page.url contains 'page/muzh' %}
-  <link rel="preload" href="https://static.insales-cdn.com/files/1/6219/33495115/original/02.mp4" as="video" />
-  <link rel="preload" href="https://static.insales-cdn.com/files/1/6218/33495114/original/01.mp4" as="video" />
+  <link rel="preload" href="{{ 'men.mp4' | file_url }}" as="video" />
 {% elsif page.url contains 'page/zhen' %}
-  <link rel="preload" href="https://static.insales-cdn.com/files/1/6219/33495115/original/02.mp4" as="video" />
-  <link rel="preload" href="https://static.insales-cdn.com/files/1/6218/33495114/original/01.mp4" as="video" />
+  <link rel="preload" href="{{ '01.mp4' | file_url }}" as="video" />
 {% endif %}
 
 

@@ -1,0 +1,124 @@
+.btn {
+	color: $primary;
+	text-align: center;
+	font-size: 20px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 100%;
+	padding: 20px;
+}
+.btn-primary {
+	background: $primary;
+	color: $white;
+}
+.btn-secondary {
+	background: #f4f4f4;
+	color: $primary;
+}
+
+.modal {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	z-index: 100;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: #000000aa;
+
+	&__window {
+		background: $white;
+		padding: 24px;
+		margin-left: 10px;
+		margin-right: 10px;
+		width: 100%;
+		max-width: 500px;
+	}
+
+	&.modal-sm .modal__window {
+		max-width: 360px;
+	}
+
+	&__header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		padding-bottom: 16px;
+		border-bottom: 1px solid $primary;
+		margin-bottom: 24px;
+	}
+
+	&__title {
+		color: $primary;
+		font-size: 19px;
+	}
+
+	&__close {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color: $primary;
+		width: 20px;
+		height: 20px;
+		margin-left: 15px;
+		cursor: pointer;
+	}
+}
+
+.list {
+	.list_item {
+		display: flex;
+		align-items: center;
+		border-bottom: 2px solid #d1d1d1;
+		padding: 14px 0;
+		justify-content: space-between;
+		.item_label {
+			color: $secondary;
+			font-size: 19px;
+			font-style: normal;
+			font-weight: 400;
+			line-height: 100%;
+		}
+		.item_info {
+			color: $primary;
+			text-align: right;
+			font-size: 19px;
+			font-style: normal;
+			font-weight: 400;
+			line-height: 100%;
+		}
+	}
+}
+
+.radio-check {
+	label {
+		display: flex;
+		justify-content: flex-start;
+		column-gap: 5px;
+		cursor: pointer;
+		font-size: 19px;
+	}
+
+	input {
+		width: 0;
+		height: 0;
+		overflow: hidden;
+		visibility: hidden;
+	}
+
+	.check {
+		flex-shrink: 0;
+		position: relative;
+		width: 25px;
+		height: 25px;
+		border: $border-color_4 solid 1px;
+		transition: all .3s ease;
+	}
+
+	input:checked + .check {
+		background: $primary;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='#f7f7f7'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m4.5 12.75 6 6 9-13.5' /%3E%3C/svg%3E%0A");
+	}
+}

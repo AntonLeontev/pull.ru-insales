@@ -25,12 +25,13 @@
         </div>
 
         <div class="header_search_bar" :class="search && 'active'">
-          <form>
+          <form action="/search">
             <input
               type="text"
               placeholder="Поиск товаров"
               name="q"
               class="ordinary_input" 
+			  autocomplete="off"
             />
 
             <img src="{{ 'ICO-search.svg' | asset_url }}" alt="Поиск" />

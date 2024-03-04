@@ -242,7 +242,9 @@
               <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
               <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
             </button>
-            <div class="deleviry_info">
+
+            <button type="button" class="btn btn-secondary" @click="$dispatch('law-info')">Юридическая информация о продавце</button>
+            <!-- <div class="deleviry_info">
               <div class="info_item">
                 <div class="info_img">
                   <img
@@ -266,7 +268,7 @@
                   бесплатно при покупке <br />от {{ blocks.with_template['system-single-text'].kurierom.text }} ₽
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -762,33 +764,6 @@
             </div>
           </div>
         </div>
-        <!-- <div class="accordion_item">
-          <a href="" class="accordion_link ">
-            Вопросы (12) <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
-          </a>
-          <div class="accordion_content">
-            <div class="comment_item">
-              <div class="comment_name">Андрей Н.</div>
-              <div class="comment_text">
-                There are many variations of passages of Lorem Ipsum
-                available, but the majority have suffered alteration
-                in some form, by injected humour
-              </div>
-              <div class="accordion_content">
-                <div class="comment_info answer_title">Ответ</div>
-                <div class="comment_text">
-                  There are many variations of passages of Lorem Ipsum
-                  available, but the majority have suffered alteration
-                  in some form, by injected humour
-                </div>
-              </div>
-              <a href="#" class="comment_info accordion_link"
-                >Показать ответ
-                <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
-              /></a>
-            </div>
-          </div>
-        </div> -->
         
       </div>
     </div>
@@ -1065,3 +1040,37 @@
     </div>
   </div>
 {% endif %}
+
+<div class="modal modal-sm" 
+  style="display: none;" 
+  x-show="show" 
+  @law-info.window="show = true"
+  x-transition.opacity
+  x-data="{show: false}"
+>
+  <div class="modal__window" @click.outside="show = false">
+    <div class="modal__header">
+      <div class="modal__title">Юридическая информация</div>
+      <div class="modal__close" @click="show = false">
+        <img src="{{ 'ICO-close-white.svg' | asset_url }}" alt="закрыть окно">
+      </div>
+    </div>
+    <div class="modal__body">
+      <dl class="list">
+        <div class="list_item">
+          <dt class="item_label">Продавец</dt>
+          <dd class="item_info">
+            ИП Смирнов
+          </dd>
+        </div>
+
+        <div class="list_item">
+          <dt class="item_label">ИНН</dt>
+          <dd class="item_info">
+            123456789987
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</div>

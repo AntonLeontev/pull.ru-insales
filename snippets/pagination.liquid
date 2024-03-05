@@ -24,5 +24,19 @@
       {% endif %}
     {% endfor %}
   </ul>
-  <span class="pagination_count">{{ collection_size }} из {{ paginate.items }}</span>
+  <div>
+	{% if paginate.previous.url %}
+		<a href="{{ paginate.previous.url }}" class="btn btn-secondary">
+			<img src="{{ 'ICO-arrow-prev.svg' | asset_url }}" alt="prev">
+			Назад
+		</a>
+	{% endif %}
+	{% if paginate.next.url %}
+		<a href="{{ paginate.next.url }}" class="btn btn-secondary">
+			Вперед
+			<img src="{{ 'ICO-arrow-next.svg' | asset_url }}" alt="next">
+		</a>
+	{% endif %}
+  </div>
+  <!-- <span class="pagination_count">{{ collection_size }} из {{ paginate.items }}</span> -->
 </div>

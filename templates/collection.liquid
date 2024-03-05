@@ -1,5 +1,93 @@
 {% assign collection_size = page_size | default: "24" %}
 
+{% assign catalog = collections.all %}
+{% assign men = collections.muzhchinam %}
+{% assign women = collections.zhenschinam %}
+
+<div class="container">
+  {% if collection.url contains '-men' or collection.url contains 'muzh' or collection.url contains 'all' %}
+    <nav class="collection-nav">
+      <ul class="categories">
+        <li class="categories__item">
+          <a href="{{ men.url }}" class="categories__link {% if men.url == collection.url %} categories__link_active {% endif %}">{{ men.title }}</a>
+        </li>
+        {% for subcollection in men.subcollections %}
+          <li class="categories__item">
+            <a href="{{ subcollection.url }}" class="categories__link {% if subcollection.current? %} categories__link_active {% endif %}">{{ subcollection.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+
+      {% unless collection.url contains 'muzh' or collection.url contains 'all' %}
+        {% if collection.subcollections.size > 0 %}
+          <hr>
+          <ul class="categories">
+            {% for subcollection in collection.subcollections %}
+              <li class="categories__item">
+                <a href="{{ subcollection.url }}" class="categories__link {% if subcollection.current? %} categories__link_active {% endif %}">{{ subcollection.title }}</a>
+            </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endunless %}
+
+      {% unless collection.parent.url contains 'muzh' or collection.url contains 'muzh' %}
+        {% if collection.parent.subcollections.size > 0 %}
+          <hr>
+          <ul class="categories">
+            {% for subcollection in collection.parent.subcollections %}
+              <li class="categories__item">
+                  <a href="{{ subcollection.url }}" class="categories__link {% if subcollection.url == collection.url %} categories__link_active {% endif %}">{{ subcollection.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endunless %}
+    </nav>
+  {% endif %}
+
+  {% if collection.url contains '-women' or collection.url contains 'zhen' or collection.url contains 'all' %}
+    <nav class="collection-nav">
+      <ul class="categories">
+        <li class="categories__item">
+          <a href="{{ women.url }}" class="categories__link {% if women.url == collection.url %} categories__link_active {% endif %}">{{ women.title }}</a>
+        </li>
+        {% for subcollection in women.subcollections %}
+          <li class="categories__item">
+            <a href="{{ subcollection.url }}" class="categories__link {% if subcollection.current? %} categories__link_active {% endif %}">{{ subcollection.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+
+      {% unless collection.url contains 'zhen' or collection.url contains 'all' %}
+        {% if collection.subcollections.size > 0 %}
+          <hr>
+          <ul class="categories">
+            {% for subcollection in collection.subcollections %}
+              <li class="categories__item">
+                <a href="{{ subcollection.url }}" class="categories__link {% if subcollection.current? %} categories__link_active {% endif %}">{{ subcollection.title }}</a>
+            </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endunless %}
+
+      {% unless collection.parent.url contains 'zhen' or collection.url contains 'zhen' %}
+        {% if collection.parent.subcollections.size > 0 %}
+          <hr>
+          <ul class="categories">
+            {% for subcollection in collection.parent.subcollections %}
+              <li class="categories__item">
+                  <a href="{{ subcollection.url }}" class="categories__link {% if subcollection.url == collection.url %} categories__link_active {% endif %}">{{ subcollection.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endunless %}
+    </nav>
+  {% endif %}
+</div>
+
 <section class="section-catalog" x-data="{
 	showFilters: false,
   showSort: false,
@@ -8,18 +96,18 @@
     
     {% paginate products by collection_size %}
       <div class="section_header">
-        <div class="section_title">
+        <h1 class="section_title">
           {{collection.title}}
-        </div>
+        </h1>
         <div class="catalog_buttons">
           <button type="button" class="sort" @click="showSort = !showSort">
             <img src="{{ 'icon-park-outline_switch.svg' | asset_url }}" alt="" />
             Сортировать
 		      </button>
-          <button type="button" class="filter_toggle" @click="showFilters = true;overflow = false">
+          <!-- <button type="button" class="filter_toggle" @click="showFilters = true;overflow = false">
             <img src="{{ 'bi_filter.svg' | asset_url }}" alt="" /> 
             фильтр
-          </button>
+          </button> -->
           <div class="sort-list" style="display: none;" x-show="showSort" @click.outside="showSort = false" x-data="{
             addOrder(order) {
               let url = new URL(location.href)
@@ -38,55 +126,278 @@
         </div>
       </div>
       <div class="catalog_inner">
-        {% for product in collection.products %}
-			    {% if product.old_price > 0 %}
-            {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
-            {% assign saleNumber = priceDivision | minus: 100 %}
-            {% assign salePercent = saleNumber | round: 0 %}
-          {% endif %}
-          <div class="product_slide_card">
-            <div class="product_card_img">
-              <a class="card_img__link" href="{{product.url}}">
-                <img class="card_img__image" src="{{ product.first_image.large_url}}" alt="{{product.title}}" />
-              </a>
-              <div class="labels">
-                {% if product.old_price > 0 %}
-                	<div class="labe_discount">{{ salePercent }}%</div>
-                {% endif %}
-                <!-- <div class="labe_premium">Premium</div> -->
-              </div>
-              <button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
-                <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
-                <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
-              </button>
-            </div>
-            <div class="product_card_itext">
-            </div>
-            <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
-            <div class="product_card_prices">
-              <div class="product_card_price">{{ product.price | money }}</div>
-              {% if product.old_price > 0 %}
-                <div class="product_card_old_price">{{ product.old_price | money }}</div>
+        <aside class="filters__wrap">
+          <div class="filters" id="descFilters" x-data="{
+            filters: null,
+            priceMin: 0,
+            priceMax: 0,
+
+            init() {
+              let url = new URL(location.href);
+              url.pathname = 'front_api' + url.pathname
+              this.update(url)
+            },
+            update(url = null) {
+              if (url === null) {
+                url = new URL(location.href);
+                let search = new URLSearchParams(new FormData(this.$refs.filter_form))
+                url.pathname = 'front_api' + url.pathname
+                url.search = search
+              }
+              $.get(url)
+                .success(response => {
+                  this.filters = response
+                  this.priceMin = response.current_price_min
+                  this.priceMax = response.current_price_max
+                })
+            },
+          }">
+            <form class="filter_body" @change="update()" x-ref="filter_form">
+              {% if order %}
+                <input type="hidden" name="order" value="{{ order }}">
               {% endif %}
-            </div>
-          </div>
-        {% endfor %}
-      </div>
+              <!-- <div class="filter_item">
+                <a href="#" class="filter_item_btn accordion_link"
+                  >По популярности <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
+                /></a>
+                <div class="filter_item_content accordion_content">
+                  <div class="flex_wrapper">
+                    <div class="item">
+                      <input type="checkbox" name="" id="" /> По популярности
+                    </div>
+                    <div class="item">
+                      <input type="checkbox" name="" id="" /> По скидкам
+                    </div>
+                    <div class="item">
+                      <input type="checkbox" name="" id="" />По возрастанию цены
+                    </div>
+                    <div class="item">
+                      <input type="checkbox" name="" id="" />По Убыванию цены
+                    </div>
+                    <div class="item">
+                      <input type="checkbox" name="" id="" /> По новинкам
+                    </div>
+                  </div>
+                </div>
+              </div> -->
 
-      {% if paginate.pages > 1 %}
-        {% include 'pagination' %}
-      {% endif %}
+              <div class="filter_item" id="price_filter" x-data="{
+                open: true,
+                minVal: 0,
+                maxVal: 0,
 
-	  <div class="section-banner">
-        <div class="banner_inner">
-          <div class="banner_brend">
-            MANGO
-            <span>man</span>
+                init() {
+                  this.$watch('filters', () => this.updateRange())
+                },
+                updateRange() {
+                  const diff = filters?.products_price_max - filters?.products_price_min
+                  this.minVal = (priceMin - filters?.products_price_min) / diff * 100 
+                  this.maxVal = (filters?.products_price_max - priceMax) / diff * 100
+                },
+              }">
+                <button type="button" class="filter_item_btn accordion_link" @click="open = !open" :class="open && 'active'">
+                  Цена 
+                  <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""/>
+                </button>
+                <div class="filter_item_content accordion_content" :class="open && 'active'">
+                  <div class="accordion_content__wrap">
+                    <div class="slider-range">
+                      <div class="progress" :style="`left: ${minVal}%; right: ${maxVal}%`"></div>
+                    </div>
+                    <div class="range-input">
+                      <input
+                        type="range"
+                        class="range-min"
+                        :min="filters?.products_price_min"
+                        :max="filters?.products_price_max"
+                        x-model="priceMin"
+                        @input="updateRange"
+                        step="10" />
+                      <input
+                        type="range"
+                        class="range-max"
+                        :min="filters?.products_price_min"
+                        :max="filters?.products_price_max"
+                        @input="updateRange"
+                        x-model="priceMax"
+                        step="10" />
+                    </div>
+                    <div class="price-input">
+                      <div class="field">
+                        <input type="number" class="input-min" name="price_min" step="0.01" @input="updateRange" x-model="priceMin" />
+                      </div>
+                      <div class="separator">&mdash;</div>
+                      <div class="field">
+                        <input type="number" class="input-max" name="price_max" step="0.01" @input="updateRange" x-model="priceMax" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <template x-for="option in filters?.options">
+                <div class="filter_item" 
+                  @change="checkEnabled"
+                  x-data="{
+                    open: sessionStorage.getItem(`option-${option.id}`),
+                    enabled: false,
+                    init() {
+                      this.checkEnabled()
+                    },
+                    onClick() {
+                      this.open = !this.open
+                      if (this.open) {
+                        sessionStorage.setItem(`option-${option.id}`, true)
+                      } else {
+                        sessionStorage.removeItem(`option-${option.id}`)
+                      }
+                    },
+                    checkEnabled() {
+                      setTimeout(() => {
+                        let inputs = this.$refs.values.querySelectorAll('input[checked]')
+                        this.enabled = inputs.length > 0
+                      }, 500)
+                    },
+                }">
+                  <button type="button" class="filter_item_btn accordion_link" @click="onClick" :class="open && 'active'">
+                    <span x-text="option.title"></span> 
+                    <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""/>
+                    <div class="marker" x-show="enabled"></div>
+                  </button>
+                  <div class="filter_item_content accordion_content" :class="open && 'active'">
+                    <div class="accordion_content__wrap">
+                      <div class="flex_wrapper" x-ref="values">
+                        <template x-for="value in option.values">
+                          <div class="radio-check">
+                            <label class="item">
+                              <input 
+                                type="checkbox" 
+                                :name="`options[${option.id}][]`" 
+                                :value="value.id" 
+                                :checked="value.selected"
+                              >
+                              <div class="check"></div>
+                              <span x-text="`${value.title} (${value.products_count})`"></span>
+                            </label>
+                          </div>
+                        </template>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+
+              <template x-for="property in filters?.properties">
+                <div class="filter_item" 
+                  @change="checkEnabled"
+                  x-data="{
+                    open: sessionStorage.getItem(`property-${property.id}`),
+                    enabled: false,
+                    init() {
+                      this.checkEnabled()
+                    },
+                    onClick() {
+                      this.open = !this.open
+                      if (this.open) {
+                        sessionStorage.setItem(`property-${property.id}`, true)
+                      } else {
+                        sessionStorage.removeItem(`property-${property.id}`)
+                      }
+                    },
+                    checkEnabled() {
+                      setTimeout(() => {
+                        let inputs = this.$refs.values.querySelectorAll('input[checked]')
+                        this.enabled = inputs.length > 0
+                      }, 500)
+                    },
+                  }"
+                >
+                  <button type="button" class="filter_item_btn accordion_link" @click="onClick" :class="open && 'active'">
+                    <span x-text="property.title"></span> 
+                    <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""/>
+                    <div class="marker" x-show="enabled"></div>
+                  </button>
+                  <div class="filter_item_content accordion_content" :class="open && 'active'">
+                    <div class="accordion_content__wrap">
+                      <!-- <div class="searching_material">  
+                        <input
+                          type="text"
+                          placeholder="Найти “Синтетику”"
+                          class="ordinary_input" />
+                        <button class="button_black">Искать</button>
+                      </div> -->
+                      <div class="flex_wrapper" x-ref="values">
+                        <template x-for="characteristic in property.characteristics">
+                          <div class="radio-check">
+                            <label class="item">
+                              <input 
+                                type="checkbox" 
+                                :name="`characteristics[]`"
+                                :value="characteristic.id"
+                                :checked="characteristic['current?']"
+                              >
+                              <div class="check"></div>
+                              <span x-text="`${characteristic.title} (${characteristic.products_count})`"></span>
+                            </label>
+                          </div>
+                          <!-- <label class="item">
+                            <input type="checkbox" :name="`characteristics[]`" :value="characteristic.id" :checked="characteristic['current?']" />
+                            <span x-text="`${characteristic.title} (${characteristic.products_count})`"></span>
+                          </label> -->
+                        </template>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+
+              
+              <div class="filter_bottom">
+                <button type="submit" class="btn btn-primary w-full">Показать (<span x-text="filters?.count"></span>)</button>
+                <a :href="location.href.replace(/\?[^?]+$/, '')" class="clear_filter"><span>Очистить фильтры</span></a>
+              </div>
+            </form>
           </div>
-          <div class="banner_info">
-            распродажа <br />
-            скидки до 70%
+		    </aside>
+        <div class="products_wrap">
+          <div class="products">
+            {% for product in collection.products %}
+              {% if product.old_price > 0 %}
+                {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+                {% assign saleNumber = priceDivision | minus: 100 %}
+                {% assign salePercent = saleNumber | round: 0 %}
+              {% endif %}
+              <div class="product_slide_card">
+                <div class="product_card_img">
+                  <a class="card_img__link" href="{{product.url}}">
+                    <img class="card_img__image" src="{{ product.first_image.large_url}}" alt="{{product.title}}" />
+                  </a>
+                  <div class="labels">
+                    {% if product.old_price > 0 %}
+                      <div class="labe_discount">{{ salePercent }}%</div>
+                    {% endif %}
+                    <!-- <div class="labe_premium">Premium</div> -->
+                  </div>
+                  <button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
+                    <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+                    <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+                  </button>
+                </div>
+                <div class="product_card_itext">
+                </div>
+                <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
+                <div class="product_card_prices">
+                  <div class="product_card_price">{{ product.price | money }}</div>
+                  {% if product.old_price > 0 %}
+                    <div class="product_card_old_price">{{ product.old_price | money }}</div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
           </div>
+          {% if paginate.pages > 1 %}
+            {% include 'pagination' %}
+          {% endif %}
         </div>
       </div>
 

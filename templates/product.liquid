@@ -821,7 +821,6 @@
 
 {% if product.related_products.size > 0 %}
 
-<!-- section-products-carousel-->
 <section class="section-products-carousel">
   <div class="container">
     <div class="products_header section_header">
@@ -1046,7 +1045,37 @@
   x-show="show" 
   @law-info.window="show = true"
   x-transition.opacity
-  x-data="{show: false}"
+  x-data="{
+	  show: false,
+    brandId: '{{ brand.id }}',
+    organization: null,
+
+    init() {
+      if (
+        !sessionStorage.getItem('brands') ||
+        !sessionStorage.getItem('organizations')
+      ) {
+        $.get('https://app.limmite.ru/api/organizations_brands').success(
+          (response) => {
+            sessionStorage.setItem('brands', JSON.stringify(response.brands));
+            sessionStorage.setItem('organizations', JSON.stringify(response.organizations));
+          }
+        );
+
+        setTimeout(() => this.init(), 2000)
+        return
+      }
+
+      this.findOrganization()
+    },
+    findOrganization() {
+      let brands = JSON.parse(sessionStorage.getItem('brands'))
+      let organizations = JSON.parse(sessionStorage.getItem('organizations'))
+
+      let brand = brands.find(brand => brand.id == this.brandId)
+      this.organization = organizations.find(org => org.id == brand.organization_id)
+    },
+  }"
 >
   <div class="modal__window" @click.outside="show = false">
     <div class="modal__header">
@@ -1059,14 +1088,14 @@
       <dl class="list">
         <div class="list_item">
           <dt class="item_label">Продавец</dt>
-          <dd class="item_info">
+          <dd class="item_info" x-text="organization?.title">
             ИП Смирнов
           </dd>
         </div>
 
         <div class="list_item">
           <dt class="item_label">ИНН</dt>
-          <dd class="item_info">
+          <dd class="item_info" x-text="organization?.inn">
             123456789987
           </dd>
         </div>

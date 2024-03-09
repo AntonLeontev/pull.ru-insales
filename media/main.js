@@ -335,3 +335,16 @@ if (!sessionStorage.getItem('allowed_regions')) {
     sessionStorage.setItem("allowed_regions", response)
   );
 }
+
+// Получение списка брендов и ИП для продажи
+if (
+  !sessionStorage.getItem("brands") ||
+  !sessionStorage.getItem("organizations")
+) {
+  $.get("https://app.limmite.ru/api/organizations_brands").success(
+    (response) => {
+      sessionStorage.setItem("brands", JSON.stringify(response.brands));
+      sessionStorage.setItem("organizations", JSON.stringify(response.organizations));
+    }
+  );
+}

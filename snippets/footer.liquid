@@ -102,7 +102,7 @@
 
       <div class="socials">
         {% for item in block_lists.social.blocks %}
-            <a href="{{ item.url }}" class="social_item">
+            <a href="{{ item.link }}" target="_blank" class="social_item">
               <img src="{{ item.image }}" alt="{{ item.title }}" />
             </a>
         {% endfor %}

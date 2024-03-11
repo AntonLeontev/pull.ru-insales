@@ -52,6 +52,12 @@
       update() {
         ajaxAPI.cart.get().done(done => {
           this.cart = done
+
+          if (this.cart.items.length === 0) {
+            location.replace('/')
+            return
+          }
+
           this.getOrganizations()
           this.$dispatch('order-changed')
         })

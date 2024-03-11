@@ -2,7 +2,20 @@
 @import "utility";
 @import "components";
 
-
+body {
+	height: 100vh;
+}
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+main {
+  flex: 1 0 auto;
+}
+.footer {
+  flex: 0 0 auto;
+}
 body.ovhidden {
 	overflow: hidden;
 }
@@ -76,12 +89,12 @@ p+p {
 			line-height: 100%;
 		}
 
-		&:first-child::before {
-			content: 'от';
-		}
-		&:last-child::before {
-			content: 'до';
-		}
+		// &:first-child::before {
+		// 	// content: 'от';
+		// }
+		// &:last-child::before {
+		// 	// content: 'до';
+		// }
 	}
 	.separator {
 		display: flex;
@@ -2122,7 +2135,6 @@ textarea:focus-visible
 	.sort-list {
 		position: absolute;
 		top: 100%;
-		left: 0;
 		right: 0;
 		margin-top: 10px;
 		padding: 10px;
@@ -2134,6 +2146,7 @@ textarea:focus-visible
 		z-index: 10;
 
 		.sort__link {
+			white-space: nowrap;
 			color: $primary;
 		}
 	}

@@ -75,8 +75,8 @@
                 class="list_link"
                 >Распродажа</a>
             </div> -->
-              <div class="list_item">
-                <a href="/collection/all" class="list_link">Каталог</a>
+              <div class="list_item" style="width: 150px;">
+                <a href="/collection/all" class="list_link" style="margin-left: auto;">Каталог</a>
 
                 {% if template contains 'product' %}	
 					        {% assign catalog = collections | where: 'title', 'Каталог' | first %}

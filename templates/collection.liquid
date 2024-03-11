@@ -181,20 +181,22 @@
                 </div>
               </div> -->
 
-              <div class="filter_item" id="price_filter" x-data="{
-                open: true,
-                minVal: 0,
-                maxVal: 0,
+              <div class="filter_item" id="price_filter" 
+                x-data="{
+                  open: true,
+                  minVal: 0,
+                  maxVal: 0,
 
-                init() {
-                  this.$watch('filters', () => this.updateRange())
-                },
-                updateRange() {
-                  const diff = filters?.products_price_max - filters?.products_price_min
-                  this.minVal = (priceMin - filters?.products_price_min) / diff * 100 
-                  this.maxVal = (filters?.products_price_max - priceMax) / diff * 100
-                },
-              }">
+                  init() {
+                    this.$watch('filters', () => this.updateRange())
+                  },
+                  updateRange() {
+                    const diff = filters?.products_price_max - filters?.products_price_min
+                    this.minVal = (this.priceMin - filters?.products_price_min) / diff * 100 
+                    this.maxVal = (filters?.products_price_max - this.priceMax) / diff * 100
+                  },
+                }"
+              >
                 <button type="button" class="filter_item_btn accordion_link" @click="open = !open" :class="open && 'active'">
                   Цена 
                   <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""/>

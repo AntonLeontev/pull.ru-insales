@@ -34,6 +34,11 @@
 {% include_insales_scripts "common-js@v2" %}
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 
+{% if template == 'cart' %}
+	<script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
+{% endif %}
+
+
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript" >
    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};

@@ -781,7 +781,7 @@
     <div class="same_links">
       {% if brand_property %}
         {% assign brand = brand_property.characteristics | first %}
-		    {% assign brand_block = block_lists.with_template['system-banner-3'].brands-men.blocks | where: 'link', brand.handle | first %}
+		    {% assign brand_block = block_lists.with_template['system-banner-3'].brands.blocks | where: 'link', brand.handle | first %}
 
         <a href="{{ collection.url | add_param: 'characteristics[]', brand.id }}" class="same_link">
           <div class="same_link_img">

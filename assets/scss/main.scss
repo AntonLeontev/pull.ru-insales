@@ -603,7 +603,10 @@ textarea:focus-visible
 .pagination {
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	margin-top: 33px;
+	margin-bottom: 12px;
+
 	.pagination_list {
 		display: flex;
 		gap: 24px;
@@ -625,6 +628,12 @@ textarea:focus-visible
 			line-height: 100%;
 			padding-bottom: 2px;
 		}
+	}
+	.pagination__buttons {
+		display: flex;
+		gap: 14px;
+		justify-content: space-between;
+		align-items: center;
 	}
 	.pagination_count {
 		color: $secondary;
@@ -1148,14 +1157,14 @@ textarea:focus-visible
 			.header_logo {
 				img {
 					width: auto;
-					height: 57px;
+					height: 90px;
 
 					@media (max-width: 1309px) {
-						height: 38px;
+						height: 68px;
 					}
 
 					@media (max-width: 567px) {
-						height: 34px;
+						height: 64px;
 					}
 				}
 

@@ -24,7 +24,7 @@
       {% endif %}
     {% endfor %}
   </ul>
-  <div>
+  <div class="pagination__buttons">
 	{% if paginate.previous.url %}
 		<a href="{{ paginate.previous.url }}" class="btn btn-secondary">
 			<img src="{{ 'ICO-arrow-prev.svg' | asset_url }}" alt="prev">

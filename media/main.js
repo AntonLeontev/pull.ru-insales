@@ -260,6 +260,10 @@ document.addEventListener("DOMContentLoaded", function () {
           nextEl: ".swiper-button-desc-next",
           prevEl: ".swiper-button-desc-prev",
         },
+        keyboard: {
+          enabled: true,
+          onlyInViewport: true,
+        },
       },
     },
   });

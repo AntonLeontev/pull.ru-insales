@@ -9,6 +9,72 @@
     <div class="section_content">
       {{page.content}}
     </div>
+
+	{% if page.url == '/page/delivery' %}
+		<style>
+			#cdekmap {
+				width: 100%;
+				height: 550px;
+				margin-top: 24px;
+				margin-bottom: 70px;
+			}
+			ymaps {
+				position: static;
+			}
+			.ymaps3x0--top-engine-container {
+				position: absolute;
+				top: 0;
+			}
+
+			.delivery__additional {
+				display: flex;
+				flex-direction: column;
+				row-gap: 20px;
+				margin-top: 20px;
+			}
+			.cdek-hlhf5b[data-v-3c8861b9] {
+				z-index: 10 !important;
+			}
+		</style>
+		<script type="text/javascript">
+			document.addEventListener('DOMContentLoaded', () => {
+				new window.CDEKWidget({
+					defaultLocation: 'Москва',
+					from: {
+						code: 44,
+					}, 
+					root: 'cdekmap', 
+					canChoose: false,
+					apiKey: 'd61a22ab-67bc-4adc-8397-e65d01be70dc', 
+					servicePath: 'https://app.limmite.ru/webhooks/delivery/widget', 
+					fixBounds: 'country',
+					debug: false,
+					tariffs: {
+					office: [483, 136, 234],
+					door: [482, 137, 233],
+					pickup: [368, 378],
+					},
+					hideFilters: {
+						type: true,
+					},
+					forceFilters: {
+						allowed_cod: true,
+						is_dressing_room: true,
+					},
+					goods: [
+						{
+							length: 10,
+							width: 10,
+							height: 10,
+							weight: 1,
+						}], // передадим массив с товарами для расчета стоимости
+				});
+			});
+		</script>
+		<div>
+			<div id="cdekmap"></div>
+		</div>
+	{% endif %}
     
   </div>
 </section>

@@ -14,13 +14,13 @@
     <div class="container">
       <div class="header__navbar_actions">
         <div class="mb_header_buttons">
-          <div class="mb burger_btn_toggler">
-            <button type="button" class="btn" @click="sidebar = true;overflow = false">
+          <div class="mb btn_toggler">
+            <button type="button" @click="sidebar = true;overflow = false">
               <img src="{{ 'ICO-burger.svg' | asset_url }}" alt="Кнопка меню"/>
             </button>
           </div>
-          <div class="mb">
-            <button @click="search = !search"><img src="{{ 'ICO-search.svg' | asset_url }}" alt="Поиск" /></button>
+          <div class="mb btn_toggler">
+            <button type="button" @click="search = !search"><img src="{{ 'ICO-search.svg' | asset_url }}" alt="Поиск" /></button>
           </div>
         </div>
 
@@ -54,128 +54,130 @@
     </div>
   </div>
 
-  <div class="header__category">
-    <div class="container">
-      <div class="category_inner">
-        <nav class="category_pol">
-          
-          {% for link in linklists.gender-menu.links %}
-            <a href="{{link.url}}" class="{% if link.current? %} active	{% endif %}">{{link.title}}</a>
-            {% unless forloop.last %}
-              <span class="delimiter">/</span>
-            {% endunless %}
-          {% endfor %}
+  {% unless template == 'index'  %}
+	<div class="header__category">
+		<div class="container">
+		<div class="category_inner">
+			<nav class="category_pol">
+			
+			{% for link in linklists.gender-menu.links %}
+				<a href="{{link.url}}" class="{% if link.current? %} active	{% endif %}">{{link.title}}</a>
+				{% unless forloop.last %}
+				<span class="delimiter">/</span>
+				{% endunless %}
+			{% endfor %}
 
-        </nav>
-        <div class="category_list">
-          <nav class="header__menu">
-            <!-- <div class="list_item">
-              <img src="{{ 'ICO-diskount.svg' | asset_url }}" alt="" /><a
-                href="#"
-                class="list_link"
-                >Распродажа</a>
-            </div> -->
-              <div class="list_item" style="width: 150px;">
-                <a href="/collection/all" class="list_link" style="margin-left: auto;">Каталог</a>
+			</nav>
+			<div class="category_list">
+			<nav class="header__menu">
+				<!-- <div class="list_item">
+				<img src="{{ 'ICO-diskount.svg' | asset_url }}" alt="" /><a
+					href="#"
+					class="list_link"
+					>Распродажа</a>
+				</div> -->
+				<div class="list_item" style="width: 150px;">
+					<a href="/collection/all" class="list_link" style="margin-left: auto;">Каталог</a>
 
-                {% if template contains 'product' %}	
-					        {% assign catalog = collections | where: 'title', 'Каталог' | first %}
-                  {% assign categories = catalog.subcollections %}
-                  {% assign men = categories | where: 'title', 'Мужчинам' | first %}
-                  {% assign women = categories | where: 'title', 'Женщинам' | first %}
-                {% else %}  
-                  {% assign catalog = collections.all %}
-                  {% assign men = collections.muzhchinam %}
-                  {% assign women = collections.zhenschinam %}
-                {% endif %}  
-
-
-                <nav class="header__categories">
-                  <div class="container">
-                    <nav class="categories__menu">
-                      <ul class="menu__column">
-                        <li class="menu__item menu__item_title">
-                          <a class="menu__link" tabindex="-1" href="{{ men.url }}">{{ men.title }}</a>
-                        </li>
+					{% if template contains 'product' %}	
+								{% assign catalog = collections | where: 'title', 'Каталог' | first %}
+					{% assign categories = catalog.subcollections %}
+					{% assign men = categories | where: 'title', 'Мужчинам' | first %}
+					{% assign women = categories | where: 'title', 'Женщинам' | first %}
+					{% else %}  
+					{% assign catalog = collections.all %}
+					{% assign men = collections.muzhchinam %}
+					{% assign women = collections.zhenschinam %}
+					{% endif %}  
 
 
-                        {% for collection in men.subcollections %}
-                          <li class="menu__item"><a class="menu__link" href="{{ collection.url }}" tabindex="-1">{{ collection.title }}</a></li>
+					<nav class="header__categories">
+					<div class="container">
+						<nav class="categories__menu">
+						<ul class="menu__column">
+							<li class="menu__item menu__item_title">
+							<a class="menu__link" tabindex="-1" href="{{ men.url }}">{{ men.title }}</a>
+							</li>
 
-                          {% if collection.subcollections.size > 0 %}
-                          <ul class="submenu">
-                            {% for collection1 in collection.subcollections %}
-                              <li class="menu__item"><a href="{{ collection1.url }}" class="menu__link" tabindex="-1">{{ collection1.title }}</a></li>
 
-                              {% if collection1.subcollections.size > 0 %}
-                              <ul class="submenu">
-                              {% for collection2 in collection1.subcollections %}
-                                <li class="menu__item"><a href="{{ collection2.url }}" tabindex="-1" class="menu__link">{{ collection2.title }}</a></li>
-                              {% endfor %}
-                              </ul>
-                              {% endif %}
-                            {% endfor %}
-                          </ul>
-                          {% endif %}
+							{% for collection in men.subcollections %}
+							<li class="menu__item"><a class="menu__link" href="{{ collection.url }}" tabindex="-1">{{ collection.title }}</a></li>
 
-                        {% endfor %}
-                      </ul>
-                      <ul class="menu__column">
-                        <li class="menu__item menu__item_title">
-                          <a class="menu__link" tabindex="-1" href="{{ women.url }}">{{ women.title }}</a>
-                        </li>
-                      
-                        {% for collection in women.subcollections %}
-                          <li class="menu__item"><a class="menu__link" tabindex="-1" href="{{ collection.url }}">{{ collection.title }}</a></li>
+							{% if collection.subcollections.size > 0 %}
+							<ul class="submenu">
+								{% for collection1 in collection.subcollections %}
+								<li class="menu__item"><a href="{{ collection1.url }}" class="menu__link" tabindex="-1">{{ collection1.title }}</a></li>
 
-                          {% if collection.subcollections.size > 0 %}
-                          <ul class="submenu">
-                            {% for collection1 in collection.subcollections %}
-                              <li class="menu__item"><a href="{{ collection1.url }}" class="menu__link" tabindex="-1">{{ collection1.title }}</a></li>
+								{% if collection1.subcollections.size > 0 %}
+								<ul class="submenu">
+								{% for collection2 in collection1.subcollections %}
+									<li class="menu__item"><a href="{{ collection2.url }}" tabindex="-1" class="menu__link">{{ collection2.title }}</a></li>
+								{% endfor %}
+								</ul>
+								{% endif %}
+								{% endfor %}
+							</ul>
+							{% endif %}
 
-                              {% if collection1.subcollections.size > 0 %}
-                              <ul class="submenu">
-                              {% for collection2 in collection1.subcollections %}
-                                <li class="menu__item"><a href="{{ collection2.url }}" class="menu__link" tabindex="-1">{{ collection2.title }}</a></li>
-                              {% endfor %}
-                              </ul>
-                              {% endif %}
-                            {% endfor %}
-                          </ul>
-                          {% endif %}
-
-                        {% endfor %}
-                      </ul>
-
-                      <ul class="menu__column menu__column_brands">
-                        <li class="menu__item menu__item_title">
-                          <span class="menu__link">Бренды</span>
-                        </li>
-						<div class="brands_body">
-							{% assign brand_list = catalog.properties | where: 'handle', 'brand' | first %}
-							{% for brand in brand_list.characteristics %}
-							  <li class="menu__item">
-								<a class="menu__link brand-link" href="{{ catalog.url | add_param: 'characteristics[]', brand.id }}" tabindex="-1">{{ brand.name }}</a>
-							  </li>
 							{% endfor %}
-						</div>
-                      </ul>
-                      
-                    </nav>
-                  </div>
-                </nav>
-              </div>
-            {% for link in linklists.main-menu.links %}
-              <div class="list_item">
-                <a href="{{link.url}}" class="list_link" tabindex="-1">{{link.title}}</a>
-              </div>
-            {% endfor %}
-          </nav>
-          
-        </div>
-      </div>
-    </div>
-  </div>
+						</ul>
+						<ul class="menu__column">
+							<li class="menu__item menu__item_title">
+							<a class="menu__link" tabindex="-1" href="{{ women.url }}">{{ women.title }}</a>
+							</li>
+						
+							{% for collection in women.subcollections %}
+							<li class="menu__item"><a class="menu__link" tabindex="-1" href="{{ collection.url }}">{{ collection.title }}</a></li>
+
+							{% if collection.subcollections.size > 0 %}
+							<ul class="submenu">
+								{% for collection1 in collection.subcollections %}
+								<li class="menu__item"><a href="{{ collection1.url }}" class="menu__link" tabindex="-1">{{ collection1.title }}</a></li>
+
+								{% if collection1.subcollections.size > 0 %}
+								<ul class="submenu">
+								{% for collection2 in collection1.subcollections %}
+									<li class="menu__item"><a href="{{ collection2.url }}" class="menu__link" tabindex="-1">{{ collection2.title }}</a></li>
+								{% endfor %}
+								</ul>
+								{% endif %}
+								{% endfor %}
+							</ul>
+							{% endif %}
+
+							{% endfor %}
+						</ul>
+
+						<ul class="menu__column menu__column_brands">
+							<li class="menu__item menu__item_title">
+							<span class="menu__link">Бренды</span>
+							</li>
+							<div class="brands_body">
+								{% assign brand_list = catalog.properties | where: 'handle', 'brand' | first %}
+								{% for brand in brand_list.characteristics %}
+								<li class="menu__item">
+									<a class="menu__link brand-link" href="{{ catalog.url | add_param: 'characteristics[]', brand.id }}" tabindex="-1">{{ brand.name }}</a>
+								</li>
+								{% endfor %}
+							</div>
+						</ul>
+						
+						</nav>
+					</div>
+					</nav>
+				</div>
+				{% for link in linklists.main-menu.links %}
+				<div class="list_item">
+					<a href="{{link.url}}" class="list_link" tabindex="-1">{{link.title}}</a>
+				</div>
+				{% endfor %}
+			</nav>
+			
+			</div>
+		</div>
+		</div>
+	</div>
+  {% endunless %}
 
   <div class="cover" :class="sidebar && 'active'"></div>
   <div 

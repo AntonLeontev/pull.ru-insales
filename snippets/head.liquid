@@ -38,6 +38,10 @@
 	<script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
 {% endif %}
 
+{% if page.url == '/page/delivery' %}
+	<script src="https://cdn.jsdelivr.net/npm/@cdek-it/widget@3" type="text/javascript"></script>
+{% endif %}
+
 
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript" >
@@ -54,6 +58,8 @@
         webvisor:true,
         ecommerce:"dataLayer"
    });
+
+   window.dataLayer = window.dataLayer || [];
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/96482433" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->

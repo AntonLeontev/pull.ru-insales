@@ -174,12 +174,17 @@
             payment_gateway_id: this.paymentTypeId,
             delivery_price: this.deliveryPrice(),
             financial_status: paymentStatus,
-            comment: JSON.stringify({
-              deliveryPrice: this.deliveryPrice(),
-              deliveryTariff: this.deliveryTariff,
-              deliveryType: this.deliveryType,
-              deliveryAddress: this.deliveryAddress,
-            }),
+            fields_values_attributes: [
+              {
+                handle: 'delivery_data',
+                value: JSON.stringify({
+                  deliveryPrice: this.deliveryPrice(),
+                  deliveryTariff: this.deliveryTariff,
+                  deliveryType: this.deliveryType,
+                  deliveryAddress: this.deliveryAddress,
+                }),
+              }
+            ],
           },
           shipping_address: {
             phone: this.phone,
@@ -274,10 +279,10 @@
 
         let receipt = {
           'Items': [],
+          'taxationSystem': 2,
           'calculationPlace': 'limmite.ru', //место осуществления расчёта, по умолчанию берется значение из кассы
           'phone': order.client.phone, //телефон покупателя в любом формате, если нужно отправить сообщение со ссылкой на чек
           'isBso': false, //чек является бланком строгой отчётности
-          // 'AgentSign': null, //признак агента, тег ОФД 1057
           'amounts':
             {
               'electronic': order.total_price, // Сумма оплаты электронными деньгами
@@ -300,7 +305,6 @@
             'measurementUnit': 'шт', //единица измерения
             'AgentSign': 6, //признак агента, тег ОФД 1057, 1222
             'PurveyorData': { //данные поставщика платежного агента,  тег ОФД 1224
-              'Phone': '+74951234567', // телефон поставщика, тег ОД 1171
               'Name': this.productsOrganizations[line.product_id].title, // наименование поставщика, тег ОФД 1225
               'Inn': this.productsOrganizations[line.product_id].inn // ИНН поставщика, тег ОФД 1226
             }
@@ -316,12 +320,12 @@
             'vat': null, //ставка НДС
             'method': 1, // тег-1214 признак способа расчета - признак способа расчета
             'object': 4, // тег-1212 признак предмета расчета - признак предмета товара, работы, услуги, платежа, выплаты, иного предмета расчета
-            // 'measurementUnit': 'шт', //единица измерения
           })
         }
 
         widget.pay('charge',
           { 
+            // publicId: 'pk_c99424b82aed407cd4b167d280b77' // test,
             publicId: 'pk_211facd05c03ac924464a0ff67758',
             description: 'Оплата товаров в limmite.ru',
             amount: order.total_price,
@@ -530,20 +534,20 @@
                     <li class="list_item" x-show="cart?.discounts[0]?.amount">
                       <div class="label">Скидка</div>
                       <div class="info">
-                        {% if cart.discounts.size > 0 %}
-                          {% for discount in cart.discounts %}
-                          <div class="discount">
+                        <div class="discount">
                           <div class="discount-title" x-text="cart?.discount_description">
                             {{ discount.description }}
                           </div>
-                              <div class="discount-prices prices">
-                                <span class="prices-current" 
-                                  x-show="cart?.discounts[0]?.amount"
-                                  x-text="'- ' + cart?.discounts[0]?.amount + ' ₽'">
-                                  - {{ discount.amount | money }}
-                                </span>
-                              </div>
-                            </div>
+                          <div class="discount-prices prices">
+                            <span class="prices-current" 
+                              x-show="cart?.discounts[0]?.amount"
+                              x-text="'- ' + cart?.discounts[0]?.amount + ' ₽'">
+                              - {{ discount.amount | money }}
+                            </span>
+                          </div>
+                        </div>
+                        {% if cart.discounts.size > 0 %}
+                          {% for discount in cart.discounts %}
                           {% endfor %}
                         {% endif %}
                       </div>

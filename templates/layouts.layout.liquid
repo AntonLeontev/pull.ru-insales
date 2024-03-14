@@ -19,7 +19,7 @@
 
       {% include "header" %}
 
-      <main class="main">
+      <main class="main {% if template == 'index' %} main-index {% endif %}">
         
       {% unless template contains 'index' or page.url contains 'page/muzh' or page.url contains 'page/zhen' %}	
         {% include "breadcrumbs" %}

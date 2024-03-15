@@ -142,21 +142,24 @@
       },
       createOrder(paymentStatus = 'pending') {
         let address = this.deliveryAddress.address ?? this.deliveryAddress.name
-        if ($('[name=\'apartment\']').val() != '') {
-          address += ', кв. ' + $('[name=\'apartment\']').val()
-          this.deliveryAddress.apartment = $('[name=\'apartment\']').val()
-        }
-        if ($('[name=\'floor\']').val() != '') {
-          address += ', этаж ' + $('[name=\'floor\']').val()
-          this.deliveryAddress.floor = $('[name=\'floor\']').val()
-        }
-        if ($('[name=\'entrance\']').val() != '') {
-          address += ', подъезд ' + $('[name=\'entrance\']').val()
-          this.deliveryAddress.entrance = $('[name=\'entrance\']').val()
-        }
-        if ($('[name=\'intercom\']').val() != '') {
-          address += ', домофон ' + $('[name=\'intercom\']').val()
-          this.deliveryAddress.intercom = $('[name=\'intercom\']').val()
+
+        if (this.deliveryType === 'door') {
+          if ($('[name=\'apartment\']').val() != '') {
+            address += ', кв. ' + $('[name=\'apartment\']').val()
+            this.deliveryAddress.apartment = $('[name=\'apartment\']').val()
+          }
+          if ($('[name=\'floor\']').val() != '') {
+            address += ', этаж ' + $('[name=\'floor\']').val()
+            this.deliveryAddress.floor = $('[name=\'floor\']').val()
+          }
+          if ($('[name=\'entrance\']').val() != '') {
+            address += ', подъезд ' + $('[name=\'entrance\']').val()
+            this.deliveryAddress.entrance = $('[name=\'entrance\']').val()
+          }
+          if ($('[name=\'intercom\']').val() != '') {
+            address += ', домофон ' + $('[name=\'intercom\']').val()
+            this.deliveryAddress.intercom = $('[name=\'intercom\']').val()
+          }
         }
 
         let button = document.getElementById('submit_order');

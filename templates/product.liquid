@@ -1,6 +1,12 @@
 <section class="section-product-view">
   <div class="container">
     <div class="product_inner">
+      {% if product.old_price > 0 %}
+        {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+        {% assign saleNumber = priceDivision | minus: 100 %}
+        {% assign salePercent = saleNumber | round: 0 %}
+      {% endif %}
+      {% assign collectionTitles = product.collections | sort: 'level' | map: 'title' %}
       <div class="product_info" 
         id="product_info"
         x-data="{
@@ -37,11 +43,6 @@
             });
             this.swiperBig = new Swiper('.product_view_swiper', {
               spaceBetween: 10,
-              // effect: 'fade',
-              // fadeEffect: {
-              //   crossFade: true
-              // },
-
               thumbs: {
                 swiper: this.swiperMin,
                 autoScrollOffset: 1,
@@ -62,6 +63,7 @@
                 },
               },
             });
+			      this.sendMetrica();
           },
           changeVariant() {
             let selects = this.$refs.productOptions.querySelectorAll('._option_name')
@@ -91,8 +93,49 @@
               .done(onDone => { 
                 this.$dispatch('cart-changed', onDone.items_count) 
                 this.$dispatch('toast-success', {message: 'Товар добавлен в корзину', delay: 1500}) 
+
+                dataLayer.push({
+                  'ecommerce': {
+                    'currencyCode': 'RUB',    
+                    'add': {
+                      'products': [
+                        {
+                          'id': '{{ product.id }}',
+                          'name' : '{{product.title}}',
+                          'price': {{ product.price }},
+                          'discount': {{ salePercent | remove_first: '-'}},
+                          'category': '{{ collectionTitles | join: '/' }}',
+                          'quantity': 1,
+                          'variant' : this.variant.title,
+                          // 'list': 'Выдача категории',
+                          // 'position': 2
+                        }
+                      ]
+                    }
+                  }
+                });
               })
               .fail(onFail => this.$dispatch('toast-error', {message: 'Ошибка добавления товара', delay: 2500}))
+          },
+          sendMetrica() {
+            dataLayer.push({
+              'ecommerce': {
+                'currencyCode': 'RUB',
+                'detail': {
+                  'products': [
+                    {
+                        'id': '{{ product.id }}',
+                        'name' : '{{product.title}}',
+                        'price': {{ product.price }},
+                        'discount': {{ salePercent | remove_first: '-'}},
+                        'category': '{{ collectionTitles | join: '/' }}',
+                        // 'list': 'Результаты поиска',
+                        // 'position': 1
+                    }
+                  ]
+                }
+              }
+            });
           },
         }"
       >

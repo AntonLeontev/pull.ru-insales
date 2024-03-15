@@ -91,6 +91,38 @@
 <section class="section-catalog" x-data="{
 	showFilters: false,
   showSort: false,
+
+  init() {
+    this.$refs.products.addEventListener('click', (event) => {
+      if (event.target.closest('a') === null) {
+        return;
+      }
+
+      let productNode = event.target.closest('.product');
+
+      if (productNode === null) {
+        return;
+      }
+      event.preventDefault();
+      
+      
+      console.log();
+
+      dataLayer.push({
+        'ecommerce': {
+          'currencyCode': 'RUB',
+          'click': {
+              'products': [JSON.parse(this.toJson(productNode.dataset.product))]
+          }
+        }
+      });
+      
+      location.href = productNode.dataset.url
+    });
+  },
+  toJson(data) {
+    return data.replaceAll('\'', '&quot;')
+  },
 }">
   <div class="container">
     
@@ -362,20 +394,24 @@
           </div>
 		    </aside>
         <div class="products_wrap">
-          <div class="products">
+          <div class="products" x-ref="products">
             {% for product in collection.products %}
-              {% if product.old_price > 0 %}
+              {% if product.old_price > 0 and product.old_price > product.price %}
                 {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
                 {% assign saleNumber = priceDivision | minus: 100 %}
                 {% assign salePercent = saleNumber | round: 0 %}
               {% endif %}
-              <div class="product_slide_card">
+              {% assign collectionTitles = product.collections | sort: 'level' | map: 'title' %}
+              <div class="product_slide_card product" 
+                data-product='{"id": "{{ product.id }}","name" : "{{product.title}}","price": {{ product.price }},"discount": {{ salePercent | remove_first: "-"}},"category": "{{ collectionTitles | join: "/" }}"}'
+                data-url="{{product.url}}"
+              >
                 <div class="product_card_img">
                   <a class="card_img__link" href="{{product.url}}">
                     <img class="card_img__image" src="{{ product.first_image.large_url}}" alt="{{product.title}}" />
                   </a>
                   <div class="labels">
-                    {% if product.old_price > 0 %}
+                    {% if product.old_price > 0 and product.old_price > product.price %}
                       <div class="labe_discount">{{ salePercent }}%</div>
                     {% endif %}
                     <!-- <div class="labe_premium">Premium</div> -->
@@ -390,13 +426,46 @@
                 <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
                 <div class="product_card_prices">
                   <div class="product_card_price">{{ product.price | money }}</div>
-                  {% if product.old_price > 0 %}
+                  {% if product.old_price > 0 and product.old_price > product.price %}
                     <div class="product_card_old_price">{{ product.old_price | money }}</div>
                   {% endif %}
                 </div>
               </div>
             {% endfor %}
           </div>
+
+          <script>
+            let products = [
+              {% for product in collection.products %}
+                {% if product.old_price > 0 and product.old_price > product.price %}
+                  {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+                  {% assign saleNumber = priceDivision | minus: 100 %}
+                  {% assign salePercent = saleNumber | round: 0 %}
+                {% endif %}
+                {% assign collectionTitles = product.collections | sort: 'level' | map: 'title' %}
+                {
+                  "id": "{{ product.id }}",
+                  "name" : "{{product.title}}",
+                  "price": {{ product.price }},
+                  {% if product.old_price > 0 and product.old_price > product.price %}
+                  "discount": {{ salePercent | remove_first: "-"}},
+                  {% endif %}
+                  "category": "{{ collectionTitles | join: '/' }}",
+                  // "list": "Catalog",
+                  // "position": 1
+                },
+              {% endfor %}
+            ];
+
+            dataLayer.push({
+              "ecommerce": {
+                "currencyCode": "RUB",
+                "impressions": products,
+              }
+            });
+          </script>
+		        
+
           {% if paginate.pages > 1 %}
             {% include 'pagination' %}
           {% endif %}

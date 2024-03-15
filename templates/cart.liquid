@@ -194,6 +194,8 @@
         })
         .done((response) => {
           if (response.status == 'ok') {
+            this.sendMetrica(response.order)
+
 			      if (this.paymentTypeId == 5982078) {
               this.pay(response.order)
               return;
@@ -348,6 +350,47 @@
             }
           }
         )
+      },
+      sendMetrica(order) {
+        let products = []
+
+        order.order_lines.forEach(line => {
+          let name = line.title.replace(/ \(.+\)/g, '')
+          let match = line.title.match(/\(.+\)/)
+          let variant
+
+          if (match.length > 0) {
+            variant = match[0].replaceAll('(', '')
+            variant = variant.replaceAll(')', '')
+          } else {
+            variant = null;
+          }
+
+          products.push({
+            'id': line.product_id,
+            'name': name,
+            'price': line.full_sale_price,
+            // 'category': 'Одежда/Мужская одежда/Толстовки и свитшоты',
+            'variant': variant,
+            'quantity': line.quantity,
+            // 'list': 'Одежда',
+            // 'position': 1
+          })
+        })
+
+        dataLayer.push({
+          'ecommerce': {
+            'currencyCode': 'RUB',
+            'purchase': {
+              'actionField': {
+                'id' : order.number,
+                'coupon': '{{ cart.coupon }}',
+                // 'goal_id': '',
+              },
+              'products': products
+            }
+          }
+        });
       },
     }"
   >
@@ -607,13 +650,108 @@
 
 <script>
   /*---------- Удаление товара из корзины ----------*/
+  function sendRemovedToMetrica(data) {
+    dataLayer.push({
+      "ecommerce": {
+        "currencyCode": "RUB",
+        "remove": {
+          "products": [
+              {
+                "id": `${data.product.id}`,
+                "name": data.product.title,
+                "variant": data.variant,
+                "quantity": data.quantity,
+                "price": data.product.price,
+              }
+          ]
+        }
+      }
+    });
+  }
+
+  function sendAddedToMetrica(data) {
+    dataLayer.push({
+      "ecommerce": {
+        "currencyCode": "RUB",
+        "add": {
+          "products": [
+              {
+                "id": `${data.product.id}`,
+                "name": data.product.title,
+                "variant": data.variant,
+                "quantity": data.quantity,
+                "price": data.product.price,
+              }
+          ]
+        }
+      }
+    });
+  }
 
   EventBus.subscribe('always:insales:cart', function (data) {
+    console.log(data.action.method, data);
 	  if (data.action.method === 'delete_items') {
       data.action.items.forEach(item => {
         $(`[data-item-id=${item}]`).remove()
       })
+
+      let item = data.action.prevStateCart.order_lines.find(el => {
+        return el.product_id == data.action.product_id && 
+        el.variant_id == data.action.variant_id
+      })
+      let match = item.title.match(/\(.+\)/)
+      let variant
+
+      if (match.length > 0) {
+        variant = match[0].replaceAll('(', '')
+        variant = variant.replaceAll(')', '')
+      } else {
+        variant = null;
+      }
+
+      sendRemovedToMetrica({product: item.product, quantity: data.action.quantity, variant})
 	  }
+
+    if (data.action.method === 'set_items') {
+      let currentItems = data.action.items;
+      let prevItems = {}
+      data.action.prevStateCart.order_lines.forEach(el => {
+        prevItems[el.id] = el.quantity
+      })
+
+      removedItems = []
+      addedItems = []
+
+      for (let productId in currentItems) {
+        if (Object.prototype.hasOwnProperty.call(currentItems, productId)) {
+            let item = data.action.currentItems.find(el => el.id == productId)
+            let match = item.title.match(/\(.+\)/)
+            let variant
+
+            if (match.length > 0) {
+              variant = match[0].replaceAll('(', '')
+              variant = variant.replaceAll(')', '')
+            } else {
+              variant = null;
+            }
+
+            if (currentItems[productId] > prevItems[productId]) {
+              let diff = currentItems[productId] - prevItems[productId];
+
+              addedItems.push({product: item.product, quantity: diff, variant})
+            }
+
+            if (currentItems[productId] < prevItems[productId]) {
+              let diff = prevItems[productId] - currentItems[productId];
+
+              removedItems.push({product: item.product, quantity: diff, variant})
+            }
+        }
+      }
+
+      removedItems.forEach(el => sendRemovedToMetrica(el))
+      addedItems.forEach(el => sendAddedToMetrica(el))
+    }
     
     cart_form.dispatchEvent(new CustomEvent('cart-event', {
       detail: data

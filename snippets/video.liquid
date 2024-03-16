@@ -119,13 +119,41 @@
     width: auto;
   }
 
+  .image {
+    display: none;
+  }
+
   @media (max-width: 1309px) {
-    .video {
-      height: calc(100dvh - 75px);
+    .video, .image-wrap {
+      height: calc(100svh - 75px);
       margin-top: -68px;
     }
 	}
 
+  @media (max-width: 999px) {
+    .video {
+      display: none;
+    }
+
+    .image-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: end;
+      background-color: #111;
+    }
+
+    .image-wrap .image {
+      display: block;
+      height: 100%;
+      width: auto;
+    }
+	}
+
+  @media (max-width: 574px) {
+    .video__wrap .banner .banner__text {
+      font-size: 20px;
+    }
+	}
 </style>
 
 <div class="video__wrap">
@@ -142,6 +170,14 @@
       <source src="{{ '01.mp4' | file_url }}" type="video/mp4">
     {% endif %}
   </video>
+
+  <div class="image-wrap">
+    {% if page.url contains 'page/muzh' %}
+      <img class="image" src="{{ 'frame-men.jpg' | asset_url }}" alt="man">
+    {% elsif page.url contains 'page/zhen' %}
+      <img class="image" src="{{ 'frame-woman1.jpg' | asset_url }}" alt="woman">
+    {% endif %}
+  </div>
 
   <div class="banner">
     <div class="banner__body">
@@ -182,40 +218,6 @@
     </div>
   </div>
 </div>
-<script>
-  let playlist
-  const playlistDesc = [
-    // 'https://static.insales-cdn.com/files/1/6219/33495115/original/02.mp4',
-    'https://static.insales-cdn.com/files/1/6218/33495114/original/01.mp4',
-  ]
-  const playlistMob = [
-    // 'https://static.insales-cdn.com/files/1/5283/33502371/original/02mob.mp4',
-    'https://static.insales-cdn.com/files/1/5282/33502370/original/01mob.mp4',
-  ]
-
-  if (window.innerWidth <= 550) {
-    playlist = playlistMob
-  } else {
-    playlist = playlistDesc
-  }
-
-  const player = document.querySelector('.video');
-  const source = player.querySelector('source')
-  let playingIndex = 0
-
-//   source.setAttribute('src', playlist[playingIndex])
-//   player.addEventListener('ended', playNextInPlaylist)
-
-//   function playNextInPlaylist() {
-//     if (playingIndex == playlist.length - 1) {
-//       playingIndex = -1
-//     }
-    
-//     playingIndex++
-//     source.setAttribute('src', playlist[playingIndex])
-//     player.load()
-//   }
-</script>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {

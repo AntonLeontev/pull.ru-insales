@@ -184,34 +184,10 @@
                 })
             },
           }">
-            <form class="filter_body" @change="update()" x-ref="filter_form">
+            <form class="filter_body " @change="update()" x-ref="filter_form">
               {% if order %}
                 <input type="hidden" name="order" value="{{ order }}">
               {% endif %}
-              <!-- <div class="filter_item">
-                <a href="#" class="filter_item_btn accordion_link"
-                  >По популярности <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""
-                /></a>
-                <div class="filter_item_content accordion_content">
-                  <div class="flex_wrapper">
-                    <div class="item">
-                      <input type="checkbox" name="" id="" /> По популярности
-                    </div>
-                    <div class="item">
-                      <input type="checkbox" name="" id="" /> По скидкам
-                    </div>
-                    <div class="item">
-                      <input type="checkbox" name="" id="" />По возрастанию цены
-                    </div>
-                    <div class="item">
-                      <input type="checkbox" name="" id="" />По Убыванию цены
-                    </div>
-                    <div class="item">
-                      <input type="checkbox" name="" id="" /> По новинкам
-                    </div>
-                  </div>
-                </div>
-              </div> -->
 
               <div class="filter_item" id="price_filter" 
                 x-data="{
@@ -387,7 +363,7 @@
 
               
               <div class="filter_bottom">
-                <button type="submit" class="btn btn-primary w-full">Показать (<span x-text="filters?.count"></span>)</button>
+                <button type="submit" class="btn btn-primary w-full">Показать<span x-text="`(${filters?.count ?? 0})`"></span></button>
                 <a :href="location.href.replace(/\?[^?]+$/, '')" class="clear_filter"><span>Очистить фильтры</span></a>
               </div>
             </form>

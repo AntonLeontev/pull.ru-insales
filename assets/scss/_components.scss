@@ -5,11 +5,16 @@
 	align-items: center;
 	color: $primary;
 	text-align: center;
-	font-size: 20px;
+	font-size: 1.25rem;
 	font-style: normal;
 	font-weight: 400;
 	line-height: 100%;
-	padding: 20px;
+	padding: 1.25rem;
+
+	@media (max-width: 999px) {
+		font-size: .875rem;
+		padding: .875rem;
+	}
 }
 .btn-primary {
 	background: $primary;

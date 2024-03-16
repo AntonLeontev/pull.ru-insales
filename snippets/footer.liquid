@@ -1,47 +1,66 @@
 <footer class="footer">
-  <div class="footer_content">
-    <div class="container">
-      <div class="content_inner">
+  <div class="container">
+    <div class="footer__content">
 
-        <div class="content_list_item">
-            <div class="list_item">
-              <a target="_blank" href="https://static.insales-cdn.com/files/1/3328/33565952/original/offer.pdf">Оферта</a>
-            </div>
-            <div class="list_item">
-              <a target="_blank" href="https://static.insales-cdn.com/files/1/3325/33565949/original/policy.pdf">Политика обработки персональных данных</a>
-            </div>
+      <div class="footer__menu-wrap">
+        <nav class="footer__menu">
+          <div class="menu__header">Покупателям</div>
+          <ul class="menu__links">
+            <li class="menu__item">
+              <a href="https://static.insales-cdn.com/files/1/3325/33565949/original/policy.pdf" target="_blank" class="menu__link">Политика обработки персональных данных</a>
+            </li>
+            <li class="menu__item">
+              <a href="https://static.insales-cdn.com/files/1/3327/33565951/original/terms_of_use.pdf" target="_blank" class="menu__link">Соглашение для покупателей</a>
+            </li>
+            <li class="menu__item">
+              <a href="/page/delivery" class="menu__link">Доставка товара</a>
+            </li>
+          </ul>
+        </nav>
+
+        <nav class="footer__menu">
+          <div class="menu__header">Продавцам</div>
+          <ul class="menu__links">
+            <li class="menu__item">
+              <a href="https://static.insales-cdn.com/files/1/3326/33565950/original/terms_for_sellers.pdf" target="_blank" class="menu__link">Соглашение для продавцов</a>
+            </li>
+            <li class="menu__item">
+              <a href="https://static.insales-cdn.com/files/1/3328/33565952/original/offer.pdf" target="_blank" class="menu__link">Оферта</a>
+            </li>
+          </ul>
+        </nav>
+
+        <nav class="footer__menu">
+          <div class="menu__header">О нас</div>
+          <ul class="menu__links">
+            <li class="menu__item">
+              <a href="#" class="menu__link">Как это работает</a>
+            </li>
+            <li class="menu__item">
+              <a href="#" class="menu__link">Правообладателям</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="footer__info">
+        <div class="info__item">
+          <div class="item__header">Информация о владельце сайта</div>
+          <ul class="item__values">
+            <li class="item__value">ООО&nbsp;"ТРАСТ" ИНН&nbsp;7203568240</li>
+          </ul>
         </div>
-
-        <div class="content_list_item">
-          <div class="header_logo">
-            <a href="/"><img src="{{ 'logo-white-gold.svg' | asset_url }}" alt="Логотип" /></a>
-          </div>
+        <div class="info__item">
+          <div class="item__header">Авторизованные процессинговые компании</div>
+          <ul class="item__values">
+            <li class="item__value">ООО&nbsp;"ТРАСТ СЕРВИС" ИНН&nbsp;7203567990</li>
+          </ul>
         </div>
-
-        <div class="content_list_item">
-          <div class="list_item">
-            <a target="_blank" href="https://static.insales-cdn.com/files/1/3327/33565951/original/terms_of_use.pdf">Соглашение для покупателей</a>
-          </div>
-          <div class="list_item">
-            <a target="_blank" href="https://static.insales-cdn.com/files/1/3326/33565950/original/terms_for_sellers.pdf">Соглашение для продавцов</a>
-          </div>
-          <div class="list_item">
-            <a target="_blank" href="https://limmite.ru/page/delivery">Доставка товаров</a>
-          </div>
-        </div>
-
       </div>
     </div>
-  </div>
 
-  <div class="footer_socials">
-
-    <div class="container">
-
+    <div class="footer_socials">
       <div class="payment_types">
-        <!-- <div class="payment_type_title">
-          Доступны <span>другие способы оплаты</span>
-        </div> -->
         <div class="payment_systems">
           {% for item in block_lists.footer-payment.blocks %}
             <img src="{{ item.image }}" alt="{{ item.title }}" />
@@ -51,22 +70,11 @@
 
       <div class="socials">
         {% for item in block_lists.social.blocks %}
-            <a href="{{ item.link }}" target="_blank" class="social_item">
-              <img src="{{ item.image }}" alt="{{ item.title }}" />
-            </a>
+          <a href="{{ item.link }}" target="_blank" class="social_item">
+            <img src="{{ item.image }}" alt="{{ item.title }}" />
+          </a>
         {% endfor %}
       </div>
-
-      <div class="content_list_item">
-          <div class="list_item">
-            ООО "Траст Сервис"
-          </div>
-          <div class="list_item">
-            ИНН 7203567990
-          </div>
-        </div>
-
     </div>
-
   </div>
 </footer>

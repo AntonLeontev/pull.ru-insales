@@ -14,9 +14,6 @@ body {
 main {
   flex: 1 0 auto;
 }
-.footer {
-  flex: 0 0 auto;
-}
 .ds {
 	display: block;
 }
@@ -55,6 +52,15 @@ p {
 p+p {
 	margin-top: 5px;
 }
+// Виджет мессенджеров
+.doonAJ {
+	bottom: 60px !important;
+
+	@media (max-width: 999px) {
+		bottom: 115px !important;
+		z-index: 49 !important;
+	}
+}
 .cover {
 	position: fixed;
 	top: 0;
@@ -69,6 +75,9 @@ p+p {
 	&.active {
 		display: block;
 	}
+}
+.info_tab_list {
+	margin-bottom: 14px;
 }
 .price-input {
 	position: relative;
@@ -197,6 +206,17 @@ textarea:active,
 textarea:focus-visible
 {
 	outline: none;
+}
+.characteristics-notice {
+	font-weight: 400;
+	font-size: 1rem;
+	line-height: 150%;
+	color: $secondary_dark;
+	margin-bottom: 12px;
+
+	@media screen and (max-width: 567px) {
+		font-size: 14px;
+	}
 }
 .review-form {
 	margin-bottom: 12px;
@@ -1128,7 +1148,7 @@ textarea:focus-visible
 		}
 
 		.header__navbar_actions {
-			padding: 24px 0;
+			// padding: 24px 0;
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
@@ -1273,7 +1293,7 @@ textarea:focus-visible
 						color: $white;
 						font-size: 14px;
 						font-style: normal;
-						font-weight: 500;
+						font-weight: 700;
 						line-height: 100%;
 						text-transform: uppercase;
 						opacity: 0.6;
@@ -1317,7 +1337,7 @@ textarea:focus-visible
 					color: $white;
 					font-size: 14px;
 					font-style: normal;
-					font-weight: 300;
+					font-weight: 700;
 					line-height: 100%;
 					text-transform: uppercase;
 					opacity: 0.6;
@@ -1326,7 +1346,7 @@ textarea:focus-visible
 					color: $white;
 					font-size: 14px;
 					font-style: normal;
-					font-weight: 300;
+					font-weight: 400;
 					line-height: 100%;
 					text-transform: uppercase;
 					opacity: 0.6;
@@ -1336,7 +1356,7 @@ textarea:focus-visible
 					color: $white;
 					opacity: 1;
 					font-style: normal;
-					font-weight: 500;
+					font-weight: 700;
 				}
 			}
 		}
@@ -1936,6 +1956,7 @@ textarea:focus-visible
 .footer {
 	background-color: $primary;
 	color: $white;
+	flex: 0 0 auto;
 
 	.footer__content {
 		display: flex;
@@ -2066,6 +2087,8 @@ textarea:focus-visible
 	}
 
 	@media (max-width: 999px) {
+		padding-bottom: 48px;
+
 		.footer__content {
 			flex-direction: column;
 
@@ -2357,7 +2380,9 @@ textarea:focus-visible
 			}
 		}
 
-	
+		.filter-button {
+			display: none;
+		}		
 	}
 
 	@media (max-width: 1309px) {
@@ -2373,6 +2398,22 @@ textarea:focus-visible
 						width: 100%;
 					}
 				}
+			}
+
+			.filter-button {
+				position: fixed;
+				bottom: 0;
+				left: 0;
+				width: 100vw;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				column-gap: 12px;
+				height: 48px;
+				text-transform: uppercase;
+				border-top: 1px solid $secondary_dark;
+				background: $white;
+				color: $primary;
 			}
 		}
 		.product_card_name {
@@ -3732,7 +3773,7 @@ textarea:focus-visible
 	position: fixed;
 	bottom: 0;
 	right: 0;
-	padding: 0 20px 20px 20px;
+	padding: 0 20px 0 0;
 	width: 320px;
 	display: flex;
 	flex-direction: column;
@@ -3744,6 +3785,7 @@ textarea:focus-visible
 		transition: opacity 0.3s ease;
 		opacity: 0;
 		font-size: 19px;
+		margin-bottom: 20px;
 
 		&-showing {
 			opacity: 1;
@@ -4595,7 +4637,6 @@ textarea:focus-visible
 			font-style: normal;
 			font-weight: 400;
 			line-height: 100%;
-			margin-bottom: 8px;
 		}
 		
 		.accordion_link.comment_info {
@@ -4605,7 +4646,12 @@ textarea:focus-visible
 			display: none;
 		}
 		.list_item {
+			display: flex;
+			justify-content: space-between;
+			column-gap: 12px;
 			margin-bottom: 24px;
+			border-bottom: 1px solid $secondary;
+			padding-bottom: 12px;
 		}
 		.swiper-pagination-bullet {
 			width: 40px;
@@ -4903,7 +4949,6 @@ textarea:focus-visible
 	}
 	.section-cart {
 		.section_title {
-			padding-bottom: 24px;
 			margin-bottom: 24px;
 		}
 		.catalog_buttons {

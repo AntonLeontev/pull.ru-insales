@@ -133,7 +133,7 @@
         </h1>
         <div class="catalog_buttons">
           <button type="button" class="sort" @click="showSort = !showSort">
-            <img src="{{ 'icon-park-outline_switch.svg' | asset_url }}" alt="" />
+            <img src="{{ 'icon-park-outline_switch.svg' | asset_url }}" alt="Сортировка" />
             Сортировать
 		      </button>
           <!-- <button type="button" class="filter_toggle" @click="showFilters = true;overflow = false">
@@ -445,6 +445,11 @@
           {% if paginate.pages > 1 %}
             {% include 'pagination' %}
           {% endif %}
+
+          <button class="filter-button" @click="showFilters = true">
+            <img src="{{ 'bi_filter.svg' | asset_url }}" alt="Открыть фильтр" />
+            Открыть фильтр
+          </button>
         </div>
       </div>
 

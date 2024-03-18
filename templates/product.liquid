@@ -352,6 +352,9 @@
               {% endfor %}
               
             </dl>
+            <div class="characteristics-notice">
+              Информация о технических характеристиках, комплекте поставки, стране изготовления, внешнем виде и цвете товара носит справочный характер и основывается на последних доступных к моменту публикации сведениях, представленных продавцом товаров
+            </div>
           </div>
           <div class="tab_body_item review_tab nem">
             {% if account.reviews_enabled? %}
@@ -583,14 +586,18 @@
                 {% endfor %}
   
               </dl>
+
+              <div class="characteristics-notice">
+                Информация о технических характеристиках, комплекте поставки, стране изготовления, внешнем виде и цвете товара носит справочный характер и основывается на последних доступных к моменту публикации сведениях, представленных продавцом товаров
+              </div>
             </div>
           </div>
 
           <div class="accordion_footer">
             <div class="accordion_footer__wrap">
-              <button class="accordion_link_hide" @click="open = false">
+              <!-- <button class="accordion_link_hide" @click="open = false">
                 <span>Скрыть</span> <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
-              </a>
+              </button> -->
             </div>
           </div>
         </div>

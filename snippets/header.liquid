@@ -55,7 +55,7 @@
   </div>
 
   {% unless template == 'index'  %}
-	<div class="header__category">
+  <div class="header__category" {% unless page.id == 13610431 or page.id == 13610537 %} style="background: #1f1f1f;" {% endunless %}>
 		<div class="container">
 		<div class="category_inner">
 			<nav class="category_pol">

@@ -141,9 +141,15 @@
         
       },
       createOrder(paymentStatus = 'pending') {
-        let address = this.deliveryAddress.address ?? this.deliveryAddress.name
+        let address
+
+        if (this.deliveryType === 'office') {
+          address = `${this.deliveryAddress.code}, ${this.deliveryAddress.region}, ${this.deliveryAddress.city}, ${this.deliveryAddress.address}`
+        }
 
         if (this.deliveryType === 'door') {
+			    address = this.deliveryAddress.formatted
+
           if ($('[name=\'apartment\']').val() != '') {
             address += ', кв. ' + $('[name=\'apartment\']').val()
             this.deliveryAddress.apartment = $('[name=\'apartment\']').val()

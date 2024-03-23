@@ -335,8 +335,16 @@ textarea:focus-visible
 
 }
 .main-choice {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: calc(100vh - 117px - 270px);
 	background-color: #000;
 	padding: 36px 0;
+
+	@media (max-width: 999px) {
+		min-height: calc(100vh - 81px - 380px);
+	}
 
 	&__title {
 		margin-bottom: 24px;
@@ -364,6 +372,9 @@ textarea:focus-visible
 			position: relative;
 
 			@media (max-width: 567px) {
+				display: flex;
+				justify-content: center;
+				align-items: center;
 				margin-top: 32px;
 			}
 		}
@@ -372,7 +383,13 @@ textarea:focus-visible
 			.choice__image {
 				max-width: 100%;
   				height: auto;
-				vertical-align:bottom
+				vertical-align:bottom;
+
+				@media (max-width: 567px) {
+					max-width: 100%;
+					width: auto;
+  					height: calc((100lvh - 77px - 80px) / 2 - 50px);
+				}
 			}
 			.choice__title {
 				padding: 12px 0;
@@ -844,8 +861,9 @@ textarea:focus-visible
 	}
 }
 .product_slide_card {
-	display: flex;
-	flex-direction: column;
+	// display: flex;
+	// flex-direction: column;
+	// max-width: 310px;
 
 	.product_card_img {
 		position: relative;
@@ -938,7 +956,7 @@ textarea:focus-visible
 			flex: 1 1 auto;
 		}
 	}
-	max-width: 310px;
+	
 }
 .gallary {
 	&__cover {
@@ -2376,7 +2394,7 @@ textarea:focus-visible
 			gap: 24px 24px;
 
 			.product_slide_card {
-				max-width: 100%;
+				// max-width: calc((100% - 48px) / 3);
 			}
 		}
 
@@ -2434,6 +2452,10 @@ textarea:focus-visible
 			.products {
 				grid-template-columns: 1fr 1fr;
 				gap: 14px 14px;
+
+				.product_slide_card {
+					max-width: calc((100vw - 42px) / 2);
+				}
 			}
 		}
 	}
@@ -4183,24 +4205,6 @@ textarea:focus-visible
 	main {
 		padding-top: 36px;
 		padding-bottom: 146px;
-	}
-	.section-banner {
-		display: none;
-	}
-	.section-banner-app {
-		.app_inner {
-			padding-bottom: 0;
-			&::after {
-				top: auto;
-			}
-		}
-		.bg-img {
-			left: -30px;
-			img {
-				width: calc(100% + 60px);
-				height: calc(100% + 60px);
-			}
-		}
 	}
 	.main {
 		.section-news {

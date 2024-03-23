@@ -1,16 +1,34 @@
  <!-- section-banner -->
+
+<style>
+	.banner-mb {
+		display: none;
+	}
+
+	@media screen and (max-width: 567px) {
+		.banner-ds {
+			display: none;
+		}
+
+		.banner-mb {
+			display: block;
+		}
+	}
+</style>
+
 <section class="section-banner">
   <div class="container">
 	<div class="banner_inner">
 		<a href="/page/delivery" class="banner__info">
-			<div class="banner__info-inner">
+			<!-- <div class="banner__info-inner">
 				<div class="banner__text">ДОСТАВКА С ПРИМЕРКОЙ</div>
 				<div class="banner__title">домой или в пункт выдачи</div>
 				<div class="banner__text">ПЛАТИТЕ КОГДА ХОТИТЕ</div>
 				<div class="banner__title">при оформлении заказа или после примерки</div>
-			</div>
+			</div> -->
 		</a>
-		<img src="{{ 'home-banner.webp' | asset_url }}" alt="banner">
+		<img class="banner-ds" src="{{ 'home-banner.webp' | asset_url }}" alt="banner">
+		<img class="banner-mb" src="{{ 'home-banner-mob.webp' | asset_url }}" alt="banner">
 	</div>
     <!-- <div class="banner_inner">
       <div class="banner_brend">

@@ -2932,6 +2932,19 @@ textarea:focus-visible
 		position: relative;
 		flex-basis: 100%;
 
+		.original-label_wrap {
+			margin-bottom: 32px;
+			
+			.original-label {
+				padding: 12px 18px;
+				width: min-content;
+				color: $white;
+				background: $primary;
+				font-size: 16px;
+				white-space: nowrap;
+			}
+		}
+
 		.product_quantity {
 			margin-bottom: 24px;
 

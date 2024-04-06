@@ -364,19 +364,22 @@
               
             <form
             class="review-form"
-              @submit.prevent="submit"
+              @submit.prevent="sendFeedback"
               x-data="{
                 show: false,
                 active: true,
                 errors: [],
                 success: false,
 
-                submit() {
+                sendFeedback() {
                   if (!this.active) return
 
                   this.active = false
                   this.errors = []
                   let data = new FormData(this.$event.target)
+                  if (data.get('review[image_attributes][image]').size === 0) {
+                    data.delete('review[image_attributes][image]')
+                  }
                   $.post('{{ product.url }}/reviews.json', Object.fromEntries(data.entries()))
                     .done(res => {
                       if (res.errors) {
@@ -386,6 +389,7 @@
 
                       this.success = true
                     })
+                    .fail((fail) => console.log(fail))
                     .always(() => this.active = true)
                 },
               }"

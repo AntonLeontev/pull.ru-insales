@@ -179,28 +179,29 @@
 
   <div class="running_line swiper">
     <div class="swiper-wrapper">
+      {% assign brands = block_lists.with_template['system-banner-3'].brands-runline.blocks %}
+
       {% if page.url contains 'page/zhen' %}	
-          {% assign brands = block_lists.with_template['system-banner-3'].brands-runline-women.blocks %}
-          {% assign collection = collections.zhenschinam %}
-        {% elsif page.url contains 'page/muzh' %} 
-          {% assign brands = block_lists.with_template['system-banner-3'].brands-runline-men.blocks %}
-          {% assign collection = collections.muzhchinam %}
-        {% else %} 
-          {% assign brands = block_lists.with_template['system-banner-3'].brands-runline.blocks %}
-          {% assign collection = collections.all %}
-        {% endif %} 
-  
-        {% assign brand_property = collection.properties | where: 'handle', 'brand' | first %}
-        
-        {% for brand in brands %}
-          {% assign brand_char = brand_property.characteristics | where: 'handle', brand.link | first %}
-  
-          <div class="swiper-slide">
-            <a href="{{ collection.url | add_param: 'characteristics[]', brand_char.id }}">
-              <img class="brand-logo" src="{{ brand.image }}" alt="{{ brand.title }}"/>
-            </a>
-          </div>
-        {% endfor %}
+        {% assign collection = collections.zhenschinam %}
+      {% elsif page.url contains 'page/muzh' %} 
+        {% assign collection = collections.muzhchinam %}
+      {% else %} 
+        {% assign collection = collections.all %}
+      {% endif %} 
+
+      {% assign brand_property = collection.properties | where: 'handle', 'brand' | first %}
+      
+      {% for brand in brands %}
+        {% assign brand_char = brand_property.characteristics | where: 'handle', brand.link | first %}
+
+        <div class="swiper-slide">
+          <a href="{{ collection.url | add_param: 'characteristics[]', brand_char.id }}">
+          <img class="brand-logo" src="{{ brand.image }}" alt="{{ brand.title }}"/>
+          </a>
+        </div>
+        {% if brand_char.id %}
+        {% endif %}
+      {% endfor %}
     </div>
   </div>
 </div>

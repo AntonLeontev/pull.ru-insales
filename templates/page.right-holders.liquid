@@ -1,0 +1,244 @@
+<link rel="stylesheet" href="{{ 'pages.min.css' | asset_url }}">
+
+<div class="container">
+	<div class="rights-holder">
+		<div class="rights-holder_container">
+			<nav class="rights-holder navigation">
+				<a class="rights-holder navigation__link">Главная</a>
+				<span class="rights-holder navigation__separator">/</span>
+				<a class="rights-holder navigation__link">
+					Правообладателям</a>
+			</nav>
+			<div class="rights-holder info_container">
+				<h1 class="rights-holder title">
+					Правообладателям
+				</h1>
+				<div class="rights-holder description_container">
+					<p class="rights-holder description-paragraph">
+						Мы рады прямому сотрудничеству с
+						изготовителями брендовых товаров,
+						официальными дистрибьюторами и дилерами.
+						Подробнее о нашем порядке работы вы
+						можете узнать на странице “<a href="/page/how-it-works"
+							class="rights-holder description-paragraph__red-decoration">Как это работает</a>?”
+					</p>
+					<p class="rights-holder description-paragraph">
+						Если вы желаете заключить с нами договор
+						реализации вашей продукции, пришлите
+						Ваше предварительное предложение на
+						адрес электронной почты (<a href="mailto:info@limmite.ru"
+							class="rights-holder description-paragraph__red-decoration">info@limmite.ru</a>)
+					</p>
+					<p class="rights-holder description-paragraph">
+						Вы желаете оставить обращение
+						(претензию) по поводу товаров,
+						продавцов, размещенных на сайте, просим
+						воспользоваться формой ниже:
+					</p>
+				</div>
+			</div>
+		</div>
+	
+		<form x-data>
+			<div class="appeal-rights-holder">
+				<div class="appeal-rights-holder__info">
+					<h2 class="appeal-rights-holder__title">
+						Обращение правообладателя
+					</h2>
+					<span class="appeal-rights-holder__desciption">Все поля обязательны к заполнению</span>
+				</div>
+				<div class="appeal-rights-holder__select_container">
+					<h2 class="select-container__title">
+						Суть жалобы
+					</h2>
+					<div class="rights-holder appeal-rights-holder-custom_select">
+						<select class="custom_select__select">
+							<option value="" disabled selected>
+								Выберите суть жалобы
+							</option>
+						</select>
+						<div class="custom_select__arrow"></div>
+					</div>
+				</div>
+			</div>
+			<div class="customer_goods_container" x-data="{
+				links: [
+					{value: ''},
+				],
+			}">
+				<div class="customer_goods-info">
+					<h2 class="customer_goods-info__title">
+						Продавец и товары
+					</h2>
+					<p class="customer_goods-info__description">
+						Введите ссылки на товары вручную или
+						загрузите excel-файл со списком артикулов,
+						на которые Вы жалуетесь, чтобы мы могли
+						определить продавца.
+					</p>
+				</div>
+				<div class="customer_goods-fields_container">
+					<template x-for="link, key in links">
+						<div class="field_input">
+							<input class="field_input__input" name="product_links[]" placeholder="ссылка" x-model="links[key].value" />
+							<button class="field_input__bin" type="button" x-show="links.length > 1" @click="links.splice(key, 1)">
+								<img src="{{ 'input_bin.svg' | asset_url }}" alt="Удалить ссылку">
+							</button>
+						</div>
+					</template>
+				</div>
+				<div class="customer_goods-buttons">
+					<button class="buttons-add" type="button" @click="links.push({value: ''})">Добавить</button>
+					<input type="file" name="product_links_file" x-ref="product_links_file" hidden accept=".xlsx" />
+					<button class="rights-holder buttons-load" type="button" @click="$refs.product_links_file.click()">
+						Загрузка файла
+						<svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+							xmlns="http://www.w3.org/2000/svg">
+							<path
+								d="M7.29412 10.44V2.27333L10.3824 5.77333L10.8235 5.33333L7 1L3.17647 5.33333L3.61765 5.77333L6.70588 2.27333V10.44H7.29412ZM2 11H2.58824V12.3333H11.4118V11H12V13H2V11Z"
+								fill="black" />
+							<path fill-rule="evenodd" clip-rule="evenodd"
+								d="M6.99961 0.773438L11.029 5.34005L10.375 5.99229L7.44373 2.6702V10.5902H6.55549V2.6702L3.62423 5.99229L2.97025 5.34005L6.99961 0.773438ZM3.38191 5.32692L3.61028 5.55468L6.85549 1.87677V10.2902H7.14373V1.87677L10.3889 5.55468L10.6173 5.32692L6.99961 1.22687L3.38191 5.32692ZM1.84961 10.8502H2.73784V12.1835H11.2614V10.8502H12.1496V13.1502H1.84961V10.8502ZM2.14961 11.1502V12.8502H11.8496V11.1502H11.5614V12.4835H2.43784V11.1502H2.14961Z"
+								fill="black" />
+						</svg>
+					</button>
+					<span class="buttons-load__warning">Формат: XLSX.<br />
+						Загрузка не более 1-го файла.</span>
+				</div>
+			</div>
+			<div class="customer_goods_container">
+				<div class="customer_goods-info">
+					<h2 class="customer_goods-info__title">
+						Продавец и товары
+					</h2>
+					<p class="customer_goods-info__description">
+						Введите ссылки на товары вручную или
+						загрузите excel-файл со списком артикулов,
+						на которые Вы жалуетесь, чтобы мы могли
+						определить продавца.
+					</p>
+				</div>
+				<div class="customer_goods-fields_container">
+					<div class="field_inputs_container">
+						<div class="rights-holder appeal-rights-holder-custom_select">
+							<select class="custom_select__select">
+								<option value="" disabled selected>
+									Выберите суть жалобы
+								</option>
+							</select>
+							<div class="custom_select__arrow"></div>
+						</div>
+						<input class="field_input_simple" placeholder="Название бренда" />
+					</div>
+					<input class="field_input_simple" placeholder="ФИО обращающегося" />
+					<input class="field_input_simple" placeholder="Название компании (правообладателя)" />
+					<div class="field_inputs_container">
+						<input class="field_input_simple" placeholder="Телефон" />
+						<input class="field_input_simple" placeholder="Email" />
+					</div>
+				</div>
+			</div>
+			<div class="documents_container">
+				<h2 class="documents__title">Документы</h2>
+				<div class="documents-elements">
+					<div class="doc-element">
+						<h3 class="doc-element__title">
+							Текст жалобы
+						</h3>
+						<p class="doc-element__desctiption">
+							Загрузите в файле PDF подписанный текст
+						</p>
+						<input type="file" name="complaint" x-ref="complaint" hidden accept=".pdf">
+						<button type="button" class="rights-holder buttons-load" @click="$refs.complaint.click()">
+							Загрузка файла
+							<svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+								xmlns="http://www.w3.org/2000/svg">
+								<path
+									d="M7.29412 10.44V2.27333L10.3824 5.77333L10.8235 5.33333L7 1L3.17647 5.33333L3.61765 5.77333L6.70588 2.27333V10.44H7.29412ZM2 11H2.58824V12.3333H11.4118V11H12V13H2V11Z"
+									fill="black" />
+								<path fill-rule="evenodd" clip-rule="evenodd"
+									d="M6.99961 0.773438L11.029 5.34005L10.375 5.99229L7.44373 2.6702V10.5902H6.55549V2.6702L3.62423 5.99229L2.97025 5.34005L6.99961 0.773438ZM3.38191 5.32692L3.61028 5.55468L6.85549 1.87677V10.2902H7.14373V1.87677L10.3889 5.55468L10.6173 5.32692L6.99961 1.22687L3.38191 5.32692ZM1.84961 10.8502H2.73784V12.1835H11.2614V10.8502H12.1496V13.1502H1.84961V10.8502ZM2.14961 11.1502V12.8502H11.8496V11.1502H11.5614V12.4835H2.43784V11.1502H2.14961Z"
+									fill="black" />
+							</svg>
+						</button>
+					</div>
+					<div class="doc-element">
+						<p class="doc-element__desctiption">
+							Подтверждение нарушения права
+						</p>
+		
+						<input type="file" name="confirm" x-ref="confirm" hidden accept=".pdf">
+						<button type="button" class="rights-holder buttons-load" @click="$refs.confirm.click()">
+							Загрузка файла
+							<svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+								xmlns="http://www.w3.org/2000/svg">
+								<path
+									d="M7.29412 10.44V2.27333L10.3824 5.77333L10.8235 5.33333L7 1L3.17647 5.33333L3.61765 5.77333L6.70588 2.27333V10.44H7.29412ZM2 11H2.58824V12.3333H11.4118V11H12V13H2V11Z"
+									fill="black" />
+								<path fill-rule="evenodd" clip-rule="evenodd"
+									d="M6.99961 0.773438L11.029 5.34005L10.375 5.99229L7.44373 2.6702V10.5902H6.55549V2.6702L3.62423 5.99229L2.97025 5.34005L6.99961 0.773438ZM3.38191 5.32692L3.61028 5.55468L6.85549 1.87677V10.2902H7.14373V1.87677L10.3889 5.55468L10.6173 5.32692L6.99961 1.22687L3.38191 5.32692ZM1.84961 10.8502H2.73784V12.1835H11.2614V10.8502H12.1496V13.1502H1.84961V10.8502ZM2.14961 11.1502V12.8502H11.8496V11.1502H11.5614V12.4835H2.43784V11.1502H2.14961Z"
+									fill="black" />
+							</svg>
+						</button>
+					</div>
+					<div class="doc-element">
+						<h3 class="doc-element__title">
+							Полномочия.
+						</h3>
+						<p class="doc-element__desctiption">
+							Выписка из ЕГРЮЛ, если вы
+							правообладатель, или копия доверенности,
+							если вы представитель в формате PDF
+						</p>
+						<input type="file" name="powers" x-ref="powers" hidden accept=".pdf">
+						<button class="rights-holder buttons-load" type="button" @click="$refs.powers.click()">
+							Загрузка файла
+							<svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+								xmlns="http://www.w3.org/2000/svg">
+								<path
+									d="M7.29412 10.44V2.27333L10.3824 5.77333L10.8235 5.33333L7 1L3.17647 5.33333L3.61765 5.77333L6.70588 2.27333V10.44H7.29412ZM2 11H2.58824V12.3333H11.4118V11H12V13H2V11Z"
+									fill="black" />
+								<path fill-rule="evenodd" clip-rule="evenodd"
+									d="M6.99961 0.773438L11.029 5.34005L10.375 5.99229L7.44373 2.6702V10.5902H6.55549V2.6702L3.62423 5.99229L2.97025 5.34005L6.99961 0.773438ZM3.38191 5.32692L3.61028 5.55468L6.85549 1.87677V10.2902H7.14373V1.87677L10.3889 5.55468L10.6173 5.32692L6.99961 1.22687L3.38191 5.32692ZM1.84961 10.8502H2.73784V12.1835H11.2614V10.8502H12.1496V13.1502H1.84961V10.8502ZM2.14961 11.1502V12.8502H11.8496V11.1502H11.5614V12.4835H2.43784V11.1502H2.14961Z"
+									fill="black" />
+							</svg>
+						</button>
+					</div>
+					<div class="doc-element">
+						<h3 class="doc-element__title">
+							Подтверждение вашего права
+						</h3>
+						<p class="doc-element__desctiption">
+							Сведения о регистрации объекта ИС или
+							иные подтверждения вашего права в
+							формате PDF
+						</p>
+						<input type="file" name="rights" x-ref="rights" hidden accept=".pdf">
+						<button class="rights-holder buttons-load" type="button" @click="$refs.rights.click()">
+							Загрузка файла
+							<svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+								xmlns="http://www.w3.org/2000/svg">
+								<path
+									d="M7.29412 10.44V2.27333L10.3824 5.77333L10.8235 5.33333L7 1L3.17647 5.33333L3.61765 5.77333L6.70588 2.27333V10.44H7.29412ZM2 11H2.58824V12.3333H11.4118V11H12V13H2V11Z"
+									fill="black" />
+								<path fill-rule="evenodd" clip-rule="evenodd"
+									d="M6.99961 0.773438L11.029 5.34005L10.375 5.99229L7.44373 2.6702V10.5902H6.55549V2.6702L3.62423 5.99229L2.97025 5.34005L6.99961 0.773438ZM3.38191 5.32692L3.61028 5.55468L6.85549 1.87677V10.2902H7.14373V1.87677L10.3889 5.55468L10.6173 5.32692L6.99961 1.22687L3.38191 5.32692ZM1.84961 10.8502H2.73784V12.1835H11.2614V10.8502H12.1496V13.1502H1.84961V10.8502ZM2.14961 11.1502V12.8502H11.8496V11.1502H11.5614V12.4835H2.43784V11.1502H2.14961Z"
+									fill="black" />
+							</svg>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="submit_button_container">
+				<input type="submit" class="submit_button" value="Отправить" />
+			</div>
+			<div class="confirmation_container">
+				<input id="confirmation__checkbox" class="confirmation__checkbox" type="checkbox" />
+				<label class="confirmation__warning" for="confirmation__checkbox">
+					Вы подтверждаете, что ознакомлен(а) с
+					<a class="confirmation__link">правилами оформления претензий</a>
+				</label>
+			</div>
+		</form>
+	</div>
+</div>

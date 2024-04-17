@@ -1035,13 +1035,13 @@
 {% if product.images.size > 0 %}
   <div class="gallary" 
     style="display: none;" 
-    x-data="{show: false}" 
+    x-data="{show: true}" 
     x-show="show" 
-    x-transition.opacity
+    x-transition
     @show-gallary.window="show = true"
   >
     <div class="gallary__cover">
-      <div class="container">
+      <div class="container_gallary">
         <div class="carousel">
           <div thumbsSlider="" class="swiper gallary_product_view_swiper_th">
             <div class="swiper-wrapper">
@@ -1057,7 +1057,39 @@
             <div class="swiper-wrapper" x-ref="swiperContainer">
               {% for image in product.images %}
                 <div class="swiper-slide" data-id="{{ image.id }}">
-                  <img src="{{ image.original_url | image_url: 954, format: 'webp' }}" alt="{{ image.title }}" />
+                  <div class="image-wrap" x-data="{
+                    zoom: false,
+
+                    toggleZoom() {
+                      this.zoom = !this.zoom
+
+                      if (this.zoom) {
+                        this.move()
+                        setTimeout(() => {
+                          this.$event.target.style.transition = 'none'
+                        }, 300);
+                      } else {
+                        this.$event.target.style.transition = 'all ease .2s'
+                        this.$event.target.style.translate = 'unset'
+                      }
+                    },
+                    move() {
+                      if (!this.zoom) return
+                      let e = this.$event
+                      let zoomer = e.target;
+                      y = this.$root.offsetHeight / 2 - this.$event.clientY
+                      //console.log(this.$event.clientY, this.$root.offsetHeight)
+                      zoomer.style.translate = '0px ' + y + 'px'
+                    },
+                  }">
+                    <img 
+                      src="{{ image.original_url }}" 
+                      alt="{{ image.title }}" 
+                      @click="toggleZoom" 
+                      @mousemove="move"
+                      :class="zoom && 'zoom'"
+                    />
+                  </div>
                 </div>
               {% endfor %}
               

@@ -1035,13 +1035,31 @@
 {% if product.images.size > 0 %}
   <div class="gallary" 
     style="display: none;" 
-    x-data="{show: true}" 
+    x-data="{
+      show: false,
+
+      doShow() {
+        this.show = true
+        this.overflow = false
+      },
+      hide() {
+        this.show = false
+        this.overflow = true
+      },
+    }" 
     x-show="show" 
     x-transition
-    @show-gallary.window="show = true"
+    @show-gallary.window="doShow"
   >
     <div class="gallary__cover">
       <div class="container_gallary">
+        <div style="color: white; background-color: #111; position: fixed; top: 0; left: 0; padding: 1px;" 
+          @debug.window="text = $event.detail"
+          x-data="{
+            text: '',
+          }"
+          x-text="text"
+        ></div>
         <div class="carousel">
           <div thumbsSlider="" class="swiper gallary_product_view_swiper_th">
             <div class="swiper-wrapper">
@@ -1054,39 +1072,116 @@
           </div>
   
           <div class="swiper gallary_product_view_swiper">
-            <div class="swiper-wrapper" x-ref="swiperContainer">
+            <div class="swiper-wrapper" x-ref="swiperContainer" x-data="{
+              touchstart() {
+                if (this.$event.touches?.length === 1) {
+                  const event = this.$event
+
+                  this.startX = event.touches[0].clientX
+                  this.startY = event.touches[0].clientY
+                }
+
+                if (this.$event.touches?.length > 1) {
+                  this.isScaling = true
+
+                  this.$event.preventDefault();
+                  this.distance = this.dist(event);
+                }
+              },
+              touchmove() {
+                if (this.$event.touches?.length === 1 && this.scale > 1) {
+                  if (this.isScaling) return
+
+                  this.$event.preventDefault()
+                  this.$event.stopPropagation();
+                  
+                  const event = this.$event
+
+                  let x = event.touches[0].clientX - this.startX
+                  let y = event.touches[0].clientY - this.startY
+
+                  //this.$dispatch('debug', `${x}px ${y}px`)
+
+                  let translateX = x + this.prevTranslateX
+                  let translateY = y + this.prevTranslateY
+
+                  this.curTranslateX = translateX
+                  this.curTranslateY = translateY
+
+                  event.target.style.translate = `${translateX}px ${translateY}px`
+
+                  //this.$dispatch('debug', `move`)
+                }
+
+                if (this.$event.touches?.length > 1) {
+                  this.$event.preventDefault();
+
+                  //get the ratio
+                  let distance = this.dist(event)
+                  let rf = (distance - this.distance) / 120;
+                  this.distance = distance;
+                  let scale = Math.min(Math.max(this.scale + rf, 1), 4)
+                  this.$event.target.style.transform = 'scale(' + scale + ')';
+                  this.scale = scale
+                }
+              },
+              touchend() {
+                if (this.$event.touches?.length === 0) {
+                  this.prevTranslateX = this.curTranslateX
+                  this.prevTranslateY = this.curTranslateY
+
+                  this.isScaling = false
+                }
+              },
+              dist(a) {
+                let zw = a.touches[0].pageX - a.touches[1].pageX;
+                let zh = a.touches[0].pageY - a.touches[1].pageY;
+                return Math.sqrt(zw * zw + zh * zh);
+              },
+			        toggleZoom() {
+                if (window.innerWidth > 999) {
+                  this.zoom = !this.zoom
+                  if (this.zoom) {
+                    this.move()
+                    setTimeout(() => {
+                      this.$event.target.style.transition = 'none'
+                    }, 300);
+                  } else {
+                    this.$event.target.style.transition = 'all ease .2s'
+                    this.$event.target.style.translate = 'unset'
+                  }
+                }
+              },
+              move() {
+                if (!this.zoom) return
+                let e = this.$event
+                let zoomer = e.target;
+                y = this.$root.offsetHeight / 2 - this.$event.clientY
+                zoomer.style.translate = '0px ' + y + 'px'
+              },
+            }">
               {% for image in product.images %}
                 <div class="swiper-slide" data-id="{{ image.id }}">
                   <div class="image-wrap" x-data="{
+                    isScaling: false,
                     zoom: false,
-
-                    toggleZoom() {
-                      this.zoom = !this.zoom
-
-                      if (this.zoom) {
-                        this.move()
-                        setTimeout(() => {
-                          this.$event.target.style.transition = 'none'
-                        }, 300);
-                      } else {
-                        this.$event.target.style.transition = 'all ease .2s'
-                        this.$event.target.style.translate = 'unset'
-                      }
-                    },
-                    move() {
-                      if (!this.zoom) return
-                      let e = this.$event
-                      let zoomer = e.target;
-                      y = this.$root.offsetHeight / 2 - this.$event.clientY
-                      //console.log(this.$event.clientY, this.$root.offsetHeight)
-                      zoomer.style.translate = '0px ' + y + 'px'
-                    },
+                    distance: 1,
+                    scale: 1,
+                    startX: 0,
+                    startY: 0,
+                    curTranslateX: 0,
+                    curTranslateY: 0,
+                    prevTranslateX: 0,
+                    prevTranslateY: 0,
                   }">
                     <img 
                       src="{{ image.original_url }}" 
                       alt="{{ image.title }}" 
                       @click="toggleZoom" 
                       @mousemove="move"
+                      @touchstart="touchstart"
+                      @touchmove="touchmove"
+                      @touchend="touchend"
                       :class="zoom && 'zoom'"
                     />
                   </div>
@@ -1095,7 +1190,7 @@
               
             </div>
             <div class="swiper-pagination"></div>
-            <button class="swiper-button swiper-button-next">
+            <!-- <button class="swiper-button swiper-button-next">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="50px" height="50px">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
               </svg>
@@ -1104,7 +1199,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="50px" height="50px">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
               </svg>
-            </button>
+            </button> -->
           </div>
 
           <button class="swiper-button swiper-button-desc swiper-button-desc-next">
@@ -1118,7 +1213,7 @@
             </svg>
           </button>
 
-          <button type="button" class="close" @click="show = false">
+          <button type="button" class="close" @click="hide">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
             </svg>

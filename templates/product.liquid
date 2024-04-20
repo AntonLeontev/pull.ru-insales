@@ -290,31 +290,6 @@
             </button>
 
             <button type="button" class="btn btn-secondary" @click="$dispatch('law-info')">Юридическая информация о продавце</button>
-            <!-- <div class="deleviry_info">
-              <div class="info_item">
-                <div class="info_img">
-                  <img
-                    src="{{ 'iconamoon_delivery-fast-thin.svg' | asset_url }}"
-                    alt="" />
-                </div>
-                <div>
-                  B пункты <span>выдачи заказов</span> с примеркой,
-                  бесплатно при покупке <br />
-                  от {{ blocks.with_template['system-single-text'].v-punkt-vydachi.text }} ₽
-                </div>
-              </div>
-              <div class="info_item">
-                <div class="info_img">
-                  <img
-                    src="{{ 'iconamoon_delivery-fast-thin.svg' | asset_url }}"
-                    alt="" />
-                </div>
-                <div>
-                  По адресу, <span>курьером</span> — с примеркой,
-                  бесплатно при покупке <br />от {{ blocks.with_template['system-single-text'].kurierom.text }} ₽
-                </div>
-              </div>
-            </div> -->
           </div>
         </div>
       </div>
@@ -1058,9 +1033,67 @@
           x-data="{
             text: '',
           }"
-          x-text="text"
+          x-html="text"
         ></div>
-        <div class="carousel">
+        <div class="carousel" x-data="{
+          gallaryBig: null,
+          gallaryMin: null,
+
+          init() {
+            this.gallaryMin = new Swiper('.gallary_product_view_swiper_th', {
+              spaceBetween: 10,
+              slidesPerView: 7,
+              freeMode: {
+                enabled: true,
+                sticky: true,
+              },
+              mousewheel: true,
+              watchSlidesProgress: true,
+              direction: 'vertical',
+              autoHeight: true,
+              centeredSlides: true,
+              centeredSlidesBounds: true,
+            });
+
+            this.gallaryBig = new Swiper('.gallary_product_view_swiper', {
+              spaceBetween: 10,
+              effect: 'slide',
+
+              thumbs: {
+                swiper: this.gallaryMin,
+                autoScrollOffset: 1,
+              },
+              breakpoints: {
+                320: {
+                  pagination: {
+                    el: '.swiper-pagination',
+                    clickable: false,
+                  },
+                  navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                  },
+                },
+                999: {
+                  pagination: false,
+                  navigation: {
+                    nextEl: '.swiper-button-desc-next',
+                    prevEl: '.swiper-button-desc-prev',
+                  },
+                  keyboard: {
+                    enabled: true,
+                    onlyInViewport: true,
+                  },
+                },
+              },
+              on: {
+                slideChange() {
+                  document.dispatchEvent(new Event('slide', {bubbles: true}))
+                },
+              }
+            });
+          },
+        }">
           <div thumbsSlider="" class="swiper gallary_product_view_swiper_th">
             <div class="swiper-wrapper">
               {% for image in product.images %}
@@ -1093,14 +1126,11 @@
                   if (this.isScaling) return
 
                   this.$event.preventDefault()
-                  this.$event.stopPropagation();
                   
                   const event = this.$event
 
                   let x = event.touches[0].clientX - this.startX
                   let y = event.touches[0].clientY - this.startY
-
-                  //this.$dispatch('debug', `${x}px ${y}px`)
 
                   let translateX = x + this.prevTranslateX
                   let translateY = y + this.prevTranslateY
@@ -1123,6 +1153,14 @@
                   let scale = Math.min(Math.max(this.scale + rf, 1), 4)
                   this.$event.target.style.transform = 'scale(' + scale + ')';
                   this.scale = scale
+
+                  if (this.scale > 1) {
+                    this.gallaryBig.allowSlideNext = false
+                    this.gallaryBig.allowSlidePrev = false
+                  } else {
+                    this.gallaryBig.allowSlideNext = true
+                    this.gallaryBig.allowSlidePrev = true
+                  }
                 }
               },
               touchend() {
@@ -1131,12 +1169,66 @@
                   this.prevTranslateY = this.curTranslateY
 
                   this.isScaling = false
+
+                  this.returnEdges()
                 }
+              },
+              returnEdges() {
+                let target = this.$event.target.getBoundingClientRect()
+                let parent = this.$event.target.parentElement.getBoundingClientRect()
+
+                this.$event.target.style.transition = 'translate ease .2s'
+                let slidingEnabled = false
+
+                //top
+                if (target.top > parent.top) {
+                  this.prevTranslateY -= target.top - parent.top
+                  this.curTranslateY -= target.top - parent.top
+                  this.$event.target.style.translate = `${this.prevTranslateX}px ${this.prevTranslateY}px`
+                }
+
+                //bottom
+                if (parent.bottom > target.bottom) {
+                  this.prevTranslateY += parent.bottom - target.bottom
+                  this.curTranslateY += parent.bottom - target.bottom
+                  this.$event.target.style.translate = `${this.prevTranslateX}px ${this.prevTranslateY}px`
+                }
+
+                //left
+                if (target.left > parent.left) {
+                  this.prevTranslateX -= target.left - parent.left
+                  this.curTranslateX -= target.left - parent.left
+                  this.$event.target.style.translate = `${this.prevTranslateX}px ${this.prevTranslateY}px`
+
+                  this.gallaryBig.allowSlidePrev = true
+                  slidingEnabled = true
+                }
+
+				        //right
+                if (parent.right > target.right) {
+                  this.prevTranslateX += parent.right - target.right
+                  this.curTranslateX += parent.right - target.right
+                  this.$event.target.style.translate = `${this.prevTranslateX}px ${this.prevTranslateY}px`
+
+                  this.gallaryBig.allowSlideNext = true
+                  slidingEnabled = true
+                }
+
+                if (!slidingEnabled && this.scale > 1) {
+                  this.gallaryBig.allowSlideNext = false
+                  this.gallaryBig.allowSlidePrev = false
+                }
+
+                setTimeout(() => this.$event.target.style.transition = 'unset', 300);
               },
               dist(a) {
                 let zw = a.touches[0].pageX - a.touches[1].pageX;
                 let zh = a.touches[0].pageY - a.touches[1].pageY;
                 return Math.sqrt(zw * zw + zh * zh);
+              },
+              enableSliding() {
+                this.gallaryBig.allowSlideNext = true
+                this.gallaryBig.allowSlidePrev = true
               },
 			        toggleZoom() {
                 if (window.innerWidth > 999) {
@@ -1159,7 +1251,9 @@
                 y = this.$root.offsetHeight / 2 - this.$event.clientY
                 zoomer.style.translate = '0px ' + y + 'px'
               },
-            }">
+            }"
+            @slide.document="enableSliding"
+            >
               {% for image in product.images %}
                 <div class="swiper-slide" data-id="{{ image.id }}">
                   <div class="image-wrap" x-data="{
@@ -1173,10 +1267,21 @@
                     curTranslateY: 0,
                     prevTranslateX: 0,
                     prevTranslateY: 0,
-                  }">
+
+                    resetScale() {
+                      if (this.scale > 1) {
+                        this.scale = 1
+
+                        this.$refs.image.style.transform = 'scale(1)'
+                      }
+                    },
+                  }"
+                  @slide.document="resetScale"
+                  >
                     <img 
                       src="{{ image.original_url }}" 
                       alt="{{ image.title }}" 
+                      x-ref="image"
                       @click="toggleZoom" 
                       @mousemove="move"
                       @touchstart="touchstart"

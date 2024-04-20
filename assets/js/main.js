@@ -218,55 +218,52 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   });
 
-  const gallaryMin = new Swiper(".gallary_product_view_swiper_th", {
-    spaceBetween: 10,
-    slidesPerView: 7,
-    freeMode: {
-      enabled: true,
-      sticky: true,
-    },
-    mousewheel: true,
-    watchSlidesProgress: true,
-    direction: "vertical",
-    autoHeight: true,
-    centeredSlides: true,
-    centeredSlidesBounds: true,
-  });
-  const gallaryBig = new Swiper(".gallary_product_view_swiper", {
-    spaceBetween: 10,
-    effect: "slide",
-    // fadeEffect: {
-    //   crossFade: true
-    // },
+  //   const gallaryMin = new Swiper(".gallary_product_view_swiper_th", {
+  //     spaceBetween: 10,
+  //     slidesPerView: 7,
+  //     freeMode: {
+  //       enabled: true,
+  //       sticky: true,
+  //     },
+  //     mousewheel: true,
+  //     watchSlidesProgress: true,
+  //     direction: "vertical",
+  //     autoHeight: true,
+  //     centeredSlides: true,
+  //     centeredSlidesBounds: true,
+  //   });
+  //   const gallaryBig = new Swiper(".gallary_product_view_swiper", {
+  //     spaceBetween: 10,
+  //     effect: "slide",
 
-    thumbs: {
-      swiper: gallaryMin,
-      autoScrollOffset: 1,
-    },
-    breakpoints: {
-      320: {
-        pagination: {
-          el: ".swiper-pagination",
-          clickable: false,
-        },
-        navigation: {
-          nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev",
-        },
-      },
-      999: {
-        pagination: false,
-        navigation: {
-          nextEl: ".swiper-button-desc-next",
-          prevEl: ".swiper-button-desc-prev",
-        },
-        keyboard: {
-          enabled: true,
-          onlyInViewport: true,
-        },
-      },
-    },
-  });
+  //     thumbs: {
+  //       swiper: gallaryMin,
+  //       autoScrollOffset: 1,
+  //     },
+  //     breakpoints: {
+  //       320: {
+  //         pagination: {
+  //           el: ".swiper-pagination",
+  //           clickable: false,
+  //         },
+  //         navigation: {
+  //           nextEl: ".swiper-button-next",
+  //           prevEl: ".swiper-button-prev",
+  //         },
+  //       },
+  //       999: {
+  //         pagination: false,
+  //         navigation: {
+  //           nextEl: ".swiper-button-desc-next",
+  //           prevEl: ".swiper-button-desc-prev",
+  //         },
+  //         keyboard: {
+  //           enabled: true,
+  //           onlyInViewport: true,
+  //         },
+  //       },
+  //     },
+  //   });
 
   let niceSelectS = document.querySelectorAll(".nice_select");
   if (niceSelectS) {

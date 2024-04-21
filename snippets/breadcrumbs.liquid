@@ -34,9 +34,12 @@
         {% if product.collections.size > 0 %}
         {% assign collections = product.collections | sort: 'level' %}
           {% for collection in collections %}
-          <li class="breadcrumb_item">
-            <a class="breadcrumb_link" href="{{ collection.url }}">{{ collection.title }}</a>
-          </li>
+          {% if last_collection_title != collection.title %}
+            <li class="breadcrumb_item">
+              <a class="breadcrumb_link" href="{{ collection.url }}">{{ collection.title }}</a>
+            </li>
+          {% endif %}
+          {% assign last_collection_title = collection.title %}
           {% endfor %}
           
         {% endif %}

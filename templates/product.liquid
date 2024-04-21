@@ -47,6 +47,14 @@
                 swiper: this.swiperMin,
                 autoScrollOffset: 1,
               },
+              on: {
+                'slideChange': () => {
+                  let event = new CustomEvent('main-slide-change', {
+                    detail: {index: this.swiperBig.realIndex}
+                  })
+                  window.dispatchEvent(event)
+                }
+              },
               breakpoints: {
                 320: {
                   pagination: {
@@ -138,6 +146,7 @@
             });
           },
         }"
+        @gallary-slide-change.window="swiperBig.slideTo($event.detail.index)"
       >
         <div class="carousel">
           {% if product.images.size > 0 %}
@@ -1089,11 +1098,14 @@
               on: {
                 slideChange() {
                   document.dispatchEvent(new Event('slide', {bubbles: true}))
+                  window.dispatchEvent(new CustomEvent('gallary-slide-change', {detail: {index: this.realIndex}}))
                 },
               }
             });
           },
-        }">
+        }"
+        @main-slide-change.window="gallaryBig.slideTo($event.detail.index)"
+        >
           <div thumbsSlider="" class="swiper gallary_product_view_swiper_th">
             <div class="swiper-wrapper">
               {% for image in product.images %}
@@ -1139,8 +1151,6 @@
                   this.curTranslateY = translateY
 
                   event.target.style.translate = `${translateX}px ${translateY}px`
-
-                  //this.$dispatch('debug', `move`)
                 }
 
                 if (this.$event.touches?.length > 1) {

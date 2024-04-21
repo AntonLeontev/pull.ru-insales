@@ -11,7 +11,7 @@
         id="product_info"
         x-data="{
           variants: [],
-          variant: null,
+          variant: '',
           productReady: false,
           swiperMin: null,
           swiperBig: null,
@@ -111,7 +111,7 @@
                           'id': '{{ product.id }}',
                           'name' : '{{product.title}}',
                           'price': {{ product.price }},
-                          'discount': {{ salePercent | remove_first: '-'}},
+                          'discount': '{{ salePercent | remove_first: '-'}}',
                           'category': '{{ collectionTitles | join: '/' }}',
                           'quantity': 1,
                           'variant' : this.variant.title,
@@ -135,7 +135,7 @@
                         'id': '{{ product.id }}',
                         'name' : '{{product.title}}',
                         'price': {{ product.price }},
-                        'discount': {{ salePercent | remove_first: '-'}},
+                        'discount': '{{ salePercent | remove_first: '-'}}',
                         'category': '{{ collectionTitles | join: '/' }}',
                         // 'list': 'Результаты поиска',
                         // 'position': 1

@@ -104,10 +104,9 @@
         return;
       }
       event.preventDefault();
-      
-      
-      console.log();
 
+	  console.log(productNode.dataset.product);
+      
       dataLayer.push({
         'ecommerce': {
           'currencyCode': 'RUB',
@@ -379,7 +378,7 @@
               {% endif %}
               {% assign collectionTitles = product.collections | sort: 'level' | map: 'title' %}
               <div class="product_slide_card product" 
-                data-product='{"id": "{{ product.id }}","name" : "{{product.title}}","price": {{ product.price }},"discount": {{ salePercent | remove_first: "-"}},"category": "{{ collectionTitles | join: "/" }}"}'
+                data-product='{"id": "{{ product.id }}","name": "{{product.title}}","price": {{ product.price }},"discount": "{{ salePercent | remove_first: "-"}}","category": "{{ collectionTitles | join: "/" }}"}'
                 data-url="{{product.url}}"
               >
                 <div class="product_card_img">

@@ -549,7 +549,7 @@
       <div class="product_accordion">
         <div class="accordion_item" :class="open && 'active'" x-data="{open: true}">
           <button class="accordion_link" @click="open = !open">
-            О товаре <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
+            О товаре <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="вниз">
           </button>
           <div class="accordion_content">
             <div class="accordion_content__wrap">
@@ -594,7 +594,7 @@
         </div>
         <div class="accordion_item" :class="open && 'active'" x-data="{open: false}">
           <button class="accordion_link" @click="open = !open">
-            Отзывы ({{product.reviews_count}}) <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
+            Отзывы ({{product.reviews_count}}) <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="стрелка вниз">
           </button>
           <div class="accordion_content">
             <div class="accordion_content__wrap">
@@ -868,10 +868,10 @@
       <div class="section_title">С этим товаром покупают</div>
       <div class="slider_buttons">
         <div class="swiper-button-next">
-          <img src="{{ 'ICO-next.svg' | asset_url }}" alt="" />
+          <img src="{{ 'ICO-next.svg' | asset_url }}" alt="стрелка вперед" />
         </div>
         <div class="swiper-button-prev">
-          <img src="{{ 'ICO-back.svg' | asset_url }}" alt="" />
+          <img src="{{ 'ICO-back.svg' | asset_url }}" alt="стрелка назад" />
         </div>
       </div>
     </div>
@@ -948,10 +948,10 @@
         <div class="section_title">Похожие</div>
         <div class="slider_buttons">
           <div class="swiper-button-next">
-            <img src="{{ 'ICO-next.svg' | asset_url }}" alt="" />
+            <img src="{{ 'ICO-next.svg' | asset_url }}" alt="стрелка вперед" />
           </div>
           <div class="swiper-button-prev">
-            <img src="{{ 'ICO-back.svg' | asset_url }}" alt="" />
+            <img src="{{ 'ICO-back.svg' | asset_url }}" alt="стрелка назад" />
           </div>
         </div>
       </div>

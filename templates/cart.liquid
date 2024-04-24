@@ -29,6 +29,7 @@
       coupon: '{{ cart.coupon }}',
       agree: true,
       productsOrganizations: {},
+      orderKey: null,
 
       init() {
         ajaxAPI.cart.get()
@@ -205,12 +206,14 @@
           if (response.status == 'ok') {
             this.sendMetrica(response.order)
 
+            this.orderKey = response.order.key
+
 			      if (this.paymentTypeId == 5982078) {
               this.pay(response.order)
               return;
             }
 
-            location.href = '/page/order-success'
+            location.href = '/orders/' + this.orderKey + '?success=1'
           } else {
             let messages = []
             if (response.errors.hasOwnProperty('shipping_address.phone')) {
@@ -349,7 +352,7 @@
             }
           }, {
             onSuccess: (options) => { // success
-              location.href = '/page/order-success'
+              location.href = '/orders/' + this.orderKey + '?success=1'
             },
             onFail: (reason, options) => { // fail
               //действие при неуспешной оплате

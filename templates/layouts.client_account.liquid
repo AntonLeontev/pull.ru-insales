@@ -24,6 +24,23 @@
                   <h1 class='co-checkout-title co-title co-title--h1'>
                     {% yield 'title' %}
                   </h1>
+
+                  {% if template == 'order2' %}
+                    <style>
+                      .notification {
+                        display: none;
+                        margin-top: 30px;
+                        font-size: 30px;
+                      }
+                    </style>
+                    <div class="notification">Заказ оформлен успешно</div>
+                    <script>
+                      if (new URL(location.href).searchParams.get('success')) {
+                        document.querySelector('.notification').style.display = 'block';
+                      }
+                    </script>
+                  {% endif %}
+
                 </div>
                 {% yield %}
               </div>
@@ -31,7 +48,15 @@
           </div>
         </div>
       </main>
-      
+
+      <script>
+        let viberButton = document.getElementById('subscribe_viber');
+
+        if (viberButton) {
+          viberButton.parentElement.remove();
+        }
+      </script>
+
       {% include 'footer'%}
 
     </div>

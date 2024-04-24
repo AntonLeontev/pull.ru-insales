@@ -208,7 +208,7 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    new Swiper(".running_line", {
+    const runningLine = new Swiper(".running_line", {
       spaceBetween: 0,
       centeredSlides: true,
       speed: 3000,
@@ -221,6 +221,11 @@
       slidesPerView:'auto',
       allowTouchMove: true,
     });
+
+	setTimeout(() => {
+		console.log('runningLine', runningLine.autoplay.running);
+		runningLine.autoplay.resume()
+	}, 300);
   })
 </script>
 

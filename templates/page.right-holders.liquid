@@ -39,7 +39,40 @@
 			</div>
 		</div>
 	
-		<form x-data>
+		<form enctype="multipart/form-data" @submit.prevent="submit" x-ref="form" x-data="{
+			loading: false,
+			success: false,
+			errors: [],
+
+			submit() {
+				this.loading = true
+				this.errors = []
+
+				$.ajax({
+					url: 'https://app.limmite.ru/api/rightholders',
+					data: new FormData(this.$event.target),
+					dataType: 'json',
+					cache: false,
+					contentType: false,
+					processData: false,
+					method: 'POST',
+					success: (resp) => {
+						this.success = true
+					},
+					error: (resp) => {
+						console.log(resp);
+						if (resp.status = 422) {
+							this.errors = Object.values(resp.responseJSON.errors)
+						} else {
+							alert('Произошла ошибка')
+						}
+					},
+					complete: () => {
+						this.loading = false
+					}
+				});
+			},
+		}">
 			<div class="appeal-rights-holder">
 				<div class="appeal-rights-holder__info">
 					<h2 class="appeal-rights-holder__title">
@@ -52,10 +85,17 @@
 						Суть жалобы
 					</h2>
 					<div class="rights-holder appeal-rights-holder-custom_select">
-						<select class="custom_select__select">
+						<select name="appeal" class="custom_select__select">
 							<option value="" disabled selected>
 								Выберите суть жалобы
 							</option>
+							<option value="Контрафакт">Контрафакт (товар ложно обозначен товарным знаком, выдается за оргинальный, но не является им)</option>
+							<option value="Незаконно используется фото в карточке товара">Незаконно используется фото в карточке товара</option>
+							<option value="Незаконно используется текст в карточке товара">Незаконно используется текст в карточке товара</option>
+							<option value="Товарный знак или сходное обозначение используется на изображении в карточке товара">Товарный знак или сходное обозначение используется на изображении в карточке товара</option>
+							<option value="Товарный знак или сходное обозначение используется в названии карточки товара или тексте описания">Товарный знак или сходное обозначение используется в названии карточки товара или тексте описания</option>
+							<option value="На товаре или упаковке используется сходное обозначение">На товаре или упаковке используется сходное обозначение</option>
+							<option value="Иные нарушения авторских прав в товаре или его упаковке">Иные нарушения авторских прав в товаре или его упаковке</option>
 						</select>
 						<div class="custom_select__arrow"></div>
 					</div>
@@ -109,32 +149,28 @@
 			<div class="customer_goods_container">
 				<div class="customer_goods-info">
 					<h2 class="customer_goods-info__title">
-						Продавец и товары
+						Данные обращающегося
 					</h2>
-					<p class="customer_goods-info__description">
-						Введите ссылки на товары вручную или
-						загрузите excel-файл со списком артикулов,
-						на которые Вы жалуетесь, чтобы мы могли
-						определить продавца.
-					</p>
 				</div>
 				<div class="customer_goods-fields_container">
 					<div class="field_inputs_container">
 						<div class="rights-holder appeal-rights-holder-custom_select">
-							<select class="custom_select__select">
+							<select name="who" class="custom_select__select">
 								<option value="" disabled selected>
-									Выберите суть жалобы
+									Кто Вы
 								</option>
+								<option value="Я правообладатель">Я правообладатель</option>
+								<option value="Я представитель правообладателя">Я представитель правообладателя</option>
 							</select>
 							<div class="custom_select__arrow"></div>
 						</div>
-						<input class="field_input_simple" placeholder="Название бренда" />
+						<input name="brand" class="field_input_simple" placeholder="Название бренда" />
 					</div>
-					<input class="field_input_simple" placeholder="ФИО обращающегося" />
-					<input class="field_input_simple" placeholder="Название компании (правообладателя)" />
+					<input name="name" class="field_input_simple" placeholder="ФИО обращающегося" />
+					<input name="company" class="field_input_simple" placeholder="Название компании (правообладателя)" />
 					<div class="field_inputs_container">
-						<input class="field_input_simple" placeholder="Телефон" />
-						<input class="field_input_simple" placeholder="Email" />
+						<input name="phone" class="field_input_simple" placeholder="Телефон" />
+						<input name="email" class="field_input_simple" placeholder="Email" />
 					</div>
 				</div>
 			</div>
@@ -148,7 +184,7 @@
 						<p class="doc-element__desctiption">
 							Загрузите в файле PDF подписанный текст
 						</p>
-						<input type="file" name="complaint" x-ref="complaint" hidden accept=".pdf">
+						<input name="text" type="file" name="complaint" x-ref="complaint" hidden accept=".pdf">
 						<button type="button" class="rights-holder buttons-load" @click="$refs.complaint.click()">
 							Загрузка файла
 							<svg width="14" height="14" viewBox="0 0 14 14" fill="none"
@@ -167,7 +203,7 @@
 							Подтверждение нарушения права
 						</p>
 		
-						<input type="file" name="confirm" x-ref="confirm" hidden accept=".pdf">
+						<input name="confirm" type="file" name="confirm" x-ref="confirm" hidden accept=".pdf">
 						<button type="button" class="rights-holder buttons-load" @click="$refs.confirm.click()">
 							Загрузка файла
 							<svg width="14" height="14" viewBox="0 0 14 14" fill="none"
@@ -190,7 +226,7 @@
 							правообладатель, или копия доверенности,
 							если вы представитель в формате PDF
 						</p>
-						<input type="file" name="powers" x-ref="powers" hidden accept=".pdf">
+						<input name="powers" type="file" name="powers" x-ref="powers" hidden accept=".pdf">
 						<button class="rights-holder buttons-load" type="button" @click="$refs.powers.click()">
 							Загрузка файла
 							<svg width="14" height="14" viewBox="0 0 14 14" fill="none"
@@ -213,7 +249,7 @@
 							иные подтверждения вашего права в
 							формате PDF
 						</p>
-						<input type="file" name="rights" x-ref="rights" hidden accept=".pdf">
+						<input name="rights" type="file" name="rights" x-ref="rights" hidden accept=".pdf">
 						<button class="rights-holder buttons-load" type="button" @click="$refs.rights.click()">
 							Загрузка файла
 							<svg width="14" height="14" viewBox="0 0 14 14" fill="none"
@@ -230,10 +266,18 @@
 				</div>
 			</div>
 			<div class="submit_button_container">
-				<input type="submit" class="submit_button" value="Отправить" />
+				<button type="submit" class="submit_button" :disabled="loading || success">
+					<span x-text="success ? 'Отправлено' : 'Отправить'"></span>
+					<svg x-show="loading" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><radialGradient id="a9" cx=".66" fx=".66" cy=".3125" fy=".3125" gradientTransform="scale(1.5)"><stop offset="0" stop-color="#ffffff"></stop><stop offset=".3" stop-color="#ffffff" stop-opacity=".9"></stop><stop offset=".6" stop-color="#ffffff" stop-opacity=".6"></stop><stop offset=".8" stop-color="#ffffff" stop-opacity=".3"></stop><stop offset="1" stop-color="#ffffff" stop-opacity="0"></stop></radialGradient><circle transform-origin="center" fill="none" stroke="url(#a9)" stroke-width="30" stroke-linecap="round" stroke-dasharray="200 1000" stroke-dashoffset="0" cx="100" cy="100" r="70"><animateTransform type="rotate" attributeName="transform" calcMode="spline" dur="2" values="360;0" keyTimes="0;1" keySplines="0 0 1 1" repeatCount="indefinite"></animateTransform></circle><circle transform-origin="center" fill="none" opacity=".2" stroke="#ffffff" stroke-width="30" stroke-linecap="round" cx="100" cy="100" r="70"></circle></svg>
+				</button>
+			</div>
+			<div x-show="errors.length > 0" class="errors">
+				<template x-for="error in errors">
+					<div class="error" x-text="error.join(' ')"></div>
+				</template>
 			</div>
 			<div class="confirmation_container">
-				<input id="confirmation__checkbox" class="confirmation__checkbox" type="checkbox" />
+				<input id="confirmation__checkbox" class="confirmation__checkbox" type="checkbox" checked required />
 				<label class="confirmation__warning" for="confirmation__checkbox">
 					Вы подтверждаете, что ознакомлен(а) с
 					<a class="confirmation__link">правилами оформления претензий</a>

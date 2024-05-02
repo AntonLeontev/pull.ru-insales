@@ -147,6 +147,15 @@
         height: min * orderLine.quantity
       }
     },
+	showApartment() {
+		return this.deliveryType === 'door' && !this.deliveryAddress?.formatted?.includes('кв.')
+	},
+	showFloor() {
+		return this.deliveryType === 'door' && !this.deliveryAddress?.formatted?.includes('этаж')
+	},
+	showEntrance() {
+		return this.deliveryType === 'door' && !this.deliveryAddress?.formatted?.includes('подъезд')
+	},
   }"
 >
   <div class="card_name" @click="toggle()">
@@ -156,12 +165,14 @@
   <div class="card_content" :class="show && 'active'">
 	<div class="card_content_wrap">
 		<div id="cdekmap"></div>
-		<div class="delivery__additional" x-show="deliveryType === 'door'">
-			<input class="ordinary_input" name="entrance" placeholder="Подъезд" x-ref="entrance">
-			<input class="ordinary_input" name="floor" placeholder="Этаж" x-ref="floor">
-			<input class="ordinary_input" name="apartment" placeholder="Квартира" x-ref="apartment">
-			<input class="ordinary_input" name="intercom" placeholder="Код домофона" x-ref="intercom">
-		</div>
+		<template x-if="deliveryType === 'door'">
+			<div class="delivery__additional">
+				<input class="ordinary_input" name="entrance" placeholder="Подъезд" x-ref="entrance" x-show="showEntrance">
+				<input class="ordinary_input" name="floor" placeholder="Этаж" x-ref="floor" x-show="showFloor">
+				<input class="ordinary_input" name="apartment" placeholder="Квартира" x-ref="apartment" x-show="showApartment">
+				<input class="ordinary_input" name="intercom" placeholder="Код домофона" x-ref="intercom">
+			</div>
+		</template>
 	</div>
   </div>
 </div>

@@ -176,7 +176,7 @@
           client: {
             email: this.email,
             name: this.name,
-            phone: this.phone,
+            phone: this.formatPhone(this.phone),
             consent_to_personal_data: true,
           },
           order: {
@@ -197,7 +197,7 @@
             ],
           },
           shipping_address: {
-            phone: this.phone,
+            phone: this.formatPhone(this.phone),
             city: this.deliveryAddress.city,
             address: address,
           }
@@ -403,6 +403,17 @@
             }
           }
         });
+      },
+      formatPhone(phone) {
+        phone = phone.replaceAll(/\D/g, '')
+
+        if (phone[0] == 7) {
+          phone = '+' + phone
+        } else if (phone[0] == 8) {
+          phone = '+7' + phone.slice(1)
+        }
+
+        return phone
       },
     }"
   >

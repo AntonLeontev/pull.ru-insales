@@ -330,22 +330,42 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-// Получение списка разрешенных регионов для доставки
-if (!sessionStorage.getItem('allowed_regions')) {
-	$.get("https://app.limmite.ru/api/allowed_regions").success((response) =>
-    sessionStorage.setItem("allowed_regions", response)
-  );
-}
+// // Получение списка разрешенных регионов для доставки
+// if (!sessionStorage.getItem('allowed_regions')) {
+// 	$.get("https://app.limmite.ru/api/allowed_regions").success((response) =>
+//     sessionStorage.setItem("allowed_regions", response)
+//   );
+// }
 
-// Получение списка брендов и ИП для продажи
+// // Получение списка брендов и ИП для продажи
+// if (
+//   !sessionStorage.getItem("brands") ||
+//   !sessionStorage.getItem("organizations")
+// ) {
+//   $.get("https://app.limmite.ru/api/organizations_brands").success(
+//     (response) => {
+//       sessionStorage.setItem("brands", JSON.stringify(response.brands));
+//       sessionStorage.setItem(
+//         "organizations",
+//         JSON.stringify(response.organizations)
+//       );
+//     }
+//   );
+// }
+
 if (
   !sessionStorage.getItem("brands") ||
-  !sessionStorage.getItem("organizations")
+  !sessionStorage.getItem("organizations") ||
+  !sessionStorage.getItem("allowed_regions") ||
+  !sessionStorage.getItem("ip")
 ) {
-  $.get("https://app.limmite.ru/api/organizations_brands").success(
-    (response) => {
-      sessionStorage.setItem("brands", JSON.stringify(response.brands));
-      sessionStorage.setItem("organizations", JSON.stringify(response.organizations));
-    }
-  );
+  $.get("https://app.limmite.ru/api/additition-data").success((response) => {
+    sessionStorage.setItem("allowed_regions", response.regions);
+    sessionStorage.setItem("brands", JSON.stringify(response.brands.brands));
+    sessionStorage.setItem(
+      "organizations",
+      JSON.stringify(response.brands.organizations)
+    );
+    sessionStorage.setItem("ip", response.ip);
+  });
 }

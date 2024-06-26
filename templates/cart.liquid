@@ -30,6 +30,7 @@
       agree: true,
       productsOrganizations: {},
       orderKey: null,
+      processing: false,
 
       init() {
         ajaxAPI.cart.get()
@@ -169,8 +170,7 @@
           }
         }
 
-        let button = document.getElementById('submit_order');
-        button.disabled = true
+        this.processing = true
 
         $.post('/fast_checkout.json', {
           client: {
@@ -196,7 +196,7 @@
               },
               {
                 handle: 'ip_address',
-                value: sessionStorage.getItem("ip")
+                value: sessionStorage.getItem('ip')
               }
             ],
           },
@@ -240,7 +240,7 @@
 			    this.$dispatch('toast-error', {message: 'Ошибка оформления заказа'})
           console.log(fail.errors);
         })
-        .always(() => button.disabled = false)
+        .always(() => this.processing = false)
       },
       fillClient() {
         this.name = this.$event.detail.name
@@ -557,7 +557,22 @@
                   </div>
                 </div>
 				
-                <button type="submit" class="button_black" id="submit_order" style="width: 100%;">Оформить заказ</button>
+                <button type="submit" class="button_black" id="submit_order" style="width: 100%;" :disabled="processing">
+                  <span x-show="!processing">Оформить заказ</span>
+                  
+                  <svg x-show="processing" width="16px" height="16px" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <circle class="spin" cx="25" cy="25" fill="none" r="20" stroke-width="10" stroke="#ffffff" stroke-dasharray="80 29">
+                      <animateTransform
+                        attributeName="transform"
+                        attributeType="XML"
+                        type="rotate"
+                        from="0 25 25"
+                        to="360 25 25"
+                        dur="800ms"
+                        repeatCount="indefinite" />
+                    </circle>
+                  </svg>
+				        </button>
 
                 <div class="radio-check mt-24">
                   <label>

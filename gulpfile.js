@@ -6,7 +6,7 @@ const autoprefixer = require("autoprefixer");
 const cssnano = require("cssnano");
 
 const plugins = [
-  autoprefixer({ overrideBrowserslist: ["last 5 versions"] }),
+  autoprefixer({ overrideBrowserslist: ["last 10 versions"] }),
   cssnano(),
 ];
 
@@ -40,6 +40,8 @@ function buildFonts() {
 exports.buildStyles = buildStyles;
 exports.watch = function () {
   gulp.watch("./assets/scss/main.scss", buildStyles);
+  gulp.watch("./assets/scss/partials/*.scss", buildStyles);
+  gulp.watch("./assets/scss/views/*.scss", buildStyles);
   gulp.watch("./assets/scss/fons.scss", buildFonts);
   gulp.watch("./assets/scss/pages.scss", buildPages);
   gulp.watch("./assets/scss/_rights-holders.scss", buildPages);

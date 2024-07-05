@@ -23,72 +23,103 @@
 
     <div class="product" x-data="product">
         <div class="product__images">
-			<div class="images_desctop">
+			<div class="images_desctop" @click="showGallary">
 				{% if product.images.size == 1 %}
 					<img src="{{product.first_image.original_url | format: 'webp'}}" alt="{{ product.title }}" width="100%">
 				{% endif %}
 
-				{% if product.images.size == 2 or product.images.size == 3 %}
-					<div class="images">
-						{% for image in product.images %}
-							<div class="image__wrap">
-								<img src="{{product.first_image.original_url | format: 'webp'}}" alt="{{ product.title }}">
-							</div>
-						{% endfor %}
-					</div>
-				{% endif %}
+				{% if product.images.size >= 2 %}
+					{% assign images_in_grid = product.images.size | divided_by: 6 | times: 6 %}
+					{% assign images_over_grid = product.images.size | minus: images_in_grid %}
 
-				{% if product.images.size == 4 or product.images.size == 5 %}
-					<div class="images">
-						{% for image in product.images %}
-							{% if forloop.index <= 2 %}
-								<div class="image__wrap">
-									<img src="{{image.original_url | format: 'webp'}}" alt="{{ product.title }}">
-								</div>
-							{% endif %}
-						{% endfor %}
-					</div>
-					<div class="images">
-						{% for image in product.images %}
-							{% if forloop.index > 2 %}
-								<div class="image__wrap">
-									<img src="{{image.original_url | format: 'webp'}}" alt="{{ product.title }}">
-								</div>
-							{% endif %}
-						{% endfor %}
-					</div>
-				{% endif %}
+					{% for image in product.images %}
+						{% assign image_modulo = forloop.index | modulo: 6 %}
 
-				{% if product.images.size >= 6 %}
-					<div class="images">
-						{% for image in product.images %}
-							{% if forloop.index <= 2 %}
-								<div class="image__wrap">
-									<img src="{{image.original_url | format: 'webp'}}" alt="{{ product.title }}">
-								</div>
-							{% endif %}
-						{% endfor %}
-					</div>
-					<div class="images">
-						{% for image in product.images %}
-							{% if forloop.index > 2 and forloop.index <= 5 %}
-								<div class="image__wrap">
-									<img src="{{image.original_url | format: 'webp'}}" alt="{{ product.title }}">
-								</div>
-							{% endif %}
-						{% endfor %}
-					</div>
-					<div class="images images_single">
-						{% for image in product.images %}
-							{% if forloop.index == 6 %}
-								<div class="image__wrap">
-									<img src="{{image.large_url | format: 'webp'}}" alt="{{ product.title }}">
-								</div>
-							{% endif %}
-						{% endfor %}
-					</div>
-				{% endif %}
 
+						{% if forloop.index <= images_in_grid %}
+							{% if image_modulo == 1 %}
+								<div class="images">
+							{% endif %}
+
+							{% if image_modulo > 0 and image_modulo <= 2 %}
+								<div class="image__wrap" data-index="{{ forloop.index0 }}">
+									<img src="{{image.original_url | format: 'webp'}}" alt="{{ product.title }}">
+								</div>
+							{% endif %}
+
+							{% if image_modulo == 3 %}
+								</div>
+								<div class="images">
+							{% endif %}
+
+							{% if image_modulo > 2 and image_modulo <= 5 %}
+								<div class="image__wrap" data-index="{{ forloop.index0 }}">
+									<img src="{{image.original_url | format: 'webp'}}" alt="{{ product.title }}">
+								</div>
+							{% endif %}
+
+							{% if image_modulo == 0 %}
+								</div>
+								<div class="images images_single">
+									<div class="image__wrap" data-index="{{ forloop.index0 }}">
+										<img src="{{image.large_url | format: 'webp'}}" alt="{{ product.title }}">
+									</div>
+								</div>
+							{% endif %}
+						{% else %}
+							{% if images_over_grid == 1 %}
+								<div class="images images_single">
+									<div class="image__wrap" data-index="{{ forloop.index0 }}">
+										<img src="{{image.large_url | format: 'webp'}}" alt="{{ product.title }}">
+									</div>
+								</div>
+							{% endif %}
+
+							{% if images_over_grid == 2 or images_over_grid == 3 %}
+								{% if image_modulo == 1 %}
+									<div class="images">
+								{% endif %}
+
+								{% if image_modulo <= 3 %}
+									<div class="image__wrap" data-index="{{ forloop.index0 }}">
+										<img src="{{image.original_url | format: 'webp'}}" alt="{{ product.title }}">
+									</div>
+								{% endif %}
+
+								{% if forloop.last %}
+									</div>
+								{% endif %}
+							{% endif %}
+
+							{% if images_over_grid == 4 or images_over_grid == 5 %}
+								{% if image_modulo == 1 %}
+									<div class="images">
+								{% endif %}
+
+								{% if image_modulo <= 2 %}
+									<div class="image__wrap" data-index="{{ forloop.index0 }}">
+										<img src="{{image.original_url | format: 'webp'}}" alt="{{ product.title }}">
+									</div>
+								{% endif %}
+
+								{% if image_modulo == 2 %}
+									</div>
+									<div class="images">
+								{% endif %}
+
+								{% if image_modulo > 2 %}
+									<div class="image__wrap" data-index="{{ forloop.index0 }}">
+										<img src="{{image.original_url | format: 'webp'}}" alt="{{ product.title }}">
+									</div>
+								{% endif %}
+
+								{% if forloop.last %}
+									</div>
+								{% endif %}
+							{% endif %}
+						{% endif %}
+					{% endfor %}
+				{% endif %}
 			</div>
 			<div class="images_mobile"></div>
         </div>
@@ -486,7 +517,18 @@
 						}
 					});
 				},
-        
+				showGallary() {
+					let wrap = this.$event.target.closest('.image__wrap')
+
+					if (!wrap) return
+
+					let event = new CustomEvent('main-slide-change', {
+						detail: {index: wrap.dataset.index}
+					})
+					window.dispatchEvent(event)
+
+					this.$dispatch('show-gallary')
+				},
 			}))
 		})
 	</script>

@@ -1,0 +1,1060 @@
+<section class="section-product-view">
+  <div class="container">
+    <div class="product_inner">
+      {% if product.old_price > 0 %}
+        {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+        {% assign saleNumber = priceDivision | minus: 100 %}
+        {% assign salePercent = saleNumber | round: 0 %}
+      {% endif %}
+      {% assign collectionTitles = product.collections | sort: 'level' | map: 'title' %}
+      <div class="product_info" 
+        id="product_info"
+        x-data="{
+          variants: [],
+          variant: '',
+          productReady: false,
+          swiperMin: null,
+          swiperBig: null,
+		  
+          init() {
+            $.get('{{ product.url }}.json')
+              .done(resp => {
+                this.variants = resp.product.variants
+                if (this.variants.length > 1) {
+                  this.changeVariant()
+                } else {
+                  this.variant = this.variants[0]
+                }
+                this.productReady = true
+              })
+            this.swiperMin = new Swiper('.product_view_swiper_th', {
+              spaceBetween: 10,
+              slidesPerView: 6,
+              freeMode: {
+                enabled: true,
+                sticky: true,
+              },
+              mousewheel: true,
+              watchSlidesProgress: true,
+              direction: 'vertical',
+              autoHeight: true,
+              centeredSlides: true,
+              centeredSlidesBounds: true,
+            });
+            this.swiperBig = new Swiper('.product_view_swiper', {
+              spaceBetween: 10,
+              thumbs: {
+                swiper: this.swiperMin,
+                autoScrollOffset: 1,
+              },
+              on: {
+                'slideChange': () => {
+                  let event = new CustomEvent('main-slide-change', {
+                    detail: {index: this.swiperBig.realIndex}
+                  })
+                  window.dispatchEvent(event)
+                }
+              },
+              breakpoints: {
+                320: {
+                  pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                  },
+                },
+                1241: {
+                  pagination: false,
+                  keyboard: {
+                    enabled: false,
+                    onlyInViewport: false,
+                  },
+                },
+              },
+            });
+			      this.sendMetrica();
+          },
+          changeVariant() {
+            let selects = this.$refs.productOptions.querySelectorAll('._option_name')
+            let options = {}
+            selects.forEach(el => {
+              if (el.dataset.optionNameId == undefined) return
+
+              options[el.dataset.optionNameId] = el.value
+            })
+
+            let currentVariant = this.variants.find(variant => {
+              return variant.option_values.every(val => options[val.option_name_id] == val.id)
+            })
+
+            if (_.isNil(currentVariant)) {
+              currentVariant = this.variants.find(variant => {
+                return variant.option_values.some(val => options[this.$el.dataset.optionNameId] == val.id)
+              })
+            }
+            this.variant = currentVariant
+          },
+          addToCart() {
+            let items = {}
+            items[this.variant.id] = 1
+
+            ajaxAPI.cart.add(items, {})
+              .done(onDone => { 
+                this.$dispatch('cart-changed', onDone.items_count) 
+                this.$dispatch('toast-success', {message: 'Товар добавлен в корзину', delay: 1500}) 
+
+                dataLayer.push({
+                  'ecommerce': {
+                    'currencyCode': 'RUB',    
+                    'add': {
+                      'products': [
+                        {
+                          'id': '{{ product.id }}',
+                          'name' : '{{product.title}}',
+                          'price': {{ product.price }},
+                          'discount': '{{ salePercent | remove_first: '-'}}',
+                          'category': '{{ collectionTitles | join: '/' }}',
+                          'quantity': 1,
+                          'variant' : this.variant.title,
+                          // 'list': 'Выдача категории',
+                          // 'position': 2
+                        }
+                      ]
+                    }
+                  }
+                });
+              })
+              .fail(onFail => this.$dispatch('toast-error', {message: 'Ошибка добавления товара', delay: 2500}))
+          },
+          sendMetrica() {
+            dataLayer.push({
+              'ecommerce': {
+                'currencyCode': 'RUB',
+                'detail': {
+                  'products': [
+                    {
+                        'id': '{{ product.id }}',
+                        'name' : '{{product.title}}',
+                        'price': {{ product.price }},
+                        'discount': '{{ salePercent | remove_first: '-'}}',
+                        'category': '{{ collectionTitles | join: '/' }}',
+                        // 'list': 'Результаты поиска',
+                        // 'position': 1
+                    }
+                  ]
+                }
+              }
+            });
+          },
+        }"
+        @gallary-slide-change.window="swiperBig.slideTo($event.detail.index)"
+      >
+        <div class="carousel">
+          {% if product.images.size > 0 %}
+            <div thumbsSlider="" class="swiper product_view_swiper_th">
+              <div class="swiper-wrapper">
+                {% for image in product.images %}
+                  <div class="swiper-slide swiper-vertical-slide" data-id="{{ image.id }}">
+                    <img src="{{ image.thumb_url | image_url: 100, format: 'webp' }}" alt="{{ image.title }}" />
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if product.images.size > 0 %}
+            <div class="swiper product_view_swiper">
+              <div class="swiper-wrapper" x-ref="swiperContainer" @click="$dispatch('show-gallary')">
+                {% for image in product.images %}
+                  <div class="swiper-slide" data-id="{{ image.id }}">
+                    <img src="{{ image.original_url | image_url: 954, format: 'webp' }}" alt="{{ image.title }}" />
+                  </div>
+                {% endfor %}
+                
+              </div>
+              <div class="swiper-pagination"></div>
+              {% if product.rating %}
+                <div class="rating">
+                  {{ product.rating }}
+                  <span>/</span>
+                  5
+                  <img src="{{ 'Star_1.svg' | asset_url }}" alt="Иконка звездочки" />
+                </div>
+              {% endif %}
+            </div>
+          {% else %}
+            <div class="swiper product_view_swiper">
+              <div class="swiper-wrapper" x-ref="swiperContainer">
+                <div class="swiper-slide" data-id="{{ image.id }}">
+                  <img src="{{ product.first_image.original_url | image_url: 954, format: 'webp' }}" alt="{{ image.title }}" />
+                </div>
+              </div>
+              <div class="swiper-pagination"></div>
+              {% if product.rating %}
+                <div class="rating">
+                  {{ product.rating }}
+                  <span>/</span>
+                  5
+                  <img src="{{ 'Star_1.svg' | asset_url }}" alt="Иконка звездочки" />
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="product_info_char">
+          <div class="loading-cover" x-show="!productReady" x-transition.opacity.duration.600ms.delay.100ms>
+            <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+              <circle class="spin" cx="400" cy="400" fill="none"
+              r="40" stroke-width="13" stroke="#111111"
+              stroke-dasharray="202 1400" />
+            </svg>
+          </div>
+          <div class="original-label_wrap">
+            <div class="original-label">Оригинальный товар</div>
+          </div>
+          <div class="product_name">{{product.title}}</div>
+          <div class="product_price">
+            <span x-text="formatNumber(variant?.price ?? 0) + ' ₽'">{{ product.price | money }} </span>
+            <div class="product_old_price" 
+              x-show="variant?.old_price && +variant?.old_price > +variant?.price" 
+              x-text="formatNumber(variant?.old_price ?? 0) + ' ₽'"
+            >{{ product.old_price | money }}</div>
+          </div>
+          <div class="product_details">
+
+            <form action="{{ cart_url }}" method="post" data-product-id="{{ product.id }}">
+              {% if product.show_variants? %}
+                <div class="product-variants" x-ref="productOptions">
+                  {% for option_name in product.options %}
+                    {% if option_name.title != "Цвет товара" %}
+					            <div>{{ option_name.title }}</div>
+                      <select class="select_ordinary nice_select _option_name" data-option-name-id="{{ option_name.id }}" @change="changeVariant">
+                        {% for option_value in option_name.values %}
+                          <option value="{{ option_value.id }}" {% if forloop.first %} selected {% endif %}>{{ option_value.title | escape }}</option>
+                        {% endfor %}
+                      </select>
+                    {% else %}
+                      <div>{{ option_name.title }}</div>
+                      <select id="variant-select" class="select_ordinary nice_select _option_name"
+                        data-option-name-id="{{ option_name.id }}"
+                        @change="change"
+                        x-data="{
+                          change() {
+                            if (this.$el.value === '') {
+                              return
+                            }
+
+                            location.replace(this.$el.value)
+                          }
+                        }"
+                      >
+                        {% for option_value in option_name.values %}
+                          <option selected value="{{ option_value.id }}">{{ option_value.title | escape }}</option>
+                        {% endfor %}
+
+                        {% if product.similar_products.size > 0 %}
+                          {% for sim_product in product.similar_products %}
+                            {% assign sim_color = sim_product.options | where: "title", "Цвет товара" | first %}
+                            {% for sim_color_value in sim_color.values %}
+                              <option value="{{ sim_product.url }}">{{ sim_color_value.title | escape }}</option>
+                            {% endfor %}
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    {% endif %}
+                    
+                  {% endfor %}
+
+
+                </div>
+              {% else %}
+                <input type="hidden" name="variant_id" value="{{ product.variants.first.id }}" />
+              {% endif %}
+
+
+              <div class="product_quantity">
+                <!-- <div class="product_quantity__title">Наличие на складе:</div> -->
+                <div class="product_quantity__body">
+                  <div class="quantity">Наличие на складе: <span x-text="formatNumber(variant?.quantity_at_warehouse0) + ' шт.'"></span></div>
+                </div>
+              </div>
+
+              <div class="data">
+                  <button type="button" class="add_to_card button_black" @click="addToCart">Добавить в корзину</button>
+              </div>
+            </form>
+
+            <button class="save_btn" data-ui-favorites-trigger="{{ product.id }}">
+              <span data-ui-favorites-trigger-added-text="В избранном"
+                data-ui-favorites-trigger-not-added-text="Добавить в избранное"
+              ></span>
+              <!-- <img src="{{ 'ICO-heart.svg' | asset_url }}" alt="" /> -->
+              <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+              <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+            </button>
+
+            <button type="button" class="btn btn-secondary" @click="$dispatch('law-info')">Юридическая информация о продавце</button>
+          </div>
+        </div>
+      </div>
+      <div class="product_tab">
+        <div class="tab_header">
+          <button class="tab_header_item active" data-tab="info_tab"
+            >О товаре
+          </button>
+          <button class="tab_header_item" data-tab="review_tab"
+            >Отзывы ({{product.reviews_count}})
+          </button>
+        </div>
+        <div class="tab_body">
+          <div class="tab_body_item info_tab active">
+            <div class="description">
+              <p>
+                {{product.description}}
+              </p>
+            </div>
+            <dl class="info_tab_list">
+
+              {% for property in product.properties %}
+
+                  <div class="list_item">
+                    <dt class="item_label">{{property.name}}</dt>
+                     
+                    <dd class="item_info">
+                      {% for item in property.characteristics %}
+                        {% if forloop.last %}
+                          {{item.name}}
+                        {% else %}
+                          {{item.name}},
+                        {% endif %}
+                      {% endfor %}
+                    </dd>
+                  </div>
+
+              {% endfor %}
+              
+            </dl>
+            <div class="characteristics-notice">
+              Информация о технических характеристиках, комплекте поставки, стране изготовления, внешнем виде и цвете товара носит справочный характер и основывается на последних доступных к моменту публикации сведениях, представленных продавцом товаров
+            </div>
+          </div>
+          <div class="tab_body_item review_tab nem">
+            {% if account.reviews_enabled? %}
+              
+            <form
+            class="review-form"
+              @submit.prevent="sendFeedback"
+              x-data="{
+                show: false,
+                active: true,
+                errors: [],
+                success: false,
+
+                sendFeedback() {
+                  if (!this.active) return
+
+                  this.active = false
+                  this.errors = []
+                  let data = new FormData(this.$event.target)
+                  if (data.get('review[image_attributes][image]').size === 0) {
+                    data.delete('review[image_attributes][image]')
+                  }
+                  $.post('{{ product.url }}/reviews.json', Object.fromEntries(data.entries()))
+                    .done(res => {
+                      if (res.errors) {
+                        this.errors = res.errors.content
+                        return
+                      }
+
+                      this.success = true
+                    })
+                    .fail((fail) => console.log(fail))
+                    .always(() => this.active = true)
+                },
+              }"
+            >
+              {% assign success_message = messages.review_is_added %}
+              {% if account.reviews_moderated? %}
+                {% assign success_message = messages.review_is_added_moderated %}
+              {% endif %}
+
+              <div
+                id="review_form"
+                class="reviews-wrapper {% unless review.errors.size > 0 %}is-hide{% endunless%}"
+              >
+                <div class="reviews-form">
+                  <div class="reviews-form__header" :class="show && 'active'" @click="show = !show">
+                    <div class="reviews-form__title">Оставить отзыв</div>
+                    <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="вниз">
+                  </div>
+
+                  <div class="reviews-form__content" :class="show && 'active'">
+                    <div class="reviews-form__content-wrapper">
+                      <div class="form-field reviews-form__rating">
+                        <div data-reviews-form-field-area class="star-rating-wrapper">
+                          <div class="rating-area">
+                            <input type="radio" id="star-5" name="review[rating]" value="5">
+                            <label for="star-5" title="Оценка «5»"></label>	
+                            <input type="radio" id="star-4" name="review[rating]" value="4">
+                            <label for="star-4" title="Оценка «4»"></label>    
+                            <input type="radio" id="star-3" name="review[rating]" value="3">
+                            <label for="star-3" title="Оценка «3»"></label>  
+                            <input type="radio" id="star-2" name="review[rating]" value="2">
+                            <label for="star-2" title="Оценка «2»"></label>    
+                            <input type="radio" id="star-1" name="review[rating]" value="1">
+                            <label for="star-1" title="Оценка «1»"></label>
+                          </div>
+                          <div data-reviews-form-field-error class="form__field-error"></div>
+                        </div>
+                      </div>
+                      <div
+                        data-reviews-form-field-area
+                        class="form-field is-required {% if review.errors contains 'author' %}is-error{% endif %}"
+                      >
+                        <input
+                          name="review[author]"
+                          placeholder="{{ messages.name }} *"
+                          type="text"
+                          class="ordinary_input" />
+                        <div data-reviews-form-field-error class="form__field-error"></div>
+                      </div>
+                      <div data-reviews-form-field-area class="form-field is-required {% if review.errors contains 'email' %}is-error{% endif %}">
+                        <input
+                          name="review[email]"
+                          placeholder="{{ messages.field_email }} *"
+                          type="text"
+                          class="ordinary_input"
+                        />
+                        <div data-reviews-form-field-error class="form__field-error"></div>
+                      </div>
+                      <div
+                        data-reviews-form-field-area
+                        class="form-field form-comment is-required {% if review.errors contains 'content' %}is-error{% endif %}">
+                        <textarea
+                          name="review[content]"
+                          placeholder="{{ messages.review }}*"
+                          class="review__text"
+                        >{{ review.content }}</textarea>
+                        <template x-for="error in errors">
+                          <div style="margin-top: 10px;" class="form__field-error" x-text="error"></div>
+                        </template>
+                      </div>
+                      {% if account.reviews_images_enabled? %}
+                        <div
+                          data-reviews-form-field-area
+                          class="form-field form-file is-required {% if review.errors contains 'image.image' %} input--error{% endif %}"
+                        >
+                          <label class="form-label icon icon-camera">
+                            <span class="load-review-image-name">{{ messages.add_photo }}</span>
+                            <input
+                              data-reviews-form-image
+                              type="file"
+                              class="ordinary_input"
+                              name="review[image_attributes][image]" />
+                          </label>
+                          <div data-reviews-form-field-error class="form__field-error"></div>
+                        </div>
+                      {% endif %}
+                      <div
+                        class="notice-success"
+                      ></div>
+                      <div class="form-field form-field_conctrols">
+                        <button 
+                          type="submit" 
+                          class="review-form__button"
+                          :class="success && 'success'" 
+                          :disabled="success" 
+                          x-text="success ? 'Отзыв успешно отправлен' : '{{ messages.give_feedback }}'"
+                        ></button>
+                      </div>
+                      {% if account.reviews_moderated? %}
+                        <div class="reviews-form__moderation-info">
+                          {{ messages.reviews_are_moderated }}
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <hr>
+              
+              {% if product.reviews == empty %}
+                
+                <div class="tab_item_innner">
+                  <div class="tab_item_title">Нет отзывов</div>
+                  <div class="subtitle">
+                    На данный товар пока никто не оставил свой отзыв.
+                  </div>
+                </div>
+
+              {% else %}
+
+                <div class="not_empty">
+                  <div class="review_header">
+                    {% if product.rating > 1 %}
+                      <div class="review_rating">
+                        {{ product.rating }}
+                        <div class="rating-stars">
+                          <div class="background" style="width: {{ product.rating | times: 100 | divided_by: 5 }}%"></div>
+                          <img src="{{ 'star-mask.png' | asset_url }}" alt="Рейтинг товара {{ product.rating }}">
+                        </div>
+                        <div class="rating_text">Суммарная оценка</div>
+                      </div>
+                    {% endif %}
+                  </div>
+                  <div class="reviews-wrap">
+                    {% for review in product.reviews %}
+                      <div class="comment_item">
+                        <div class="comment_name">
+                          <span>{{ review.author }}</span>
+                          <span>{{ review.created_at | date: "%d.%m.%Y" }}</span>
+                        </div>
+                        {% if review.rating %}
+                          <div class="comment_rating">
+                            <div class="rating-stars">
+                              <div class="background" style="width: {{ review.rating | times: 100 | divided_by: 5 }}%"></div>
+                              <img src="{{ 'star-mask-white.png' | asset_url }}" alt="Оценка товара {{ review.rating }}">
+                            </div>
+                          </div>
+                        {% endif %}
+                        
+                        <div class="comment_text">
+                          {{ review.content | newline_to_br }}
+                        </div>
+                        {% if review.replied? %}
+                          <div class="comment_reply">
+                            <div class="reply_admin">Ответ администрации:</div>
+                            <div class="reply_text">{{ review.manager_reply }}</div>
+                          </div>
+                        {% endif %}
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+
+        
+      </div>
+
+      <div class="product_accordion">
+        <div class="accordion_item" :class="open && 'active'" x-data="{open: true}">
+          <button class="accordion_link" @click="open = !open">
+            О товаре <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="вниз">
+          </button>
+          <div class="accordion_content">
+            <div class="accordion_content__wrap">
+              <div class="description">
+                {{product.description}}
+              </div>
+  
+              <dl class="info_tab_list">
+  
+                {% for property in product.properties %}
+                
+                  <div class="list_item">
+                    <dt class="item_label">{{property.name}}</dt>
+                    <dd class="item_info">
+                      {% for item in property.characteristics %}
+                          {% if forloop.last %}
+                            {{item.name}}
+                          {% else %}
+                            {{item.name}},
+                          {% endif %}
+                        {% endfor %}
+                    </dd>
+                  </div>
+  
+                {% endfor %}
+  
+              </dl>
+
+              <div class="characteristics-notice">
+                Информация о технических характеристиках, комплекте поставки, стране изготовления, внешнем виде и цвете товара носит справочный характер и основывается на последних доступных к моменту публикации сведениях, представленных продавцом товаров
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion_footer">
+            <div class="accordion_footer__wrap">
+              <!-- <button class="accordion_link_hide" @click="open = false">
+                <span>Скрыть</span> <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="">
+              </button> -->
+            </div>
+          </div>
+        </div>
+        <div class="accordion_item" :class="open && 'active'" x-data="{open: false}">
+          <button class="accordion_link" @click="open = !open">
+            Отзывы ({{product.reviews_count}}) <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="стрелка вниз">
+          </button>
+          <div class="accordion_content">
+            <div class="accordion_content__wrap">
+              {% if account.reviews_enabled? %}
+                
+              <form
+                data-reviews-form-wrapper="{
+                  'reviews_moderated': {{ account.reviews_moderated? }},
+                  'url': '{{ product.url }}'
+                }"
+                class="review-form"
+                method="post"
+                action="{{ product.url }}"
+                enctype="multipart/form-data"
+              >
+                {% assign success_message = messages.review_is_added %}
+                {% if account.reviews_moderated? %}
+                  {% assign success_message = messages.review_is_added_moderated %}
+                {% endif %}
+
+                <div
+                  id="review_form"
+                  class="reviews-wrapper {% unless review.errors.size > 0 %}is-hide{% endunless%}"
+                  x-data="{show: false}"
+                >
+                  <div class="reviews-form">
+                    <div class="reviews-form__header" :class="show && 'active'" @click="show = !show">
+                      <div class="reviews-form__title">Оставить отзыв</div>
+                      <img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="вниз">
+                    </div>
+
+                    <div class="reviews-form__content" :class="show && 'active'">
+                      <div class="reviews-form__content-wrapper">
+                        <div class="form-field reviews-form__rating">
+                          <div data-reviews-form-field-area class="star-rating-wrapper">
+                            <div class="rating-area">
+                              <input type="radio" id="star-5" name="review[rating]" value="5">
+                              <label for="star-5" title="Оценка «5»"></label>	
+                              <input type="radio" id="star-4" name="review[rating]" value="4">
+                              <label for="star-4" title="Оценка «4»"></label>    
+                              <input type="radio" id="star-3" name="review[rating]" value="3">
+                              <label for="star-3" title="Оценка «3»"></label>  
+                              <input type="radio" id="star-2" name="review[rating]" value="2">
+                              <label for="star-2" title="Оценка «2»"></label>    
+                              <input type="radio" id="star-1" name="review[rating]" value="1">
+                              <label for="star-1" title="Оценка «1»"></label>
+                            </div>
+                            <div data-reviews-form-field-error class="form__field-error"></div>
+                          </div>
+                        </div>
+                        <div
+                          data-reviews-form-field-area
+                          class="form-field is-required {% if review.errors contains 'author' %}is-error{% endif %}"
+                        >
+                          <input
+                            data-reviews-form-field='{
+                              "isRequired": true,
+                              "errorMessage": "{{ messages.name_error | escape }}"
+                            }'
+                            name="review[author]"
+                            placeholder="{{ messages.name }}"
+                            value="{{ review.author }}"
+                            type="text"
+                            class="ordinary_input" />
+                          <div data-reviews-form-field-error class="form__field-error"></div>
+                        </div>
+                        <div data-reviews-form-field-area class="form-field is-required {% if review.errors contains 'email' %}is-error{% endif %}">
+                          <input
+                            data-reviews-form-field='{
+                              "isRequired": true,
+                              "errorMessage": "{{ messages.email_error | escape}}"
+                            }'
+                            name="review[email]"
+                            placeholder="{{ messages.field_email }}"
+                            value="{{ review.email }}"
+                            type="text"
+                            class="ordinary_input"
+                          />
+                          <div data-reviews-form-field-error class="form__field-error"></div>
+                        </div>
+                        <div
+                          data-reviews-form-field-area
+                          class="form-field form-comment is-required {% if review.errors contains 'content' %}is-error{% endif %}">
+                          <textarea
+                            data-reviews-form-field='{
+                              "isRequired": true,
+                              "errorMessage": "{{ messages.please_enter_message | escape }}"
+                            }'
+                            name="review[content]"
+                            placeholder="{{ messages.review }}*"
+                            class="review__text"
+                          >{{ review.content }}</textarea>
+                          <div data-reviews-form-field-error class="form__field-error"></div>
+                        </div>
+                        {% if account.reviews_images_enabled? %}
+                          <div
+                            data-reviews-form-field-area
+                            class="form-field form-file is-required {% if review.errors contains 'image.image' %} input--error{% endif %}"
+                          >
+                            <label class="form-label icon icon-camera">
+                              <span class="load-review-image-name">{{ messages.add_photo }}</span>
+                              <input
+                                data-reviews-form-image
+                                type="file"
+                                class="ordinary_input"
+                                name="review[image_attributes][image]" />
+                            </label>
+                            <div data-reviews-form-field-error class="form__field-error"></div>
+                          </div>
+                        {% endif %}
+                        <div
+                          data-reviews-form-success='{
+                            "showTime": 10000,
+                            "message": "{{ success_message }}",
+                            "reloadPage": false
+                          }'
+                          class="notice-success"
+                        ></div>
+                        <div class="form-field form-field_conctrols">
+                          <button type="submit" class="review-form__button">{{ messages.give_feedback }}</button>
+                        </div>
+                        {% if account.reviews_moderated? %}
+                          <div class="reviews-form__moderation-info">
+                            {{ messages.reviews_are_moderated }}
+                          </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+              <hr>
+                
+                {% if product.reviews == empty %}
+                  
+                  <div class="tab_item_innner">
+                    <div class="tab_item_title">Нет отзывов</div>
+                    <div class="subtitle">
+                      На данный товар пока никто не оставил свой отзыв.
+                    </div>
+                  </div>
+
+                {% else %}
+
+                  <div class="not_empty">
+                    <div class="review_header">
+                      {% if product.rating > 1 %}
+                        <div class="review_rating">
+                          {{ product.rating }}
+                          <div class="rating-stars">
+                            <div class="background" style="width: {{ product.rating | times: 100 | divided_by: 5 }}%"></div>
+                            <img src="{{ 'star-mask.png' | asset_url }}" alt="Рейтинг товара {{ product.rating }}">
+                          </div>
+                          <div class="rating_text">Суммарная оценка</div>
+                        </div>
+                      {% endif %}
+                    </div>
+                    <div class="reviews-wrap">
+                      {% for review in product.reviews %}
+                        <div class="comment_item">
+                          <div class="comment_name">
+                            <span>{{ review.author }}</span>
+                            <span>{{ review.created_at | date: "%d.%m.%Y" }}</span>
+                          </div>
+                          {% if review.rating %}
+                            <div class="comment_rating">
+                              <div class="rating-stars">
+                                <div class="background" style="width: {{ review.rating | times: 100 | divided_by: 5 }}%"></div>
+                                <img src="{{ 'star-mask-white.png' | asset_url }}" alt="Оценка товара {{ review.rating }}">
+                              </div>
+                            </div>
+                          {% endif %}
+                          
+                          <div class="comment_text">
+                            {{ review.content | newline_to_br }}
+                          </div>
+                          {% if review.replied? %}
+                            <div class="comment_reply">
+                              <div class="reply_admin">Ответ администрации:</div>
+                              <div class="reply_text">{{ review.manager_reply }}</div>
+                            </div>
+                          {% endif %}
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+
+                {% endif %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    {% assign collections = product.collections | sort: 'level' %}
+    {% assign collection = collections | last %}
+    {% assign gender_collection = collections | where: 'handle', 'muzhchinam' | first %}
+
+    {% unless gender_collection %}
+      {% assign gender_collection = collections | where: 'handle', 'zhenschinam' | first %}
+    {% endunless %}
+
+    {% assign brand_property = product.properties | where: 'handle', 'brand' | first %}
+
+    <div class="same_links">
+      {% if brand_property %}
+        {% assign brand = brand_property.characteristics | first %}
+		    {% assign brand_block = block_lists.with_template['system-banner-3'].brands.blocks | where: 'link', brand.handle | first %}
+
+        <a href="{{ collection.url | add_param: 'characteristics[]', brand.id }}" class="same_link">
+          <div class="same_link_img">
+            <img src="{{ collection.image.thumb_url }}" alt="{{ collection.title }}" />
+          </div>
+          <div class="same_link_text">
+            <div class="same_link_name">
+              Вся категория {{ collection.title | downcase }} бренда «{{ brand.title }}»
+            </div>
+            <div class="same_link_subname">Бренд и категория</div>
+          </div>
+        </a>
+        <a href="{{ gender_collection.url | add_param: 'characteristics[]', brand.id }}" class="same_link">
+          <div class="same_link_img">
+            <img src="{{ brand_block.image }}" alt="{{ brand.title }}" />
+
+          </div>
+          <div class="same_link_text">
+            <div class="same_link_name">Вся продукция «{{ brand.title }}»</div>
+            <div class="same_link_subname">Бренд</div>
+          </div>
+        </a>
+      {% endif %}
+
+      <a href="{{ collection.url }}" class="same_link">
+        <div class="same_link_img">
+          <img src="{{ collection.image.thumb_url }}" alt="{{ collection.title }}" />
+        </div>
+        <div class="same_link_text">
+          <div class="same_link_name">Вся категория {{ collection.title | downcase }}</div>
+          <div class="same_link_subname">Категория</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+{% if product.related_products.size > 0 %}
+
+<section class="section-products-carousel">
+  <div class="container">
+    <div class="products_header section_header">
+      <div class="section_title">С этим товаром покупают</div>
+      <div class="slider_buttons">
+        <div class="swiper-button-next">
+          <img src="{{ 'ICO-next.svg' | asset_url }}" alt="стрелка вперед" />
+        </div>
+        <div class="swiper-button-prev">
+          <img src="{{ 'ICO-back.svg' | asset_url }}" alt="стрелка назад" />
+        </div>
+      </div>
+    </div>
+    <!-- Slider main container -->
+    <div
+      class="swiper products_swiper swiper-initialized swiper-horizontal swiper-backface-hidden">
+      <!-- Additional required wrapper -->
+      <div
+        class="swiper-wrapper"
+        id="swiper-wrapper-cb1071e566d10864ee"
+        aria-live="polite">
+        <!-- Slides -->
+
+        
+        {% for product in product.related_products  %}
+          <div class="swiper-slide">
+            {% if product.old_price > 0 %}
+              {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+              {% assign saleNumber = priceDivision | minus: 100 %}
+              {% assign salePercent = saleNumber | round: 0 %}
+            {% endif %}
+            <div class="product_slide_card">
+              <div class="product_card_img">
+                <a class="card_img__link" href="{{product.url}}">
+                  <img class="card_img__image" src="{{product.first_image.large_url | image_url: 459, format: 'webp'}}" alt="{{product.title}}" />
+                </a>
+                <div class="labels">
+                  {% if product.old_price > 0 %}
+                    <div class="labe_discount">{{ salePercent }}%</div>
+                  {% endif %}
+                  <!-- <div class="labe_premium">Premium</div> -->
+                </div>
+                <button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
+                <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+                <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+                </button>
+              </div>
+              <div class="product_card_itext">
+                <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
+                <div class="product_card_prices">
+                  <div class="product_card_price">{{ product.price | money }}</div>
+                  {% if product.old_price > 0 %}
+                    <div class="product_card_old_price">{{ product.old_price | money }}</div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+
+        
+
+      </div>
+
+      <!-- If we need navigation buttons -->
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+      <span
+        class="swiper-notification"
+        aria-live="assertive"
+        aria-atomic="true"></span>
+    </div>
+  </div>
+</section>
+
+{% endif %}
+
+{% if product.similar_products.size > 0 %}
+
+  <!-- section products carousel-->
+  <section class="section-sim-products-carousel">
+    <div class="container">
+      <div class="products_header section_header">
+        <div class="section_title">Похожие</div>
+        <div class="slider_buttons">
+          <div class="swiper-button-next">
+            <img src="{{ 'ICO-next.svg' | asset_url }}" alt="стрелка вперед" />
+          </div>
+          <div class="swiper-button-prev">
+            <img src="{{ 'ICO-back.svg' | asset_url }}" alt="стрелка назад" />
+          </div>
+        </div>
+      </div>
+      <!-- Slider main container -->
+      <div
+        class="swiper similar_swiper swiper-initialized swiper-horizontal swiper-backface-hidden">
+        <!-- Additional required wrapper -->
+        <div
+          class="swiper-wrapper"
+          id="swiper-wrapper-cb1071e566d10864ee"
+          aria-live="polite">
+          <!-- Slides -->
+
+          
+          {% for product in product.similar_products %}
+            {% if product.old_price > 0 %}
+              {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+              {% assign saleNumber = priceDivision | minus: 100 %}
+              {% assign salePercent = saleNumber | round: 0 %}
+            {% endif %}
+            <div class="swiper-slide">
+              <div class="product_slide_card">
+                <div class="product_card_img">
+                  <a class="card_img__link" href="{{product.url}}">
+                    <img class="card_img__image" src="{{product.first_image.large_url | image_url: 459, format: 'webp'}}" alt="{{product.title}}" />
+                  </a>
+                  <div class="labels">
+                    {% if product.old_price > 0 %}
+                      <div class="labe_discount">{{ salePercent }}%</div>
+                    {% endif %}
+                    <!-- <div class="labe_premium">Premium</div> -->
+                  </div>
+                  <button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
+                  <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+                  <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+                  </button>
+                </div>
+                <div class="product_card_itext">
+                  <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
+                  <div class="product_card_prices">
+                    <div class="product_card_price">{{ product.price | money }}</div>
+                    {% if product.old_price > 0 %}
+                      <div class="product_card_old_price">{{ product.old_price | money }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+
+          
+
+        </div>
+
+        <span
+          class="swiper-notification"
+          aria-live="assertive"
+          aria-atomic="true"></span>
+      </div>
+    </div>
+  </section>
+
+{% endif %}
+
+
+
+<div class="modal modal-sm" 
+  style="display: none;" 
+  x-show="show" 
+  @law-info.window="show = true"
+  x-transition.opacity
+  x-data="{
+	  show: false,
+    brandId: '{{ brand.id }}',
+    organization: null,
+
+    init() {
+      if (
+        !sessionStorage.getItem('brands') ||
+        !sessionStorage.getItem('organizations')
+      ) {
+        $.get('https://app.limmite.ru/api/organizations_brands').success(
+          (response) => {
+            sessionStorage.setItem('brands', JSON.stringify(response.brands));
+            sessionStorage.setItem('organizations', JSON.stringify(response.organizations));
+          }
+        );
+
+        setTimeout(() => this.init(), 2000)
+        return
+      }
+
+      this.findOrganization()
+    },
+    findOrganization() {
+      let brands = JSON.parse(sessionStorage.getItem('brands'))
+      let organizations = JSON.parse(sessionStorage.getItem('organizations'))
+
+      let brand = brands.find(brand => brand.id == this.brandId)
+      this.organization = organizations.find(org => org.id == brand.organization_id)
+    },
+  }"
+>
+  <div class="modal__window" @click.outside="show = false">
+    <div class="modal__header">
+      <div class="modal__title">Юридическая информация</div>
+      <div class="modal__close" @click="show = false">
+        <img src="{{ 'ICO-close-white.svg' | asset_url }}" alt="закрыть окно">
+      </div>
+    </div>
+    <div class="modal__body">
+      <dl class="list">
+        <div class="list_item">
+          <dt class="item_label">Продавец</dt>
+          <dd class="item_info" x-text="organization?.title">
+            ИП Смирнов
+          </dd>
+        </div>
+
+        <div class="list_item">
+          <dt class="item_label">ИНН</dt>
+          <dd class="item_info" x-text="organization?.inn">
+            123456789987
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</div>

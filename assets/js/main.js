@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Optional parameters
 
     loop: true,
-    slidesPerView: 4,
+    slidesPerView: 6,
     spaceBetween: 24,
     breakpoints: {
       320: {
@@ -56,11 +56,11 @@ document.addEventListener("DOMContentLoaded", function () {
         spaceBetween: 24,
       },
       767: {
-        slidesPerView: 2.3,
+        slidesPerView: 2,
         spaceBetween: 24,
       },
       999: {
-        slidesPerView: 3,
+        slidesPerView: 4,
         spaceBetween: 40,
       },
       1241: {
@@ -68,8 +68,8 @@ document.addEventListener("DOMContentLoaded", function () {
         spaceBetween: 40,
       },
       1441: {
-        slidesPerView: 4,
-        spaceBetween: 40,
+        slidesPerView: 6,
+        spaceBetween: 24,
       },
     },
     // Navigation arrows

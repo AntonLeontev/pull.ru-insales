@@ -1,24 +1,29 @@
 .btn {
 	display: flex;
-	gap: 10px;
+	gap: .625rem;
 	justify-content: center;
 	align-items: center;
 	color: $primary;
 	text-align: center;
-	font-size: 1.25rem;
+	font-size: 20px;
 	font-style: normal;
 	font-weight: 400;
 	line-height: 100%;
-	padding: 1.25rem;
+	padding: 20px;
+	border: .0625rem solid $primary;
 
-	@media (max-width: 999px) {
-		font-size: .875rem;
-		padding: .875rem;
+	@media (max-width: 62.4375rem) {
+		font-size: 14px;
+		padding: 14px;
 	}
 }
 .btn-primary {
 	background: $primary;
 	color: $white;
+}
+.btn-outline {
+	background: $white;
+	color: $primary;
 }
 .btn-secondary {
 	background: #f4f4f4;
@@ -39,29 +44,29 @@
 
 	&__window {
 		background: $white;
-		padding: 24px;
-		margin-left: 10px;
-		margin-right: 10px;
+		padding: 1.5rem;
+		margin-left: .625rem;
+		margin-right: .625rem;
 		width: 100%;
-		max-width: 500px;
+		max-width: 31.25rem;
 	}
 
 	&.modal-sm .modal__window {
-		max-width: 360px;
+		max-width: 22.5rem;
 	}
 
 	&__header {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		padding-bottom: 16px;
-		border-bottom: 1px solid $primary;
-		margin-bottom: 24px;
+		padding-bottom: 1rem;
+		border-bottom: .0625rem solid $primary;
+		margin-bottom: 1.5rem;
 	}
 
 	&__title {
 		color: $primary;
-		font-size: 19px;
+		font-size: 1.1875rem;
 	}
 
 	&__close {
@@ -69,9 +74,9 @@
 		justify-content: center;
 		align-items: center;
 		background-color: $primary;
-		width: 20px;
-		height: 20px;
-		margin-left: 15px;
+		width: 1.25rem;
+		height: 1.25rem;
+		margin-left: .9375rem;
 		cursor: pointer;
 	}
 }
@@ -80,14 +85,14 @@
 	.list_item {
 		display: flex;
 		align-items: center;
-		border-bottom: 2px solid #d1d1d1;
-		padding: 14px 0;
+		border-bottom: .125rem solid #d1d1d1;
+		padding: .875rem 0;
 		justify-content: space-between;
-		column-gap: 10px;
+		column-gap: .625rem;
 		
 		.item_label {
 			color: $secondary;
-			font-size: 19px;
+			font-size: 1.1875rem;
 			font-style: normal;
 			font-weight: 400;
 			line-height: 100%;
@@ -95,7 +100,7 @@
 		.item_info {
 			color: $primary;
 			text-align: right;
-			font-size: 19px;
+			font-size: 1.1875rem;
 			font-style: normal;
 			font-weight: 400;
 			line-height: 100%;
@@ -107,9 +112,9 @@
 	label {
 		display: flex;
 		justify-content: flex-start;
-		column-gap: 5px;
+		column-gap: .3125rem;
 		cursor: pointer;
-		font-size: 19px;
+		font-size: 1.1875rem;
 	}
 
 	input {
@@ -122,9 +127,9 @@
 	.check {
 		flex-shrink: 0;
 		position: relative;
-		width: 25px;
-		height: 25px;
-		border: $border-color_4 solid 1px;
+		width: 1.5625rem;
+		height: 1.5625rem;
+		border: $border-color_4 solid .0625rem;
 		transition: all .3s ease;
 	}
 

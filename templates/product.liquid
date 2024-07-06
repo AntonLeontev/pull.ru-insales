@@ -121,7 +121,60 @@
 					{% endfor %}
 				{% endif %}
 			</div>
-			<div class="images_mobile"></div>
+			<div class="images_mobile">
+				<div class="carousel">
+					{% if product.images.size > 0 %}
+						<div thumbsSlider="" class="swiper product_view_swiper_th">
+							<div class="swiper-wrapper">
+								{% for image in product.images %}
+									<div class="swiper-slide swiper-vertical-slide" data-id="{{ image.id }}">
+										<img src="{{ image.thumb_url | image_url: 100, format: 'webp' }}" alt="{{ image.title }}" />
+									</div>
+								{% endfor %}
+							</div>
+						</div>
+					{% endif %}
+
+					{% if product.images.size > 0 %}
+						<div class="swiper product_view_swiper">
+							<div class="swiper-wrapper" x-ref="swiperContainer" @click="$dispatch('show-gallary')">
+								{% for image in product.images %}
+									<div class="swiper-slide" data-id="{{ image.id }}">
+										<img src="{{ image.original_url | image_url: 954, format: 'webp' }}" alt="{{ image.title }}" />
+									</div>
+								{% endfor %}
+								
+							</div>
+							<div class="swiper-pagination"></div>
+							{% if product.rating %}
+								<div class="rating">
+									{{ product.rating }}
+									<span>/</span>
+									5
+									<img src="{{ 'Star_1.svg' | asset_url }}" alt="Иконка звездочки" />
+								</div>
+							{% endif %}
+						</div>
+					{% else %}
+						<div class="swiper product_view_swiper">
+							<div class="swiper-wrapper" x-ref="swiperContainer">
+								<div class="swiper-slide" data-id="{{ image.id }}">
+									<img src="{{ product.first_image.original_url | image_url: 954, format: 'webp' }}" alt="{{ image.title }}" />
+								</div>
+							</div>
+							<div class="swiper-pagination"></div>
+							{% if product.rating %}
+								<div class="rating">
+								{{ product.rating }}
+								<span>/</span>
+								5
+								<img src="{{ 'Star_1.svg' | asset_url }}" alt="Иконка звездочки" />
+								</div>
+							{% endif %}
+						</div>
+					{% endif %}
+				</div>
+			</div>
         </div>
         <div class="product__info">
             <div class="loading-cover" x-show="!productReady" x-transition.opacity.duration.600ms.delay.100ms>
@@ -384,7 +437,6 @@
 				variants: [],
 				variant: '',
 				productReady: false,
-				swiperMin: null,
 				swiperBig: null,
 				
 				init() {
@@ -399,49 +451,24 @@
 						this.productReady = true
 					})
 
-					this.swiperMin = new Swiper('.product_view_swiper_th', {
-					spaceBetween: 10,
-					slidesPerView: 6,
-					freeMode: {
-						enabled: true,
-						sticky: true,
-					},
-					mousewheel: true,
-					watchSlidesProgress: true,
-					direction: 'vertical',
-					autoHeight: true,
-					centeredSlides: true,
-					centeredSlidesBounds: true,
-					});
 					this.swiperBig = new Swiper('.product_view_swiper', {
-					spaceBetween: 10,
-					thumbs: {
-						swiper: this.swiperMin,
-						autoScrollOffset: 1,
-					},
-					on: {
-						'slideChange': () => {
-						let event = new CustomEvent('main-slide-change', {
-							detail: {index: this.swiperBig.realIndex}
-						})
-						window.dispatchEvent(event)
-						}
-					},
-					breakpoints: {
-						320: {
+						spaceBetween: 10,
+						thumbs: {
+							swiper: this.swiperMin,
+							autoScrollOffset: 1,
+						},
+						on: {
+							'slideChange': () => {
+								let event = new CustomEvent('main-slide-change', {
+									detail: {index: this.swiperBig.realIndex}
+								})
+								window.dispatchEvent(event)
+							}
+						},
 						pagination: {
 							el: '.swiper-pagination',
 							clickable: true,
 						},
-						},
-						1241: {
-						pagination: false,
-						keyboard: {
-							enabled: false,
-							onlyInViewport: false,
-						},
-						},
-					},
 					});
 						this.sendMetrica();
 				},
@@ -595,6 +622,8 @@
 		</section>
 
 		{% endif %}
+
+		
 	
 </div>
 

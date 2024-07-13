@@ -53,7 +53,14 @@
         dataType: 'jsonp',
         timeout: 2000,
       })
-      .done(resp => this.initWidget(resp.city))
+      .done(resp => {
+		if (resp.country !== 'RU') {
+			this.initWidget('Москва')
+			return;
+		}
+
+		this.initWidget(resp.city)
+	  })
       .fail((fail) => {
         this.initWidget('Москва')
       })

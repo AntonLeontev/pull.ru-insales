@@ -572,9 +572,9 @@
 						<img src="{{ 'ICO-back.svg' | asset_url }}" alt="стрелка назад" />
 					</div>
 				</div>
-				</div>
-				<!-- Slider main container -->
-				<div class="swiper products_swiper swiper-initialized swiper-horizontal swiper-backface-hidden">
+			</div>
+			<!-- Slider main container -->
+			<div class="swiper products_swiper swiper-initialized swiper-horizontal swiper-backface-hidden">
 				<!-- Additional required wrapper -->
 				<div
 					class="swiper-wrapper"
@@ -585,24 +585,19 @@
 					
 					{% for product in product.related_products  %}
 					<div class="swiper-slide">
-						{% if product.old_price > 0 %}
-						{% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
-						{% assign saleNumber = priceDivision | minus: 100 %}
-						{% assign salePercent = saleNumber | round: 0 %}
-						{% endif %}
 						<div class="product_slide_card">
-						<div class="product_card_img">
-							<a class="card_img__link" href="{{product.url}}">
-								<img class="card_img__image" src="{{product.first_image.large_url | image_url: 459, format: 'webp'}}" alt="{{product.title}}" />
-							</a>
-							<button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
-								<img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
-								<img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
-							</button>
-						</div>
-						<div class="product_card_itext">
-							<a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
-						</div>
+							<div class="product_card_img">
+								<a class="card_img__link" href="{{product.url}}">
+									<img class="card_img__image" src="{{product.first_image.large_url | image_url: 459, format: 'webp'}}" alt="{{product.title}}" />
+								</a>
+								<button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
+									<img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+									<img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+								</button>
+							</div>
+							<div class="product_card_itext">
+								<a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
+							</div>
 						</div>
 					</div>
 					{% endfor %}
@@ -610,20 +605,97 @@
 					
 
 				</div>
-
-				<!-- If we need navigation buttons -->
-				<div class="swiper-button-prev"></div>
-				<div class="swiper-button-next"></div>
-				<span
-					class="swiper-notification"
-					aria-live="assertive"
-					aria-atomic="true"></span>
 			</div>
+
+			<!-- If we need navigation buttons -->
+			<div class="swiper-button-prev"></div>
+			<div class="swiper-button-next"></div>
+			<span
+				class="swiper-notification"
+				aria-live="assertive"
+				aria-atomic="true"></span>
 		</section>
 
-		{% endif %}
+	{% endif %}
 
-		
+	<section class="section-products-carousel" x-data="brandSlider" x-show="products.length > 0">
+		<div class="products_header section_header">
+			<div class="section_title">Больше товаров {{ brand.title }}</div>
+			<div class="slider_buttons">
+				<div class="swiper-button-next">
+					<img src="{{ 'ICO-next.svg' | asset_url }}" alt="стрелка вперед" />
+				</div>
+				<div class="swiper-button-prev">
+					<img src="{{ 'ICO-back.svg' | asset_url }}" alt="стрелка назад" />
+				</div>
+			</div>
+		</div>
+		<!-- Slider main container -->
+		<div class="swiper products_swiper swiper-initialized swiper-horizontal swiper-backface-hidden">
+		<!-- Additional required wrapper -->
+			<div
+				class="swiper-wrapper"
+				id="swiper-wrapper-cb1071e566d10864ee"
+				aria-live="polite">
+				<!-- Slides -->
+
+				
+				<template x-for="product in products">
+					<div class="swiper-slide">
+						<div class="product_slide_card">
+							<div class="product_card_img">
+								<a class="card_img__link" :href="product.url">
+									<img class="card_img__image" :src="product.first_image.large_url" :alt="product.title" />
+								</a>
+								<button class="product_save_btn" :data-ui-favorites-trigger="product.id">
+									<img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+									<img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+								</button>
+							</div>
+							<div class="product_card_itext">
+								<a :href="product.url" class="product_card_name" x-text="product.title"></a>
+							</div>
+						</div>
+					</div>
+				</template>
+
+				
+
+			</div>
+		</div>
+
+		<!-- If we need navigation buttons -->
+		<div class="swiper-button-prev"></div>
+		<div class="swiper-button-next"></div>
+		<span
+			class="swiper-notification"
+			aria-live="assertive"
+			aria-atomic="true"></span>
+	</section>
+
+	<script>
+		document.addEventListener('alpine:init', () => {
+			Alpine.data('brandSlider', () => ({
+				products: [],
+				brandId: {{ brand.id }},
+
+				init() {
+					$.get('/collection/all.json?characteristics[]=' + this.brandId)
+						.success((response) => {
+							this.products = response.products.filter(el => el.id != {{ product.id }})
+						})
+						.fail(err => {
+							console.log(err);
+						})
+				},
+			}))
+		})
+	</script>
+
+	<div class="bottom-buttons">
+		<a href="{{ collection.url }}" class="btn btn-primary">Все товары категории {{ collection.title | downcase }}</a>
+		<a href="{{ gender_collection.url | add_param: 'characteristics[]', brand.id }}" class="btn btn-primary">Все товары {{ brand.title }}</a>
+	</div>
 	
 </div>
 

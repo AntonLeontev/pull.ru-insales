@@ -254,4 +254,21 @@
 			}
 		}
 	}
+
+}
+
+.bottom-buttons {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 24px;
+	margin-top: 3rem;
+	
+	@media (max-width: 500px) {
+		flex-direction: column;
+
+		a {
+			width: 100%;
+		}
+	}
 }

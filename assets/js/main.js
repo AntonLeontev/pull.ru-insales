@@ -369,3 +369,23 @@ if (
     sessionStorage.setItem("ip", response.ip);
   });
 }
+
+if (!sessionStorage.getItem("location")) {
+  $.ajax({
+    url: "https://kladr.insales.ru/current_location.json",
+    type: "get",
+    dataType: "jsonp",
+    timeout: 2000,
+  })
+    .done((resp) => {
+      if (resp.country !== "RU") {
+        sessionStorage.setItem("location", "Москва");
+        return;
+      }
+
+      sessionStorage.setItem("location", resp.city);
+    })
+    .fail((fail) => {
+      sessionStorage.setItem("location", "Москва");
+    });
+}

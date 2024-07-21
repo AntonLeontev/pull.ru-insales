@@ -47,23 +47,7 @@
     initiated: false,
 
     init() {
-      $.ajax({
-        url: 'https://kladr.insales.ru/current_location.json',
-        type: 'get',
-        dataType: 'jsonp',
-        timeout: 2000,
-      })
-      .done(resp => {
-		if (resp.country !== 'RU') {
-			this.initWidget('Москва')
-			return;
-		}
-
-		this.initWidget(resp.city)
-	  })
-      .fail((fail) => {
-        this.initWidget('Москва')
-      })
+		this.initWidget(sessionStorage.getItem('location'))
     },
     initWidget(location) {
       if (location == null || location == '') {

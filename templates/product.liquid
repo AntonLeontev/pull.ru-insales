@@ -21,7 +21,9 @@
         {% assign brand = brand_property.characteristics | first %}
 	{% endif %}
 
-    <div class="product" x-data="product">
+    <div class="product" x-data="product"
+      @gallary-slide-change.window="swiperBig.slideTo($event.detail.index)"
+    >
         <div class="product__images">
 			<div class="images_desctop" @click="showGallary">
 				{% if product.images.size == 1 %}
@@ -196,7 +198,7 @@
 			<div class="product__description">{{ product.description }}</div>
             <div class="product__price-wrap">
                 <span class="product_old-price" x-show="variant?.old_price && +variant?.old_price > +variant?.price"
-                    x-text="formatNumber(variant?.old_price ?? 0) + ' ₽'"></span>
+                    x-text="formatNumber(variant?.old_price ?? 0)"></span>
                 <span class="product__price" x-text="formatNumber(variant?.price ?? 0) + ' ₽'"></span>
 				<span class="product__percent" x-show="variant?.old_price && +variant?.old_price > +variant?.price">{{ salePercent }}%</span>
             </div>
@@ -693,7 +695,7 @@
 	</script>
 
 	<div class="bottom-buttons">
-		<a href="{{ collection.url }}" class="btn btn-primary">Все товары категории {{ collection.title | downcase }}</a>
+		<a href="{{ collection.url }}" class="btn btn-primary">Все {{ collection.title | downcase }}</a>
 		<a href="{{ gender_collection.url | add_param: 'characteristics[]', brand.id }}" class="btn btn-primary">Все товары {{ brand.title }}</a>
 	</div>
 	

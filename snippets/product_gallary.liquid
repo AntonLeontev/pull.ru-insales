@@ -3,6 +3,7 @@
     style="display: none;" 
     x-data="{
       show: false,
+      canCloseBySwipeTop: true,
 
       doShow() {
         this.show = true
@@ -11,6 +12,7 @@
       hide() {
         this.show = false
         this.overflow = true
+        this.$dispatch('gallary-hided');
       },
     }" 
     x-show="show" 
@@ -80,7 +82,7 @@
               on: {
                 slideChange() {
                   document.dispatchEvent(new Event('slide', {bubbles: true}))
-                  window.dispatchEvent(new CustomEvent('gallary-slide-change', {detail: {index: this.realIndex}}))
+                  window.dispatchEvent(new CustomEvent('gallary-slide-change', {detail: {index: this.realIndex}, bubbles: true}))
                 },
               }
             });
@@ -110,6 +112,7 @@
 
                 if (this.$event.touches?.length > 1) {
                   this.isScaling = true
+                  this.canCloseBySwipeTop = false
 
                   this.$event.preventDefault();
                   this.distance = this.dist(event);
@@ -155,13 +158,27 @@
                   }
                 }
               },
-              touchend() {
+              touchend(e) {
                 if (this.$event.touches?.length === 0) {
                   this.prevTranslateX = this.curTranslateX
                   this.prevTranslateY = this.curTranslateY
 
                   this.isScaling = false
 
+                  //определяем был ли это свайп вверх
+                  if (this.canCloseBySwipeTop) {
+                    let touch = this.$event.changedTouches[0];
+                    let endX = touch.clientX;
+                    let endY = touch.clientY;
+
+                    if (
+                      this.startY > endY 
+                      && Math.abs(this.startY - endY) > Math.abs(this.startX - endX) 
+                    ) {
+                      this.hide()
+                    }
+                  }
+                  
                   this.returnEdges()
                 }
               },
@@ -171,6 +188,7 @@
 
                 this.$event.target.style.transition = 'translate ease .2s'
                 let slidingEnabled = false
+                let canCloseBySwipeWasChanged = false
 
                 //top
                 if (target.top > parent.top) {
@@ -184,6 +202,9 @@
                   this.prevTranslateY += parent.bottom - target.bottom
                   this.curTranslateY += parent.bottom - target.bottom
                   this.$event.target.style.translate = `${this.prevTranslateX}px ${this.prevTranslateY}px`
+
+                  this.canCloseBySwipeTop = true
+                  canCloseBySwipeWasChanged = true
                 }
 
                 //left
@@ -209,6 +230,10 @@
                 if (!slidingEnabled && this.scale > 1) {
                   this.gallaryBig.allowSlideNext = false
                   this.gallaryBig.allowSlidePrev = false
+                }
+
+                if (!canCloseBySwipeWasChanged && this.scale > 1) {
+                  this.canCloseBySwipeTop = false
                 }
 
                 setTimeout(() => this.$event.target.style.transition = 'unset', 300);
@@ -268,6 +293,7 @@
                       }
                     },
                   }"
+                  @gallary-hided.document="resetScale"
                   @slide.document="resetScale"
                   >
                     <img 
@@ -302,7 +328,17 @@
 
           <button type="button" class="close" @click="hide">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+              <filter id='shadow'>
+                <feComponentTransfer in="SourceGraphic">
+                  <feFuncR type="discrete" tableValues=".5"/>
+                  <feFuncG type="discrete" tableValues=".5"/>
+                  <feFuncB type="discrete" tableValues=".5"/>
+                </feComponentTransfer>
+                <feGaussianBlur stdDeviation=".55"/>
+                <feOffset dx="0" dy="0" result="shadow"/>
+                <feComposite in="SourceGraphic" in2="shadow" operator="over"/>
+              </filter>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" filter="url(#shadow)" />
             </svg>
           </button>
         </div>

@@ -1,13 +1,8 @@
 <header class="header" id="header" 
-	@cart-changed.window="onCartChange" 
   x-data="{
     sidebar: false,
     items: {{ cart.items_count }},
     search: false,
-
-    onCartChange() {
-      this.items = this.$event.detail
-    },
   }"
 >
   <div class="header__navbar">
@@ -46,7 +41,7 @@
         <div class="header_account_actions">
           <!-- <img src="{{ 'ICO-map.svg' | asset_url }}" alt="Геолокация" /> -->
           <a href="/cart_items">
-            <div class="cart-items" x-show="items > 0" x-text="items">{{ cart.items_count }}</div>
+            <div class="cart-items" x-show="$store.cart.cart.items_count > 0" x-text="$store.cart.cart.items_count">{{ cart.items_count }}</div>
             <img src="{{ 'ICO-shop.svg' | asset_url }}" alt="Корзина" />
           </a>
         </div>

@@ -1,0 +1,180 @@
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('cart', {
+			cart: {},
+			cartReady: false,
+			productsOrganizations: [],
+			products: [],
+
+            async init() {
+				this.updateCart()
+            },
+			updateCart() {
+				ajaxAPI.cart.get()
+				.done(cart => {
+						this.cart = cart
+						//TODO delete log
+						console.log(this.cart);
+
+						this.getOrganizations()
+					})
+			},
+			incrementItem(item) {
+				if (this.getItemVariant(item).quantity <= item.quantity) {
+					return;
+				}
+
+				$.post('/cart_items.json', {
+					variant_id: item.variant_id,
+					quantity: 1,
+				})
+				.done((cart) => {
+					this.cart = cart;
+
+					this.sendIncrementToMetrica(item, 1)
+				})
+			},
+			decrementItem(item) {
+				if (item.quantity === 1) {
+					return
+				}
+
+				$.post('/cart_items.json', {
+					variant_id: item.variant_id,
+					quantity: -1,
+				})
+				.done((cart) => {
+					this.cart = cart;
+
+					this.sendDecrementToMetrica(item, 1)
+				})
+			},
+			removeItem(item) {
+				$.post('/cart_items.json', {
+					variant_id: item.variant_id,
+					quantity: -item.quantity,
+				})
+				.done((cart) => {
+					this.cart = cart;
+
+					this.sendDecrementToMetrica(item)
+				})
+			},
+			getVariant(productId, variantId) {
+				if (this.products.length === 0) return null;
+
+				let product = this.products.find(el => el.id === productId)
+
+				if (product === null) return null;
+
+				return product.variants.find(el => el.id === variantId)
+			},
+			getItemVariant(item) {
+				return this.getVariant(item.product_id, item.variant_id)
+			},
+			getItemOptions(item) {
+				if (this.products.length === 0) return null;
+				let product = this.products.find(el => el.id === item.product_id)
+				let optionNames = product?.option_names
+
+				if (optionNames === null) return null;
+
+				let optionValues = product.variants.find(el => el.id === item.variant_id)?.option_values
+
+				return optionValues.map(value => {
+					value.option_name = optionNames.find(name => name.id === value.option_name_id)?.title
+					return value
+				})
+			},
+			getItemDiscount(item) {
+				let oldPrice = Math.round(this.getItemVariant(item)?.old_price)
+
+				if (oldPrice === 0 || oldPrice < item.total_price) return 0
+
+				return Math.round(100 - item.total_price / oldPrice * 100)
+			},
+			getOrganizations() {
+				if (this.cart.items_count === 0) {
+					this.cartReady = true
+					return 
+				}
+
+				let productsIds = new Set();
+				this.cart.items.forEach(line => productsIds.add(line.product_id))
+				productsIds = Array.from(productsIds).join(',')
+				$.get(`/products_by_id/${productsIds}.json`)
+					.success(response => {
+						let result = {}
+						this.products = response.products
+
+						//TODO delete log
+						console.log(response.products);
+
+						response.products.forEach(product => {
+							let brandId = product.characteristics.find(el => el.property_id == 53902709).id
+
+							if (!sessionStorage.getItem('brands') || !sessionStorage.getItem('organizations')) {
+								setTimeout(this.getOrganizations, 1000);
+								return
+							}
+
+							let brand = JSON.parse(sessionStorage.getItem('brands')).find(el => el.id == brandId)
+							let organization = JSON.parse(sessionStorage.getItem('organizations')).find(el => el.id == brand.organization_id)
+
+							result[product.id] = organization
+						})
+
+						this.productsOrganizations = result
+						this.cartReady = true
+					})
+			},
+ 
+			setCoupon() {
+				Cart.setCoupon({coupon: this.coupon})
+			},
+			getTotalDiscount() {
+				if (this.cart.discounts?.length === 0) {
+					return 0;
+				}
+
+				return this.cart.discounts?.reduce((acc, el) => el.amount > acc ? el.amount : acc, 0)
+			},
+			sendDecrementToMetrica(item, decrement = null) {
+				dataLayer.push({
+					"ecommerce": {
+						"currencyCode": "RUB",
+						"remove": {
+							"products": [
+								{
+									"id": item.product_id,
+									"name": item.product.title,
+									"variant": item.title,
+									"quantity": decrement ?? item.quantity,
+									"price": item.sale_price,
+								}
+							]
+						}
+					}
+				});
+			},
+			sendIncrementToMetrica(item, increment = null) {
+				dataLayer.push({
+					"ecommerce": {
+						"currencyCode": "RUB",
+						"add": {
+							"products": [
+								{
+									"id": item.product_id,
+									"name": item.product.title,
+									"variant": item.title,
+									"quantity": decrement ?? item.quantity,
+									"price": item.sale_price,
+								}
+							]
+						}
+					}
+				});
+			}
+        })
+    })
+</script>

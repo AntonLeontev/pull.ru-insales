@@ -104,12 +104,33 @@
 
       {% when 'cart' %}
 
-        <li class="breadcrumb_item">
+        <li class="breadcrumb_item" 
+			x-data="{show: true}"
+			x-show="show" 
+			@to-checkout.window="show = false"
+			@to-cart.window="show = true"
+		>
           <a class="breadcrumb_link" href="/">Главная</a>
         </li>
 
-        <li class="breadcrumb_item">
-          <span class="breadcrumb_link current">Ваша корзина</span>
+        <li class="breadcrumb_item"
+			x-data="{show: true}"
+			x-show="show" 
+			@to-checkout.window="show = false"
+			@to-cart.window="show = true"
+		>
+          <span class="breadcrumb_link current">Корзина</span>
+        </li>
+
+        <li class="breadcrumb_item"
+			x-data="{show: false}"
+			x-cloak
+			x-show="show" 
+			@to-checkout.window="show = true"
+			@to-cart.window="show = false"
+			@click="$dispatch('to-cart')"
+		>
+          <button type="button" class="breadcrumb_link current">← Назад к списку товаров</button>
         </li>
 
       {% when 'compare' %}

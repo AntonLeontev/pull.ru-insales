@@ -1,40 +1,42 @@
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cdek-it/widget@3/dist/cdek-widget.umd.js" charset="utf-8"></script>
+
 <style>
-  #cdekmap {
-    width: 100%;
-    height: 550px;
-	  margin-top: 24px;
-    margin-bottom: 70px;
-  }
-  @media only screen and (max-width: 630px) and (orientation: portrait) {
-    #cdekmap {
-      height: 50vh;
-      margin-bottom: 100px;
-    }
+	#cdekmap {
+		width: 100%;
+		height: 550px;
+		margin-top: 24px;
+		margin-bottom: 3rem;
+	}
+	@media only screen and (max-width: 630px) and (orientation: portrait) {
+		#cdekmap {
+			height: 50vh;
+			margin-bottom: 3rem;
+		}
 
-    .cdek-hlhf5b[data-v-00722d2b] {
-      z-index: 10 !important;
-    }
-    .cdek-dorbss[data-v-6599109d] {
-      z-index: 10 !important;
-    }
-  }
-  ymaps {
-    position: static;
-  }
-  .ymaps3x0--top-engine-container {
-    position: absolute;
-    top: 0;
-  }
+		.cdek-hlhf5b[data-v-00722d2b] {
+			z-index: 10 !important;
+		}
+		.cdek-dorbss[data-v-6599109d] {
+			z-index: 10 !important;
+		}
+	}
+	ymaps {
+		position: static;
+	}
+	.ymaps3x0--top-engine-container {
+		position: absolute;
+		top: 0;
+	}
 
-  .delivery__additional {
-	display: flex;
-	flex-direction: column;
-	row-gap: 20px;
-	margin-top: 20px;
-  }
-  .cdek-hlhf5b[data-v-3c8861b9] {
-	z-index: 10 !important;
-  }
+	.delivery__additional {
+		display: flex;
+		flex-direction: column;
+		row-gap: 20px;
+		margin-top: 20px;
+	}
+	.cdek-hlhf5b[data-v-3c8861b9] {
+		z-index: 10 !important;
+	}
 </style>
 
 
@@ -50,59 +52,59 @@
 		this.initWidget(sessionStorage.getItem('location'))
     },
     initWidget(location) {
-      if (location == null || location == '') {
-        location = 'Москва'
-      }
-      this.widget = new window.CDEKWidget({ 
-        from: {
-          code: 44,
-        }, 
-        root: 'cdekmap', 
-        canChoose: true,
-        apiKey: 'd61a22ab-67bc-4adc-8397-e65d01be70dc', 
-        servicePath: 'https://app.limmite.ru/webhooks/delivery/widget', 
-        defaultLocation: location,
-        fixBounds: 'country',
-        debug: false,
-        tariffs: {
-          office: [483, 136, 234],
-          door: [482, 137, 233],
-          pickup: [368, 378],
-        },
-		hideFilters: {
-			type: true,
-		},
-		forceFilters: {
-			allowed_cod: true,
-			is_dressing_room: true,
-		},
-        onCalculate(tariff, address) {
-          cdekmap.dispatchEvent(new CustomEvent('delivery-calculated', {
-            bubbles: true,
-            detail: {
-            tariff: tariff,
-            address: address,
-            }
-          }));
-        },
-        onChoose(type, tariff, address) {
-          cdekmap.dispatchEvent(new CustomEvent('delivery-chosen', {
-            bubbles: true,
-            detail: {
-              type: type,
-              tariff: tariff,
-              address: address,
-            }
-          }));
-        },
-      })
+		if (location == null || location == '') {
+				location = 'Москва'
+		}
+		this.widget = new window.CDEKWidget({ 
+			from: {
+				code: 44,
+			}, 
+			root: 'cdekmap', 
+			canChoose: true,
+			apiKey: 'd61a22ab-67bc-4adc-8397-e65d01be70dc', 
+			servicePath: 'https://app.limmite.ru/webhooks/delivery/widget', 
+			defaultLocation: location,
+			fixBounds: 'country',
+			debug: false,
+			tariffs: {
+				office: [483, 136, 234],
+				door: [482, 137, 233],
+				pickup: [368, 378],
+			},
+			hideFilters: {
+				type: true,
+			},
+			forceFilters: {
+				allowed_cod: true,
+				is_dressing_room: true,
+			},
+			onCalculate(tariff, address) {
+				cdekmap.dispatchEvent(new CustomEvent('delivery-calculated', {
+					bubbles: true,
+					detail: {
+						tariff: tariff,
+						address: address,
+					}
+				}));
+			},
+			onChoose(type, tariff, address) {
+				cdekmap.dispatchEvent(new CustomEvent('delivery-chosen', {
+					bubbles: true,
+					detail: {
+						type: type,
+						tariff: tariff,
+						address: address,
+					}
+				}));
+			},
+		})
     },
     recalculate() {
-      this.widget.resetParcels()
-      this.widget.resetParcels()
-      this.cart.items.forEach(line => {
-        this.widget.addParcel(this.getParcel(line))
-      })
+		this.widget.resetParcels()
+		this.widget.resetParcels()
+		this.$store.cart.cart.items.forEach(line => {
+			this.widget.addParcel(this.getParcel(line))
+		})
     },
     toggle() {
       this.show = !this.show
@@ -112,31 +114,31 @@
       }
     },
     initiate() {
-      this.widget.resetParcels()
-      this.cart.items.forEach(line => {
-        this.widget.addParcel(this.getParcel(line))
-      })
+		this.widget.resetParcels()
+		this.$store.cart.cart.items.forEach(line => {
+				this.widget.addParcel(this.getParcel(line))
+		})
 
-      this.initiated = true
+		this.initiated = true
     },
     getParcel(orderLine) {
-      let weight = orderLine.weight * 1000 * orderLine.quantity
+		let weight = orderLine.weight * 1000 * orderLine.quantity
 
-      if (_.isNull(orderLine.dimensions) || orderLine.dimensions === '') {
-        return {weight: weight}
-      }
+		if (_.isNull(orderLine.dimensions) || orderLine.dimensions === '') {
+			return {weight: weight}
+		}
 
-      let dimensions = orderLine.dimensions.split(/x|х/)
-      const min = _.minBy(dimensions, function(d) { return +d; })
-      const indexOfMin = dimensions.indexOf(min)
-      dimensions.splice(indexOfMin, 1)
+		let dimensions = orderLine.dimensions.split(/x|х/)
+		const min = _.minBy(dimensions, function(d) { return +d; })
+		const indexOfMin = dimensions.indexOf(min)
+		dimensions.splice(indexOfMin, 1)
 
-      return {
-        weight: weight,
-        width: +dimensions[0],
-        length: +dimensions[1],
-        height: min * orderLine.quantity
-      }
+		return {
+			weight: weight,
+			width: +dimensions[0],
+			length: +dimensions[1],
+			height: min * orderLine.quantity
+		}
     },
 	showApartment() {
 		return this.deliveryType === 'door' && !this.deliveryAddress?.formatted?.includes('кв.')
@@ -150,18 +152,20 @@
   }"
 >
   <div class="card_name" @click="toggle()">
-    <span>Доставка</span>
-    <img class="icon" width="30px" src="{{ 'down.svg' | asset_url }}" alt="icon down" :class="show && 'rotated'">
+    <div class="checkout__subtitle">Выберите способ доставки</div>
   </div>
   <div class="card_content" :class="show && 'active'">
 	<div class="card_content_wrap">
 		<div id="cdekmap"></div>
 		<template x-if="deliveryType === 'door'">
-			<div class="delivery__additional">
-				<input class="ordinary_input" name="entrance" placeholder="Подъезд" x-ref="entrance" x-show="showEntrance">
-				<input class="ordinary_input" name="floor" placeholder="Этаж" x-ref="floor" x-show="showFloor">
-				<input class="ordinary_input" name="apartment" placeholder="Квартира" x-ref="apartment" x-show="showApartment">
-				<input class="ordinary_input" name="intercom" placeholder="Код домофона" x-ref="intercom">
+			<div class="contacts">
+				<div class="checkout__subtitle">Адрес доставки</div>
+				<div class="contacts__form">
+					<input class="checkout__input" name="entrance" placeholder="Подъезд" x-ref="entrance" x-show="showEntrance">
+					<input class="checkout__input" name="floor" placeholder="Этаж" x-ref="floor" x-show="showFloor">
+					<input class="checkout__input" name="apartment" placeholder="Квартира" x-ref="apartment" x-show="showApartment">
+					<input class="checkout__input" name="intercom" placeholder="Код домофона" x-ref="intercom">
+				</div>
 			</div>
 		</template>
 	</div>

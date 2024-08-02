@@ -1,0 +1,473 @@
+<section class="checkout" 
+	@delivery-chosen="setDelivery"
+    @delivery-calculated="updateDelivery"
+    @submit.prevent="submit"
+	x-data="checkout" 
+	x-show="page === 'checkout'" 
+	x-cloak
+>
+	<div class="checkout__delivery">
+		<div class="checkout__title">
+			Оформление заказа
+		</div>
+		{% include 'cdek-widget' %}
+
+		<div class="contacts">
+			<div class="checkout__subtitle">Контактные данные</div>
+			<div class="contacts__form">
+				<input class="checkout__input" type="text" name="phone" placeholder="Укажите номер телефона" x-model="phone">
+				<input class="checkout__input" type="email" name="email" placeholder="Укажите email" x-model="email">
+			</div>
+		</div>
+
+		<div class="payment">
+			<div class="checkout__subtitle">Способ оплаты</div>
+			<div class="payment__form">
+				{% for payment_variant in account.payment_gateways %}
+				<label class="payment-type">
+					<input type="radio" name="payment" value="{{ payment_variant.id }}" x-model="paymentTypeId">
+					<div class="button">
+						{{ payment_variant.title }}
+						<div class="check_full">
+							<img src="{{ 'check-black.svg' | asset_url }}" alt="check">
+						</div>
+						<div class="check_empty"></div>
+					</div>
+				</label>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="name">
+			<div class="checkout__subtitle">Кто забирает посылку</div>
+			<input type="text" class="checkout__input" placeholder="ФИО*" x-model="name">
+		</div>
+	</div>
+
+
+	<div class="checkout__summary" x-show="$store.cart.cart?.items_count > 0">
+		<div class="summary__card">
+			<div class="summary__title">Ваш заказ</div>
+			<div class="summary__options">
+				<div class="summary__option">
+					<div class="option__name">Всего товаров</div>
+					<div class="option__value"><span x-text="$store.cart.cart?.items_count"></span> шт.</div>
+				</div>
+				<div class="summary__option">
+					<div class="option__name">Цена</div>
+					<div class="option__value option__value_price"><span x-text="formatNumber(+$store.cart.cart?.total_price)"></span> ₽</div>
+				</div>
+				<div class="summary__option" x-show="$store.cart.getTotalDiscount() > 0">
+					<div class="option__name">Скидка</div>
+					<div class="option__value option__value_discount" x-text="'- ' + formatNumber($store.cart.getTotalDiscount()) + ' ₽'"></div>
+				</div>
+				<div class="summary__option" x-show="deliveryPrice() > 0">
+					<div class="option__name">Доставка</div>
+					<div class="option__value" x-text="deliveryPrice() + ' ₽'"></div>
+				</div>
+			</div>
+			<div class="summary__total">
+				<div class="total__title">Итого:</div>
+				<div class="total__value" x-text="formatNumber(+$store.cart.cart?.total_price + deliveryPrice()) + ' ₽'"></div>
+			</div>
+			<div class="summary__button">
+				<button type="button" class="btn btn-primary w-full">
+					<span x-show="!processing">Оформить заказ</span>
+
+					<svg x-show="processing" width="16px" height="16px" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
+						version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink">
+						<circle class="spin" cx="25" cy="25" fill="none" r="20" stroke-width="10"
+							stroke="#ffffff" stroke-dasharray="80 29">
+							<animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 25 25"
+								to="360 25 25" dur="800ms" repeatCount="indefinite" />
+						</circle>
+					</svg>
+				</button>
+			</div>
+			<hr>
+			<div class="promo">
+				<div class="promo__title">У вас есть промокод?</div>
+				<div class="promo__form">
+					<input type="text" class="promo__input" placeholder="Промокод" x-model="coupon">
+					<button class="promo__button">Применить</button>
+				</div>
+			</div>
+			<div class="disclaimer">
+				При осуществлении заказа вы подтверждаете, что вы ознакомились с условиями <a href="https://static.insales-cdn.com/files/1/3327/33565951/original/terms_of_use.pdf">Пользовательского соглашения</a>, включая порядок оплаты, доставки, хранения и возврата, с порядком работы Limmite, процессинговых компаний по доставке товаров и приёму платежей <a href="/page/how-it-works">(Как это работает)</a>, и согласны с ними.
+			</div>
+		</div>
+	</div>
+
+	<div class="fixed-button-wrap" x-show="$store.cart.cart.items_count > 0 && page === 'checkout'">
+		<div class="container">
+			<button type="button" class="fixed-button" x-show="page === 'checkout'">
+				<div class="button__text">Оформить заказ</div>
+				<div class="button__description">
+					<span x-text="cartItemsForHuman"></span>
+					<span>-</span>
+					<span x-text="formatNumber(+$store.cart.cart?.total_price + deliveryPrice()) + ' ₽'"></span>
+				</div>
+			</button>
+		</div>
+	</div>
+</section>
+
+<script>
+	document.addEventListener('alpine:init', () => {
+		Alpine.data('checkout', () => ({
+			deliveryType: null,
+			freeToPoint: {{ blocks.with_template['system-single-text'].v-punkt-vydachi.text }},
+			freeToCourier: {{ blocks.with_template['system-single-text'].kurierom.text }},
+			deliveryTariff: null,
+			deliveryAddress: null,
+			paymentTypeId: '5982078',
+			deliveryVariantId: '7921162',
+			email: null,
+			name: null,
+			phone: null,
+			coupon: '{{ cart.coupon }}',
+			agree: true,
+			orderKey: null,
+			processing: false,
+
+			init() {
+				$.getJSON('/client_account/contacts.json',
+					(data) => {
+						if (data.message === 'Not authorized') return
+
+						if (data.status === 'ok') {
+						this.email = data.client.email
+						this.phone = data.client.phone
+						this.name = data.client.contact_name
+						}
+					}
+				);
+			},
+			isAllowedRegion(event) {
+				if (event.detail.type != 'door') {
+					return true;
+				}
+
+				let isAllowed = false
+				event.detail.address.components.forEach(component => {
+					if (component.kind != 'province') return
+
+					if (sessionStorage.getItem('allowed_regions').includes(component.name)) {
+						isAllowed = true
+					}
+				})
+
+				return isAllowed
+			},
+			setDelivery() {
+				if (! this.isAllowedRegion(this.$event)) {
+					this.$dispatch('toast-error', {message: 'Доставка в выбранный регион временно невозможна', delay: 4000})
+					this.deliveryType = null
+					this.deliveryTariff = null
+					this.deliveryAddress = null
+					return
+				}
+
+				this.deliveryType = this.$event.detail.type
+				this.deliveryTariff = this.$event.detail.tariff
+				this.deliveryAddress = this.$event.detail.address
+			},
+			updateDelivery() {
+				if (this.deliveryTariff === null) {
+					return
+				}
+
+				if (! this.isAllowedRegion(this.$event)) {
+					this.$dispatch('toast-error', {message: 'Доставка в выбранный регион временно невозможна', delay: 4000})
+					this.deliveryType = null
+					this.deliveryTariff = null
+					this.deliveryAddress = null
+					return
+				}
+
+				let tariffs = this.$event.detail.tariff
+				tariffs = [...tariffs.door, ...tariffs.office, ...tariffs.pickup]
+				tariffs.forEach(tariff => {
+					if (tariff.tariff_code === this.deliveryTariff.tariff_code) {
+						this.deliveryTariff = tariff
+						return
+					}
+				})
+			},
+			submit() {
+				if (this.name === null || this.email === null || this.phone === null) {
+					this.$dispatch('toast-error', {message: 'Заполните данные получателя', delay: 4000})
+					document.querySelector('#customer').scrollIntoView({behavior: 'smooth'})
+					return 
+				}
+
+				if (this.name === '' || this.email === '' || this.phone === '') {
+					this.$dispatch('toast-error', {message: 'Заполните данные получателя', delay: 4000})
+					document.querySelector('#customer').scrollIntoView({behavior: 'smooth'})
+					return 
+				}
+				
+				if (this.deliveryTariff === null || this.deliveryType === null || this.deliveryAddress === null) {
+					this.$dispatch('toast-error', {message: 'Выберите способ доставки', delay: 4000})
+					document.querySelector('#cdekmap').scrollIntoView({behavior: 'smooth'})
+					return 
+				}
+
+				if (!this.agree) {
+					this.$dispatch('toast-error', {message: 'Нужно принять условия пользования', delay: 4000})
+					return 
+				}
+
+				this.createOrder()
+				
+			},
+			createOrder(paymentStatus = 'pending') {
+				let address
+
+				if (this.deliveryType === 'office') {
+					address = `${this.deliveryAddress.code}, ${this.deliveryAddress.region}, ${this.deliveryAddress.city}, ${this.deliveryAddress.address}`
+				}
+
+				if (this.deliveryType === 'door') {
+						address = this.deliveryAddress.formatted
+
+					if ($('[name=\'apartment\']').val() != '') {
+						address += ', кв. ' + $('[name=\'apartment\']').val()
+						this.deliveryAddress.apartment = $('[name=\'apartment\']').val()
+					}
+					if ($('[name=\'floor\']').val() != '') {
+						address += ', этаж ' + $('[name=\'floor\']').val()
+						this.deliveryAddress.floor = $('[name=\'floor\']').val()
+					}
+					if ($('[name=\'entrance\']').val() != '') {
+						address += ', подъезд ' + $('[name=\'entrance\']').val()
+						this.deliveryAddress.entrance = $('[name=\'entrance\']').val()
+					}
+					if ($('[name=\'intercom\']').val() != '') {
+						address += ', домофон ' + $('[name=\'intercom\']').val()
+						this.deliveryAddress.intercom = $('[name=\'intercom\']').val()
+					}
+				}
+
+				this.processing = true
+
+				$.post('/fast_checkout.json', {
+					client: {
+						email: this.email,
+						name: this.name,
+						phone: this.formatPhone(this.phone),
+						consent_to_personal_data: true,
+					},
+					order: {
+						delivery_variant_id: this.deliveryVariantId,
+						payment_gateway_id: this.paymentTypeId,
+						delivery_price: this.deliveryPrice(),
+						financial_status: paymentStatus,
+						fields_values_attributes: [
+							{
+								handle: 'delivery_data',
+								value: JSON.stringify({
+									deliveryPrice: this.deliveryPrice(),
+									deliveryTariff: this.deliveryTariff,
+									deliveryType: this.deliveryType,
+									deliveryAddress: this.deliveryAddress,
+								}),
+							},
+							{
+								handle: 'ip_address',
+								value: sessionStorage.getItem('ip')
+							}
+						],
+					},
+					shipping_address: {
+						phone: this.formatPhone(this.phone),
+						city: this.deliveryAddress.city,
+						address: address,
+					}
+				})
+				.done((response) => {
+					if (response.status == 'ok') {
+						this.sendMetrica(response.order)
+
+						this.orderKey = response.order.key
+
+						if (this.paymentTypeId == 5982078) {
+							this.pay(response.order)
+							return;
+						}
+
+						location.href = '/orders/' + this.orderKey + '?success=1'
+					} else {
+						let messages = []
+						if (response.errors.hasOwnProperty('shipping_address.phone')) {
+							response.errors['shipping_address.phone'].forEach(el => messages.push(el))
+						}
+						if (response.errors.hasOwnProperty('order_lines.quantity')) {
+							response.errors['order_lines.quantity'].forEach(el => messages.push(el))
+						}
+						if (response.errors.hasOwnProperty('payment_gateway_id')) {
+							response.errors['payment_gateway_id'].forEach(el => messages.push(el))
+						}
+						let message = messages.join('<br><br>')
+						if (message == '') {
+							message = 'Ошибка оформления заказа'
+						}
+						
+						this.$dispatch('toast-error', {message, delay: 4000})
+					}
+				})
+				.fail((fail) => {
+					this.$dispatch('toast-error', {message: 'Ошибка оформления заказа'})
+					console.log(fail.errors);
+				})
+				.always(() => this.processing = false)
+			},
+			deliveryPrice() {
+				if (this.deliveryType === 'office' && this.$store.cart.cart?.total_price > this.freeToPoint) {
+					return 0
+				}
+
+				if (this.deliveryType === 'door' && this.$store.cart.cart?.total_price > this.freeToCourier) {
+					return 0
+				}
+
+				return this.deliveryTariff?.delivery_sum ?? 0
+			},
+			pay(order) {
+				let widget = new cp.CloudPayments({
+				yandexPaySupport: false,
+				applePaySupport: false,
+				googlePaySupport: false,
+				masterPassSupport: false,
+				tinkoffInstallmentSupport: false
+				});
+
+				let receipt = {
+				'Items': [],
+				'taxationSystem': 2,
+				'calculationPlace': 'limmite.ru', //место осуществления расчёта, по умолчанию берется значение из кассы
+				'phone': order.client.phone, //телефон покупателя в любом формате, если нужно отправить сообщение со ссылкой на чек
+				'isBso': false, //чек является бланком строгой отчётности
+				'amounts':
+					{
+					'electronic': order.total_price, // Сумма оплаты электронными деньгами
+					'advancePayment': 0.00, // Сумма из предоплаты (зачетом аванса) (2 знака после запятой)
+					'credit': 0.00, // Сумма постоплатой(в кредит) (2 знака после запятой)
+					'provision': 0.00 // Сумма оплаты встречным предоставлением (сертификаты, др. мат.ценности) (2 знака после запятой)
+					}
+				};
+
+
+				order.order_lines.forEach(line => {
+				receipt['Items'].push({
+					'label': line.title, //наименование товара
+					'price': line.full_sale_price, //цена
+					'quantity': line.quantity, //количество
+					'amount': line.full_total_price, //сумма
+					'vat': null, //ставка НДС
+					'method': 1, // тег-1214 признак способа расчета - признак способа расчета
+					'object': 1, // тег-1212 признак предмета расчета - признак предмета товара, работы, услуги, платежа, выплаты, иного предмета расчета
+					'measurementUnit': 'шт', //единица измерения
+					'AgentSign': 6, //признак агента, тег ОФД 1057, 1222
+					'PurveyorData': { //данные поставщика платежного агента,  тег ОФД 1224
+					'Name': this.productsOrganizations[line.product_id].title, // наименование поставщика, тег ОФД 1225
+					'Inn': this.productsOrganizations[line.product_id].inn // ИНН поставщика, тег ОФД 1226
+					}
+				})
+				})
+
+				if (order.full_delivery_price > 0) {
+				receipt['Items'].push({
+					'label': 'Доставка', //наименование товара
+					'price': order.full_delivery_price, //цена
+					'quantity': 1, //количество
+					'amount': order.full_delivery_price, //сумма
+					'vat': null, //ставка НДС
+					'method': 1, // тег-1214 признак способа расчета - признак способа расчета
+					'object': 4, // тег-1212 признак предмета расчета - признак предмета товара, работы, услуги, платежа, выплаты, иного предмета расчета
+				})
+				}
+
+				widget.pay('charge',
+				{ 
+					// publicId: 'pk_c99424b82aed407cd4b167d280b77' // test,
+					publicId: 'pk_211facd05c03ac924464a0ff67758',
+					description: 'Оплата товаров в limmite.ru',
+					amount: order.total_price,
+					currency: 'RUB',
+					invoiceId: order.number,
+					email: order.client.email,
+					skin: 'classic',
+					data: {
+					CloudPayments: { CustomerReceipt: receipt }
+					}
+				}, {
+					onSuccess: (options) => { // success
+					location.href = '/orders/' + this.orderKey + '?success=1'
+					},
+					onFail: (reason, options) => { // fail
+					//действие при неуспешной оплате
+					},
+					onComplete: (paymentResult, options) => { //Вызывается как только виджет получает от api.cloudpayments ответ с результатом транзакции.
+					//например вызов вашей аналитики Facebook Pixel
+					}
+				}
+				)
+			},
+			sendMetrica(order) {
+				let products = []
+
+				order.order_lines.forEach(line => {
+				let name = line.title.replace(/ \(.+\)/g, '')
+				let match = line.title.match(/\(.+\)/)
+				let variant
+
+				if (match.length > 0) {
+					variant = match[0].replaceAll('(', '')
+					variant = variant.replaceAll(')', '')
+				} else {
+					variant = null;
+				}
+
+				products.push({
+					'id': line.product_id,
+					'name': name,
+					'price': line.full_sale_price,
+					// 'category': 'Одежда/Мужская одежда/Толстовки и свитшоты',
+					'variant': variant,
+					'quantity': line.quantity,
+					// 'list': 'Одежда',
+					// 'position': 1
+				})
+				})
+
+				dataLayer.push({
+				'ecommerce': {
+					'currencyCode': 'RUB',
+					'purchase': {
+					'actionField': {
+						'id' : order.number,
+						'coupon': '{{ cart.coupon }}',
+						// 'goal_id': '',
+					},
+					'products': products
+					}
+				}
+				});
+			},
+			formatPhone(phone) {
+				phone = phone.replaceAll(/\D/g, '')
+
+				if (phone[0] == 7) {
+				phone = '+' + phone
+				} else if (phone[0] == 8) {
+				phone = '+7' + phone.slice(1)
+				}
+
+				return phone
+			},
+		}))
+	})
+</script>
+
+

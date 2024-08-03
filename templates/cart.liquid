@@ -1,4 +1,4 @@
-<form id="cart_form" data-cart-form action="/cart_items" method="post" class="cart_section" 
+<div id="cart_form" class="cart_section" 
 	@to-cart.window="page = 'cart'"
     x-data="{
 		page: 'cart',
@@ -17,6 +17,7 @@
 		},
 		toCheckout() {
 			this.page = 'checkout'
+			document.querySelector('.breadcrumb').scrollIntoView({behavior: 'smooth'})
 			this.$dispatch('to-checkout')
 		},
     }"
@@ -112,7 +113,7 @@
 						</div>
 						<div class="summary__option">
 							<div class="option__name">Цена</div>
-							<div class="option__value option__value_price"><span x-text="formatNumber(+$store.cart.cart?.total_price)"></span> ₽</div>
+							<div class="option__value option__value_price"><span x-text="formatNumber($store.cart.getSalePriceSum())"></span> ₽</div>
 						</div>
 						<div class="summary__option" x-show="$store.cart.getTotalDiscount() > 0">
 							<div class="option__name">Скидка</div>
@@ -157,7 +158,7 @@
 		{% include 'checkout' %}
 
 	</div>
-</form>
+</div>
 
 <div class="modal" 
   style="display: none;" 
@@ -184,3 +185,9 @@
     </div>
   </div>
 </div>
+
+<script>
+EventBus.subscribe('set_coupon:insales:cart', function (data) {
+  	window.dispatchEvent(new CustomEvent('coupon-updated'))
+});
+</script>

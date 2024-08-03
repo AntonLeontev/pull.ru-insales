@@ -3165,7 +3165,7 @@ textarea:focus-visible
 }
 .toasts {
 	position: fixed;
-	bottom: 0;
+	top: 5px;
 	right: 0;
 	padding: 0 1.25rem 0 0;
 	width: 20rem;
@@ -3173,6 +3173,10 @@ textarea:focus-visible
 	flex-direction: column;
 	row-gap: .3125rem;
 	z-index: 100;
+
+	@media (max-width: 567px) {
+		top: 90px;
+	}
 
 	.alert {
 		padding: .9375rem;

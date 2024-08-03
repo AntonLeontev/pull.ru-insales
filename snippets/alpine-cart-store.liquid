@@ -6,15 +6,13 @@
 			productsOrganizations: [],
 			products: [],
 
-            async init() {
+            init() {
 				this.updateCart()
             },
 			updateCart() {
 				ajaxAPI.cart.get()
-				.done(cart => {
+					.done(cart => {
 						this.cart = cart
-						//TODO delete log
-						console.log(this.cart);
 
 						this.getOrganizations()
 					})
@@ -31,6 +29,7 @@
 				.done((cart) => {
 					this.cart = cart;
 
+					window.dispatchEvent(new CustomEvent('order-changed'))
 					this.sendIncrementToMetrica(item, 1)
 				})
 			},
@@ -46,6 +45,7 @@
 				.done((cart) => {
 					this.cart = cart;
 
+					window.dispatchEvent(new CustomEvent('order-changed'))
 					this.sendDecrementToMetrica(item, 1)
 				})
 			},
@@ -57,6 +57,7 @@
 				.done((cart) => {
 					this.cart = cart;
 
+					window.dispatchEvent(new CustomEvent('order-changed'))
 					this.sendDecrementToMetrica(item)
 				})
 			},
@@ -89,9 +90,12 @@
 			getItemDiscount(item) {
 				let oldPrice = Math.round(this.getItemVariant(item)?.old_price)
 
-				if (oldPrice === 0 || oldPrice < item.total_price) return 0
+				if (oldPrice === 0 || oldPrice < item.sale_price) return 0
 
-				return Math.round(100 - item.total_price / oldPrice * 100)
+				return Math.round(100 - item.sale_price / oldPrice * 100)
+			},
+			getSalePriceSum() {
+				return this.cart.items?.reduce((acc, item) => item.sale_price * item.quantity + acc, 0)
 			},
 			getOrganizations() {
 				if (this.cart.items_count === 0) {
@@ -106,9 +110,6 @@
 					.success(response => {
 						let result = {}
 						this.products = response.products
-
-						//TODO delete log
-						console.log(response.products);
 
 						response.products.forEach(product => {
 							let brandId = product.characteristics.find(el => el.property_id == 53902709).id
@@ -129,8 +130,8 @@
 					})
 			},
  
-			setCoupon() {
-				Cart.setCoupon({coupon: this.coupon})
+			setCoupon(event) {
+				Cart.setCoupon({coupon: event.target.querySelector('input').value})
 			},
 			getTotalDiscount() {
 				if (this.cart.discounts?.length === 0) {
@@ -167,7 +168,7 @@
 									"id": item.product_id,
 									"name": item.product.title,
 									"variant": item.title,
-									"quantity": decrement ?? item.quantity,
+									"quantity": increment ?? item.quantity,
 									"price": item.sale_price,
 								}
 							]

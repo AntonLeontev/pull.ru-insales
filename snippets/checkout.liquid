@@ -1,6 +1,7 @@
 <section class="checkout" 
 	@delivery-chosen="setDelivery"
     @delivery-calculated="updateDelivery"
+    @coupon-updated.window="updateCart"
     @submit.prevent="submit"
 	x-data="checkout" 
 	x-show="page === 'checkout'" 
@@ -12,7 +13,7 @@
 		</div>
 		{% include 'cdek-widget' %}
 
-		<div class="contacts">
+		<div class="contacts" id="customer">
 			<div class="checkout__subtitle">Контактные данные</div>
 			<div class="contacts__form">
 				<input class="checkout__input" type="text" name="phone" placeholder="Укажите номер телефона" x-model="phone">
@@ -55,7 +56,7 @@
 				</div>
 				<div class="summary__option">
 					<div class="option__name">Цена</div>
-					<div class="option__value option__value_price"><span x-text="formatNumber(+$store.cart.cart?.total_price)"></span> ₽</div>
+					<div class="option__value option__value_price"><span x-text="formatNumber($store.cart.getSalePriceSum())"></span> ₽</div>
 				</div>
 				<div class="summary__option" x-show="$store.cart.getTotalDiscount() > 0">
 					<div class="option__name">Скидка</div>
@@ -71,7 +72,7 @@
 				<div class="total__value" x-text="formatNumber(+$store.cart.cart?.total_price + deliveryPrice()) + ' ₽'"></div>
 			</div>
 			<div class="summary__button">
-				<button type="button" class="btn btn-primary w-full">
+				<button type="button" class="btn btn-primary w-full" @click="submit" :disabled="processing">
 					<span x-show="!processing">Оформить заказ</span>
 
 					<svg x-show="processing" width="16px" height="16px" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
@@ -87,10 +88,20 @@
 			<hr>
 			<div class="promo">
 				<div class="promo__title">У вас есть промокод?</div>
-				<div class="promo__form">
-					<input type="text" class="promo__input" placeholder="Промокод" x-model="coupon">
-					<button class="promo__button">Применить</button>
-				</div>
+				<form class="promo__form" @submit.prevent.stop="setCoupon">
+					<input type="text" class="promo__input" placeholder="Промокод" x-model="coupon" name="coupon">
+					<button type="submit" class="promo__button">
+						<span x-show="!couponLoading">Применить</span>
+						<svg x-show="couponLoading" width="14px" height="14px" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
+						version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink">
+							<circle class="spin" cx="25" cy="25" fill="none" r="20" stroke-width="10"
+								stroke="#111111" stroke-dasharray="80 29">
+								<animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 25 25"
+									to="360 25 25" dur="800ms" repeatCount="indefinite" />
+							</circle>
+						</svg>
+					</button>
+				</form>
 			</div>
 			<div class="disclaimer">
 				При осуществлении заказа вы подтверждаете, что вы ознакомились с условиями <a href="https://static.insales-cdn.com/files/1/3327/33565951/original/terms_of_use.pdf">Пользовательского соглашения</a>, включая порядок оплаты, доставки, хранения и возврата, с порядком работы Limmite, процессинговых компаний по доставке товаров и приёму платежей <a href="/page/how-it-works">(Как это работает)</a>, и согласны с ними.
@@ -100,8 +111,18 @@
 
 	<div class="fixed-button-wrap" x-show="$store.cart.cart.items_count > 0 && page === 'checkout'">
 		<div class="container">
-			<button type="button" class="fixed-button" x-show="page === 'checkout'">
-				<div class="button__text">Оформить заказ</div>
+			<button type="button" class="fixed-button" @click="submit" :disabled="processing">
+				<div class="button__text" x-show="!processing">Оформить заказ</div>
+				<div x-show="processing">
+					<svg width="16px" height="16px" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
+						version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink">
+						<circle class="spin" cx="25" cy="25" fill="none" r="20" stroke-width="10"
+							stroke="#ffffff" stroke-dasharray="80 29">
+							<animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 25 25"
+								to="360 25 25" dur="800ms" repeatCount="indefinite" />
+						</circle>
+					</svg>
+				</div>
 				<div class="button__description">
 					<span x-text="cartItemsForHuman"></span>
 					<span>-</span>
@@ -126,7 +147,7 @@
 			name: null,
 			phone: null,
 			coupon: '{{ cart.coupon }}',
-			agree: true,
+			couponLoading: false,
 			orderKey: null,
 			processing: false,
 
@@ -136,9 +157,9 @@
 						if (data.message === 'Not authorized') return
 
 						if (data.status === 'ok') {
-						this.email = data.client.email
-						this.phone = data.client.phone
-						this.name = data.client.contact_name
+							this.email = data.client.email
+							this.phone = data.client.phone
+							this.name = data.client.contact_name
 						}
 					}
 				);
@@ -196,13 +217,13 @@
 			},
 			submit() {
 				if (this.name === null || this.email === null || this.phone === null) {
-					this.$dispatch('toast-error', {message: 'Заполните данные получателя', delay: 4000})
+					this.$dispatch('toast-error', {message: 'Не заполнены контакты получателя', delay: 4000})
 					document.querySelector('#customer').scrollIntoView({behavior: 'smooth'})
 					return 
 				}
 
 				if (this.name === '' || this.email === '' || this.phone === '') {
-					this.$dispatch('toast-error', {message: 'Заполните данные получателя', delay: 4000})
+					this.$dispatch('toast-error', {message: 'Не заполнены контакты получателя', delay: 4000})
 					document.querySelector('#customer').scrollIntoView({behavior: 'smooth'})
 					return 
 				}
@@ -210,11 +231,6 @@
 				if (this.deliveryTariff === null || this.deliveryType === null || this.deliveryAddress === null) {
 					this.$dispatch('toast-error', {message: 'Выберите способ доставки', delay: 4000})
 					document.querySelector('#cdekmap').scrollIntoView({behavior: 'smooth'})
-					return 
-				}
-
-				if (!this.agree) {
-					this.$dispatch('toast-error', {message: 'Нужно принять условия пользования', delay: 4000})
 					return 
 				}
 
@@ -332,6 +348,14 @@
 				}
 
 				return this.deliveryTariff?.delivery_sum ?? 0
+			},
+			updateCart() {
+				this.$store.cart.updateCart()
+				this.couponLoading = false
+			},
+			setCoupon(event) {
+				this.couponLoading = true
+				this.$store.cart.setCoupon(event)
 			},
 			pay(order) {
 				let widget = new cp.CloudPayments({

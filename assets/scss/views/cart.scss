@@ -616,6 +616,10 @@
 					}
 
 					.promo__button {
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						min-width: 118px;
 						padding: 1rem;
 						border: solid 1px $primary;
 						font-size: 1rem;

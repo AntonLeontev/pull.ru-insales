@@ -19,6 +19,9 @@
 			},
 			incrementItem(item) {
 				if (this.getItemVariant(item).quantity <= item.quantity) {
+					window.dispatchEvent(new CustomEvent('toast-info', 
+						{detail: {message: 'Добавлено максимальное количество', delay: 1500}}
+					))
 					return;
 				}
 
@@ -60,6 +63,29 @@
 					window.dispatchEvent(new CustomEvent('order-changed'))
 					this.sendDecrementToMetrica(item)
 				})
+			},
+			addToCart(variantId) {
+				let item = this.cart.items.find(el => el.variant_id == variantId) 
+				if (item) {
+					this.incrementItem(item)
+					return
+				}
+
+				$.post('/cart_items.json', {
+					variant_id: variantId,
+					quantity: 1,
+				})
+				.done((cart) => {
+					this.cart = cart;
+
+					window.dispatchEvent(new CustomEvent('toast-success', {detail: {message: 'Товар добавлен в корзину', delay: 1500}}))
+					window.dispatchEvent(new CustomEvent('order-changed'))
+
+					let item = cart.items.find(el => el.variant_id == variantId)
+
+					this.sendIncrementToMetrica(item)
+				})
+				.fail(onFail => window.dispatchEvent(new CustomEvent('toast-error', {detail: {message: 'Ошибка добавления товара', delay: 2500}})))
 			},
 			getVariant(productId, variantId) {
 				if (this.products.length === 0) return null;

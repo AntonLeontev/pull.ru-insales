@@ -495,36 +495,7 @@
 					this.variant = currentVariant
 				},
 				addToCart() {
-					let items = {}
-					items[this.variant.id] = 1
-
-					ajaxAPI.cart.add(items, {})
-						.done(onDone => { 
-							this.$dispatch('cart-changed', onDone.items_count) 
-							this.$dispatch('toast-success', {message: 'Товар добавлен в корзину', delay: 1500}) 
-
-							dataLayer.push({
-								'ecommerce': {
-									'currencyCode': 'RUB',    
-									'add': {
-										'products': [
-											{
-											'id': '{{ product.id }}',
-											'name' : '{{product.title}}',
-											'price': {{ product.price }},
-											'discount': '{{ salePercent | remove_first: '-'}}',
-											'category': '{{ collectionTitles | join: '/' }}',
-											'quantity': 1,
-											'variant' : this.variant.title,
-											// 'list': 'Выдача категории',
-											// 'position': 2
-											}
-										]
-									}
-								}
-							});
-						})
-						.fail(onFail => this.$dispatch('toast-error', {message: 'Ошибка добавления товара', delay: 2500}))
+					this.$store.cart.addToCart(this.variant.id)
 				},
 				sendMetrica() {
 					dataLayer.push({

@@ -4,6 +4,7 @@
 	@toast.window="add"
 	@toast-error.window="addError"
 	@toast-success.window="addSuccess"
+	@toast-info.window="addInfo"
 >
 	<template x-for="toast in toasts">
 		<div class="alert" :data-id="toast.id" :class="typeObject(toast)" @click="remove(toast.id)">
@@ -74,6 +75,13 @@
 				this.push(
 					this.$event.detail.message, 
 					'success',
+					this.$event.detail.delay, 
+				)
+			}, 
+			addInfo() {
+				this.push(
+					this.$event.detail.message, 
+					'info',
 					this.$event.detail.delay, 
 				)
 			}, 

@@ -1,273 +1,337 @@
+{% if template contains 'product' %}	
+	{% assign catalog = collections | where: 'title', 'Каталог' | first %}
+	{% assign categories = catalog.subcollections %}
+	{% assign men = categories | where: 'title', 'Мужчинам' | first %}
+	{% assign women = categories | where: 'title', 'Женщинам' | first %}
+{% else %}  
+	{% assign catalog = collections.all %}
+	{% assign men = collections.muzhchinam %}
+	{% assign women = collections.zhenschinam %}
+{% endif %}  
+
+{% assign brands = block_lists.with_template['system-banner-3'].brands.blocks %}
+
+
 <header class="header" id="header" 
-  x-data="{
-    sidebar: false,
-    items: {{ cart.items_count }},
-    search: false,
-  }"
+	x-data="{
+		sidebar: false,
+		search: false,
+		searchMobile: false,
+	}"
 >
-  <div class="header__navbar">
-    <div class="container">
-      <div class="header__navbar_actions">
-        <div class="mb_header_buttons">
-          <div class="mb btn_toggler">
-            <button type="button" @click="sidebar = true;overflow = false">
-              <img src="{{ 'ICO-burger.svg' | asset_url }}" alt="Кнопка меню"/>
-            </button>
-          </div>
-          <div class="mb btn_toggler">
-            <button type="button" @click="search = !search"><img src="{{ 'ICO-search.svg' | asset_url }}" alt="Поиск" /></button>
-          </div>
-        </div>
+	<div class="container">
+		<div class="header__content">
+			<nav class="left-menu">
+				<div class="gender__item">
+					<a href="/page/men" class="item__link">Мужчинам</a>
+					<nav class="navigation">
+						<div class="container">
+							<div class="navigation__content">
+								<div class="navigation__categories">
+									<ul class="categories__list">
+										{% for collection in men.subcollections %}
+											<li class="categories__item">
+												<a class="categories__link" href="{{ collection.url }}" tabindex="-1">{{ collection.title }}</a>
+												
+												{% if collection.subcollections.size > 0 %}
+													<ul class="subcategories">
+														{% for collection1 in collection.subcollections %}
+															<li class="subcategories__item">
+																<a href="{{ collection1.url }}" class="subcategories__link" tabindex="-1">
+																	{{ collection1.title }}
+																</a>
+															</li>
+					
+															{% if collection1.subcollections.size > 0 %}
+																<ul class="subcategories">
+																{% for collection2 in collection1.subcollections %}
+																	<li class="subcategories__item">
+																		<a href="{{ collection2.url }}" tabindex="-1" class="subcategories__link">
+																			{{ collection2.title }}
+																		</a>
+																	</li>
+																{% endfor %}
+																</ul>
+															{% endif %}
+														{% endfor %}
+													</ul>
+												{% endif %}
+											</li>
+										{% endfor %}
+									</ul>
+								</div>
+								<div class="navigation__brands">
+									<div class="brands__title">Бренды</div>
+									<ul class="brands__list">
+										{% assign collection = collections.muzhchinam %}
 
-        <div class="header_search_bar" :class="search && 'active'">
-          <form action="/search">
-            <input
-              type="text"
-              placeholder="Поиск товара"
-              name="q"
-              class="ordinary_input" 
-			        autocomplete="off"
-            />
+										{% assign brand_property = collection.properties | where: 'handle', 'brand' | first %}
+										
+										{% for brand in brands %}
+											{% assign brand_char = brand_property.characteristics | where: 'handle', brand.link | first %}
 
-            <img src="{{ 'ICO-search.svg' | asset_url }}" alt="Поиск" />
-          </form>
-        </div>
-
-        <div class="header_logo">
-          <a href="/"><img src="{{ 'logo-white-gold.svg' | asset_url }}" alt="Логотип" /></a>
-        </div>
-
-        
-        <div class="header_account_actions">
-          <!-- <img src="{{ 'ICO-map.svg' | asset_url }}" alt="Геолокация" /> -->
-          <a href="/cart_items">
-            <div class="cart-items" x-show="$store.cart.cart.items_count > 0" x-text="$store.cart.cart.items_count">{{ cart.items_count }}</div>
-            <img src="{{ 'ICO-shop.svg' | asset_url }}" alt="Корзина" />
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {% unless template == 'index'  %}
-  <div class="header__category" {% unless page.id == 13610431 or page.id == 13610537 %} style="background: #1f1f1f;" {% endunless %}>
-		<div class="container">
-		<div class="category_inner">
-			<nav class="category_pol">
-			
-			{% for link in linklists.gender-menu.links %}
-				<a href="{{link.url}}" class="{% if link.current? %} active	{% endif %}">{{link.title}}</a>
-				{% unless forloop.last %}
-				<span class="delimiter">/</span>
-				{% endunless %}
-			{% endfor %}
-
-			</nav>
-			<div class="category_list">
-			<nav class="header__menu">
-				<!-- <div class="list_item">
-				<img src="{{ 'ICO-diskount.svg' | asset_url }}" alt="" /><a
-					href="#"
-					class="list_link"
-					>Распродажа</a>
-				</div> -->
-				<div class="list_item" style="width: 150px;">
-					<a href="/collection/all" class="list_link" style="margin-left: auto;">Каталог</a>
-
-					{% if template contains 'product' %}	
-								{% assign catalog = collections | where: 'title', 'Каталог' | first %}
-					{% assign categories = catalog.subcollections %}
-					{% assign men = categories | where: 'title', 'Мужчинам' | first %}
-					{% assign women = categories | where: 'title', 'Женщинам' | first %}
-					{% else %}  
-					{% assign catalog = collections.all %}
-					{% assign men = collections.muzhchinam %}
-					{% assign women = collections.zhenschinam %}
-					{% endif %}  
-
-
-					<nav class="header__categories">
-					<div class="container">
-						<nav class="categories__menu">
-						<ul class="menu__column">
-							<li class="menu__item menu__item_title">
-							<a class="menu__link" tabindex="-1" href="{{ men.url }}">{{ men.title }}</a>
-							</li>
-
-
-							{% for collection in men.subcollections %}
-							<li class="menu__item"><a class="menu__link" href="{{ collection.url }}" tabindex="-1">{{ collection.title }}</a></li>
-
-							{% if collection.subcollections.size > 0 %}
-							<ul class="submenu">
-								{% for collection1 in collection.subcollections %}
-								<li class="menu__item"><a href="{{ collection1.url }}" class="menu__link" tabindex="-1">{{ collection1.title }}</a></li>
-
-								{% if collection1.subcollections.size > 0 %}
-								<ul class="submenu">
-								{% for collection2 in collection1.subcollections %}
-									<li class="menu__item"><a href="{{ collection2.url }}" tabindex="-1" class="menu__link">{{ collection2.title }}</a></li>
-								{% endfor %}
-								</ul>
-								{% endif %}
-								{% endfor %}
-							</ul>
-							{% endif %}
-
-							{% endfor %}
-						</ul>
-						<ul class="menu__column">
-							<li class="menu__item menu__item_title">
-							<a class="menu__link" tabindex="-1" href="{{ women.url }}">{{ women.title }}</a>
-							</li>
-						
-							{% for collection in women.subcollections %}
-							<li class="menu__item"><a class="menu__link" tabindex="-1" href="{{ collection.url }}">{{ collection.title }}</a></li>
-
-							{% if collection.subcollections.size > 0 %}
-							<ul class="submenu">
-								{% for collection1 in collection.subcollections %}
-								<li class="menu__item"><a href="{{ collection1.url }}" class="menu__link" tabindex="-1">{{ collection1.title }}</a></li>
-
-								{% if collection1.subcollections.size > 0 %}
-								<ul class="submenu">
-								{% for collection2 in collection1.subcollections %}
-									<li class="menu__item"><a href="{{ collection2.url }}" class="menu__link" tabindex="-1">{{ collection2.title }}</a></li>
-								{% endfor %}
-								</ul>
-								{% endif %}
-								{% endfor %}
-							</ul>
-							{% endif %}
-
-							{% endfor %}
-						</ul>
-
-						<ul class="menu__column menu__column_brands">
-							<li class="menu__item menu__item_title">
-							<span class="menu__link">Бренды</span>
-							</li>
-							<div class="brands_body">
-								{% assign brand_list = catalog.properties | where: 'handle', 'brand' | first %}
-								{% for brand in brand_list.characteristics %}
-								<li class="menu__item">
-									<a class="menu__link brand-link" href="{{ catalog.url | add_param: 'characteristics[]', brand.id }}" tabindex="-1">{{ brand.name }}</a>
-								</li>
-								{% endfor %}
+											{% if brand_char.id %}
+												<li class="brands__item">
+													<a href="{{ collection.url | add_param: 'characteristics[]', brand_char.id }}" class="brands__link">{{ brand.title }}</a>
+												</li>
+											{% endif %}
+										{% endfor %}
+									</ul>
+								</div>
 							</div>
-						</ul>
-						
-						</nav>
-					</div>
+						</div>
 					</nav>
 				</div>
-				{% for link in linklists.main-menu.links %}
-				<div class="list_item">
-					<a href="{{link.url}}" class="list_link" tabindex="-1">{{link.title}}</a>
+				<div class="gender__item">
+					<a href="/page/women" class="item__link">Женщинам</a>
+					<nav class="navigation">
+						<div class="container">
+							<div class="navigation__content">
+								<div class="navigation__categories">
+									<ul class="categories__list">
+										{% for collection in women.subcollections %}
+											<li class="categories__item">
+												<a class="categories__link" href="{{ collection.url }}" tabindex="-1">{{ collection.title }}</a>
+												
+												{% if collection.subcollections.size > 0 %}
+													<ul class="subcategories">
+														{% for collection1 in collection.subcollections %}
+															<li class="subcategories__item">
+																<a href="{{ collection1.url }}" class="subcategories__link" tabindex="-1">
+																	{{ collection1.title }}
+																</a>
+															</li>
+					
+															{% if collection1.subcollections.size > 0 %}
+																<ul class="subcategories">
+																{% for collection2 in collection1.subcollections %}
+																	<li class="subcategories__item">
+																		<a href="{{ collection2.url }}" tabindex="-1" class="subcategories__link">
+																			{{ collection2.title }}
+																		</a>
+																	</li>
+																{% endfor %}
+																</ul>
+															{% endif %}
+														{% endfor %}
+													</ul>
+												{% endif %}
+											</li>
+										{% endfor %}
+									</ul>
+								</div>
+								<div class="navigation__brands">
+									<div class="brands__title">Бренды</div>
+									<ul class="brands__list">
+										{% assign collection = collections.zhenschinam %}
+
+										{% assign brand_property = collection.properties | where: 'handle', 'brand' | first %}
+										
+										{% for brand in brands %}
+											{% assign brand_char = brand_property.characteristics | where: 'handle', brand.link | first %}
+
+											{% if brand_char.id %}
+												<li class="brands__item">
+													<a href="{{ collection.url | add_param: 'characteristics[]', brand_char.id }}" class="brands__link">{{ brand.title }}</a>
+												</li>
+											{% endif %}
+										{% endfor %}
+									</ul>
+								</div>
+							</div>
+						</div>
+					</nav>
 				</div>
-				{% endfor %}
+
+				<button class="left-menu__item" @click="sidebar = true; overflow = false">
+					<img src="{{ 'ICO-burger.svg' | asset_url }}" alt="Иконка меню" class="left-menu__icon">
+				</button>
+				<button class="left-menu__item" @click="searchMobile = !searchMobile">
+					<img src="{{ 'ICO-search.svg' | asset_url }}" alt="Иконка поиска" class="left-menu__icon">
+				</button>
 			</nav>
-			
+			<div class="logo">
+				<a href="/" class="logo__link">
+					<img src="{{ 'logo-main.svg' | asset_url }}" alt="limmite logo" class="logo__img">
+				</a>
+			</div>
+			<div class="right-menu" @click.outside="search = false">
+				<nav class="right-menu__icons" 
+					x-show="!search"
+					x-transition:enter="icons_enter"
+					x-transition:enter-start="icons_enter-start"
+					x-transition:enter-end="icons_enter-end"
+					x-transition:leave="icons_leave"
+				>
+					<a 
+						{% if client %}
+							href="/client_account/orders"
+						{% else %}
+							href="/client_account/login" 
+						{% endif %}
+							class="right-menu__item right-menu__item_personal"
+					>
+						<img src="{{ 'ICO-profile.svg' | asset_url }}" alt="Иконка личного кабинета" class="right-menu__icon">
+					</a>
+					<a href="/favorites" class="right-menu__item"><img src="{{ 'ICO-heart-header.svg' | asset_url }}" alt="Иконка избранного" class="right-menu__icon"></a>
+					<a href="/cart_items" class="right-menu__item right-menu__item_cart">
+						<div class="items-number" 
+							x-show="$store.cart.cart.items_count > 0" 
+							x-text="$store.cart.cart.items_count"
+							x-cloak
+						>
+							{{ cart.items_count }}
+						</div>
+						<img src="{{ 'ICO-cart.svg' | asset_url }}" alt="Иконка корзины" class="right-menu__icon">
+					</a>
+					<button class="right-menu__item right-menu__item_search" @click="search = true">
+						<img src="{{ 'ICO-search.svg' | asset_url }}" alt="Иконка поиска" class="right-menu__icon">
+					</button>
+				</nav>
+				<div class="right-menu__search" 
+					x-show="search"
+					x-transition:enter="search_enter"
+					x-transition:enter-start="search_enter-start"
+					x-transition:enter-end="search_enter-end"
+					x-transition:leave="search_leave"
+					x-cloak
+				>
+					<form action="/search">
+						<input
+							type="text"
+							placeholder="Поиск"
+							name="q"
+							autocomplete="off"
+						/>
+
+						<img src="{{ 'ICO-search.svg' | asset_url }}" alt="Поиск" />
+					</form>
+				</div>
+			</div>
+			<div class="mobile-search" :class="searchMobile && 'mobile-search_active'">
+				<div class="mobile-search__input">
+					<input type="text" name="q" placeholder="Поиск">
+					<img src="{{ 'ICO-search.svg' | asset_url }}" alt="">
+				</div>
 			</div>
 		</div>
-		</div>
 	</div>
-  {% endunless %}
 
-  <div class="cover" :class="sidebar && 'active'"></div>
-  <div 
-    class="sidebar" 
-    id="sidebar" 
-    :class="sidebar && 'active'"
-    x-data="{
-      tab: '',
-
-      init() {
-        if (location.href.includes('page/muzh') || location.href.includes('-men')) {
-          this.tab = 'men'
-        } else {
-          this.tab = 'women'
-        }
-      },
-  }">
-    <button class="sidebar__close" @click="sidebar = false;overflow = true">
-      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g id="&#209;&#129;lose">
-        <rect id="Rectangle 572" x="4.11914" y="3" width="26.0216" height="2.16846" rx="1.08423" transform="rotate(45 4.11914 3)" fill="#111111"/>
-        <rect id="Rectangle 573" width="26.0216" height="2.16846" rx="1.08423" transform="matrix(-0.707107 0.707107 0.707107 0.707107 21.4668 3)" fill="#111111"/>
-        </g>
-      </svg>
-    </button>
-
-    <div class="sidebar__switch">
-      <button class="switch__button" :class="tab === 'men' && 'active'" @click="tab = 'men'">Мужчинам</button>
-      <button class="switch__button" :class="tab === 'women' && 'active'" @click="tab = 'women'">Женщинам</button>
-    </div>
-    <nav class="sidebar__menu-wrap">
-      <ul class="sidebar__menu" x-show="tab === 'men'">
-        {% for collection in men.subcollections %}
-          {% if collection.subcollections.size > 0 %}
-          <li class="menu__item" x-data="{show: false}">
-            <div class="menu__button" :class="show && 'active'" @click="show = !show">{{ collection.title }}</div>
-            
-            <div class="submenu" :class="show && 'active'">
-              <ul class="submenu__wrap">
-                {% for collection1 in collection.subcollections %}
-                  <li class="menu__item"><a href="{{ collection1.url }}" class="menu__link">{{ collection1.title }}</a></li>
-                {% endfor %}
-                
-                <li class="menu__item"><a href="{{ collection.url }}" class="menu__link menu__link_small">Все товары</a></li>
-              </ul>
-
-            </div>
-          </li>
-          {% else %}
-            <li class="menu__item"><a class="menu__link" href="{{ collection.url }}">{{ collection.title }}</a></li>
-          {% endif %}
-  
-        {% endfor %}
-
-        <li class="menu__item"><a class="menu__link menu__link_small" href="{{ collections.muzhchinam.url }}">Все товары</a></li>
-      </ul>
-
-      <ul class="sidebar__menu" x-show="tab === 'women'">
-        {% for collection in women.subcollections %}
-          {% if collection.subcollections.size > 0 %}
-          <li class="menu__item" x-data="{show: false}">
-            <div class="menu__button" :class="show && 'active'" @click="show = !show">{{ collection.title }}</div>
-            
-            <div class="submenu" :class="show && 'active'">
-              <ul class="submenu__wrap">
-                {% for collection1 in collection.subcollections %}
-                  <li class="menu__item"><a href="{{ collection1.url }}" class="menu__link">{{ collection1.title }}</a></li>
-                {% endfor %}
-                
-                <li class="menu__item"><a href="{{ collection.url }}" class="menu__link menu__link_small">Все товары</a></li>
-              </ul>
-
-            </div>
-          </li>
-          {% else %}
-            <li class="menu__item"><a class="menu__link" href="{{ collection.url }}">{{ collection.title }}</a></li>
-          {% endif %}
-  
-        {% endfor %}
-
-        <li class="menu__item"><a class="menu__link menu__link_small" href="{{ collections.muzhchinam.url }}">Все товары</a></li>
-      </ul>
-    </nav>
-    <nav class="sidebar__personal-menu">
-      <ul class="personal-menu">
-        <li class="menu__item"><a href="/favorites" class="menu__link">Избранное</a></li>
-        {% if client %}
-          <li class="menu__item"><a href="/client_account/orders" class="menu__link">Личный кабинет</a></li>
-        {% else %}
-          <li class="menu__item"><a href="/client_account/login" class="menu__link">Личный кабинет</a></li>
-        {% endif %}
-      </ul>
-    </nav>
-  </div>
-
+	<div class="sidebar"
+		:class="sidebar && 'sidebar_active'" 
+		x-data="{
+			page: 'men',
+		}"
+	>
+			<div class="sidebar__header">
+				<button class="header__button" :class="page === 'men' && 'header__button_active'" @click="page = 'men'">Мужчинам</button>
+				<button class="header__button" :class="page === 'women' && 'header__button_active'" @click="page = 'women'">Женщинам</button>
+				<div class="header__underline"></div>
+			</div>
+			<nav class="sidebar__categories">
+				<ul class="sidebar__men-categories" x-show="page === 'men'">
+					{% for collection in men.subcollections %}
+						<li class="category" x-data="{
+							show: false,
+						}">
+							<div class="category__header">
+								<a href="{{ category.url }}" class="category__title">{{ collection.title }}</a>
+								{% if collection.subcollections.size > 0 %}
+									<button class="header__icon" :class="show && 'header__icon_active'" @click="show = !show">
+										<img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="Стрелка вниз">
+									</button>
+								{% endif %}
+							</div>
+							
+							{% if collection.subcollections.size > 0 %}
+								<div class="subcategories__wrap" :class="show && 'subcategories__wrap_active'">
+									<div class="subcategories__content">
+										<ul class="category__subcategories">
+											{% for collection1 in collection.subcollections %}
+												<li class="subcategories__item">
+													<a href="{{ collection1.url }}" class="subcategories__link" tabindex="-1">
+														{{ collection1.title }}
+													</a>
+												</li>
+		
+												{% if collection1.subcollections.size > 0 %}
+													<ul class="subcategories">
+													{% for collection2 in collection1.subcollections %}
+														<li class="subcategories__item">
+															<a href="{{ collection2.url }}" tabindex="-1" class="subcategories__link">
+																{{ collection2.title }}
+															</a>
+														</li>
+													{% endfor %}
+													</ul>
+												{% endif %}
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+							{% endif %}
+						</li>
+					{% endfor %}
+				</ul>
+				<div class="sidebar__women-categories" x-show="page === 'women'">
+					{% for collection in women.subcollections %}
+						<li class="category" x-data="{
+							show: false,
+						}">
+							<div class="category__header">
+								<a href="{{ category.url }}" class="category__title">{{ collection.title }}</a>
+								{% if collection.subcollections.size > 0 %}
+									<button class="header__icon" :class="show && 'header__icon_active'" @click="show = !show">
+										<img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="Стрелка вниз">
+									</button>
+								{% endif %}
+							</div>
+							
+							{% if collection.subcollections.size > 0 %}
+								<div class="subcategories__wrap" :class="show && 'subcategories__wrap_active'">
+									<div class="subcategories__content">
+										<ul class="category__subcategories">
+											{% for collection1 in collection.subcollections %}
+												<li class="subcategories__item">
+													<a href="{{ collection1.url }}" class="subcategories__link" tabindex="-1">
+														{{ collection1.title }}
+													</a>
+												</li>
+		
+												{% if collection1.subcollections.size > 0 %}
+													<ul class="subcategories">
+													{% for collection2 in collection1.subcollections %}
+														<li class="subcategories__item">
+															<a href="{{ collection2.url }}" tabindex="-1" class="subcategories__link">
+																{{ collection2.title }}
+															</a>
+														</li>
+													{% endfor %}
+													</ul>
+												{% endif %}
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+							{% endif %}
+						</li>
+					{% endfor %}
+				</div>
+			</nav>
+			<div class="sidebar__footer">
+				<a 
+					{% if client %}
+						href="/client_account/orders"
+					{% else %}
+						href="/client_account/login" 
+					{% endif %}
+						class="footer__button"
+				>
+					Личный кабинет
+				</a>
+			</div>
+	</div>
+	<div class="sidebar__cover" x-show="sidebar" @click="sidebar = false; overflow = true" x-cloak></div>
 </header>
 
 <!-- <script>

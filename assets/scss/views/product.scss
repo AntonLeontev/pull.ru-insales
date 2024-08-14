@@ -257,6 +257,123 @@
 
 }
 
+.review-form {
+	margin-bottom: .75rem;
+
+	.reviews-form__header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		cursor: pointer;
+
+		img {
+			transition: transform 0.3s ease;
+		}
+
+		&.active img {
+			transform: rotate(180deg);
+		}
+
+		.reviews-form__title {
+			font-size: 1.5rem;
+		}
+	}
+
+	.reviews-form__content {
+		display: grid;
+		grid-template-rows: 0fr;
+		overflow: hidden;
+		transition: grid-template-rows .3s ease;
+
+		&.active {
+			grid-template-rows: 1fr;
+		}
+
+		.reviews-form__content-wrapper {
+			display: flex;
+			flex-direction: column;
+			row-gap: .75rem;
+			overflow: hidden;
+		}
+
+		.review__text {
+			background: $white;
+			border: .125rem solid hsla(0,0%,7%,.2);
+			color: $primary;
+			font-size: 1.125rem;
+			font-style: normal;
+			font-weight: 400;
+			line-height: 100%;
+			padding: 1.125rem;
+			width: 100%;
+		}
+
+		.review-form__button {
+			margin-bottom: .625rem;
+			text-align: center;
+			width: 100%;
+			background: $primary;
+			color: $white;
+			font-size: 1.125rem;
+			font-style: normal;
+			font-weight: 400;
+			line-height: 100%;
+			padding: 1.125rem 2.25rem;
+			transition: all 0.3s ease;
+
+			&.success {
+				background: $success;
+			}
+		}
+
+		.star-rating-wrapper {
+		
+			.rating-area {
+				display: flex;
+				flex-direction: row-reverse;
+				justify-content: flex-start;
+				overflow: hidden;
+			}
+			.rating-area:not(:checked) > input {
+				display: none;
+			}
+			.rating-area:not(:checked) > label {
+				float: right;
+				width: 1.875rem;
+				padding: 0;
+				cursor: pointer;
+				font-size: 1.75rem;
+				line-height: 1.75rem;
+				color: lightgrey;
+				// text-shadow: .0625rem .0625rem #bbb;
+			}
+			.rating-area:not(:checked) > label:before {
+				content: '★';
+			}
+			.rating-area > input:checked ~ label {
+				color: #ffbe40;
+				// text-shadow: .0625rem .0625rem #c60;
+			}
+			.rating-area:not(:checked) > label:hover,
+			.rating-area:not(:checked) > label:hover ~ label {
+				color: #ffbe40;
+			}
+			.rating-area > input:checked + label:hover,
+			.rating-area > input:checked + label:hover ~ label,
+			.rating-area > input:checked ~ label:hover,
+			.rating-area > input:checked ~ label:hover ~ label,
+			.rating-area > label:hover ~ input:checked ~ label {
+				color: #ffbe40;
+				// text-shadow: .0625rem .0625rem goldenrod;
+			}
+			.rating-area > label:active {
+				position: relative;
+			}
+		}
+	}
+
+}
+
 .bottom-buttons {
 	display: flex;
 	justify-content: center;

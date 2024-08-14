@@ -1,51 +1,51 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    {% if template contains 'index' %}
-      <script>
-        if (localStorage.getItem('gender') === 'men') {
-          location.replace('/page/muzhchinam')
-        }
-        if (localStorage.getItem('gender') === 'women') {
-          location.replace('/page/zhenschinam')
-        }
-      </script>
-    {% endif %}
+	<head>
+		{% if template contains 'index' %}
+		<script>
+			if (localStorage.getItem('gender') === 'men') {
+			location.replace('/page/muzhchinam')
+			}
+			if (localStorage.getItem('gender') === 'women') {
+			location.replace('/page/zhenschinam')
+			}
+		</script>
+		{% endif %}
 
-    {% include "head" %}
-  </head>
-  <body id="body" :class="overflow || 'ovhidden'" x-data="{overflow: true}">
-    <div class="wrapper">
+		{% include "head" %}
+	</head>
+	<body id="body" :class="overflow || 'ovhidden'" x-data="{overflow: true}">
+		<div class="wrapper">
 
-      {% include "header" %}
+			{% include "header" %}
 
-      <main class="main {% if template == 'index' %} main-index {% endif %}">
-        
-      {% unless template contains 'index' or page.url contains 'page/muzh' or page.url contains 'page/zhen' %}	
-        {% include "breadcrumbs" %}
-      {% endunless %}  
-      
-      {{ content_for_layout }}
+			<main class="main {% if template == 'index' %} main-index {% endif %}">
+				
+				{% unless template contains 'index' or page.url contains 'page/muzh' or page.url contains 'page/zhen' %}	
+					{% include "breadcrumbs" %}
+				{% endunless %}  
+				
+				{{ content_for_layout }}
 
-      </main>
+			</main>
 
-      {% include "footer" %}
+			{% include "footer" %}
 
-      {% include "toasts" %}
+			{% include "toasts" %}
 
-	  
-    </div>
-	
-	{% include "alpine-cart-store" %}
-    <!-- swiper -->
-    <script src="{{ 'swiper10.js' | asset_url }}"></script>
+		
+		</div>
+		
+		{% include "alpine-cart-store" %}
+		<!-- swiper -->
+		<script src="{{ 'swiper10.js' | asset_url }}"></script>
 
-    <script src="{{ 'nice-select2.js' | asset_url }}"></script>
+		<script src="{{ 'nice-select2.js' | asset_url }}"></script>
 
-    <!-- главый js -->
-    <script src="{{ 'main.js?v=2' | asset_url }}"></script>
-	<script src="{{ 'helpers.js' | asset_url }}"></script>
-    {% include "microdata" %}
+		<!-- главый js -->
+		<script src="{{ 'main.js?v=2' | asset_url }}"></script>
+		<script src="{{ 'helpers.js' | asset_url }}"></script>
+		{% include "microdata" %}
 
-  </body>
+	</body>
 </html>

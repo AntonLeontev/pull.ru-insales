@@ -404,16 +404,6 @@ textarea:focus-visible
 		margin-bottom: 1.5rem;
 	}
 }
-.show_moree {
-	margin-top: 1.5rem;
-	color: $secondary_dark;
-	font-size: 1rem;
-	font-style: normal;
-	font-weight: 400;
-	line-height: 100%;
-	text-decoration-line: underline;
-	text-decoration-skip-ink: none;
-}
 .searching_material {
 	display: flex;
 	align-items: stretch;
@@ -425,86 +415,6 @@ textarea:focus-visible
 		max-width: 26.75rem;
 		width: 100%;
 	}
-}
-.filter_header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: .9375rem 1.5rem;
-	color: $white;
-	background: $primary;
-	font-size: 1rem;
-	font-style: normal;
-	font-weight: 700;
-	line-height: 85%;
-	text-transform: uppercase;
-}
-.filter_close {
-	.close_btn {
-		background: #fff;
-		width: 1.875rem;
-		height: 1.875rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-}
-.filter_body {
-	padding: 2.25rem;
-	.accordion_link {
-		padding: 1.5rem 0;
-	}
-	.filter_item {
-		border-bottom: .0625rem solid #939393;
-		background: #fff;
-
-		.filter_item_btn {
-			position: relative;
-			width: 100%;
-
-			.marker {
-				position: absolute;
-				right: 1.25rem;
-				top: 50%;
-				width: .5rem;
-				height: .5rem;
-				background-color: $danger;
-				border-radius: 100%;
-				transform: translateY(-50%);
-			}
-		}
-	}
-	.filter_item.active {
-		padding-bottom: 1.5rem;
-	}
-}
-.filter_bottom {
-	padding: 2.25rem;
-	display: flex;
-	flex-direction: column;
-
-	a {
-		width: 100%;
-		text-align: center;
-	}
-	.clear_filter {
-		text-align: center;
-		color: $secondary_dark;
-		font-size: 1.125rem;
-		font-style: normal;
-		font-weight: 400;
-		line-height: 100%;
-		margin-top: 1.5rem;
-		span {
-			border-bottom: .0625rem solid #4d4d4d;
-		}
-	}
-}
-.order_form {
-	display: flex;
-	flex-direction: column;
-	row-gap: 1.25rem;
-	margin-top: 1.875rem;
 }
 .accordion_content {
 	display: grid;
@@ -728,57 +638,6 @@ textarea:focus-visible
 			}
 		}
 	}
-}
-.reklama_card_item {
-	position: relative;
-	background: $bg-light;
-	height: 100%;
-	overflow: hidden;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	.text {
-		padding: 1.5rem;
-	}
-	.card_label {
-		color: $primary;
-		font-size: 1.75rem;
-		font-style: normal;
-		font-weight: 500;
-		line-height: 110%;
-		margin-bottom: .875rem;
-	}
-	.card_subinfo {
-		color: $secondary;
-		font-size: 1.125rem;
-		font-style: normal;
-		font-weight: 400;
-		line-height: 100%;
-	}
-	.bg-text {
-		position: absolute;
-		opacity: 0.02;
-		color: $primary;
-		top: 0;
-		font-size: 6rem;
-		font-style: normal;
-		font-weight: 900;
-		line-height: 100%;
-		letter-spacing: .9rem;
-		text-transform: uppercase;
-	}
-}
-.hot_label {
-	padding: .25rem .875rem;
-	color: $white;
-	display: inline-flex;
-	justify-content: center;
-	font-size: .875rem;
-	font-style: normal;
-	font-weight: 400;
-	line-height: 100%;
-	letter-spacing: .0437rem;
-	background: $primary;
 }
 .swiper-button-prev {
 	&::after {
@@ -1293,9 +1152,6 @@ textarea:focus-visible
 
 
 .mb_header_buttons {
-	display: none;
-}
-.reklama_card_item.mb {
 	display: none;
 }
 .img.shoes_desktop {
@@ -2508,27 +2364,6 @@ textarea:focus-visible
 			display: none;
 		}
 	}
-	.reklama_card_item {
-		.card_subinfo {
-			margin-bottom: 6.25rem;
-		}
-		.text {
-			height: 100%;
-			.card_link {
-				position: absolute;
-				bottom: 1.5rem;
-				color: $primary;
-				text-align: center;
-				border-bottom: .0625rem solid $primary;
-				font-size: 1.25rem;
-				font-style: normal;
-				font-weight: 400;
-				line-height: 100%;
-				padding-bottom: .1875rem;
-			}
-		}
-		height: auto;
-	}
 	main {
 		padding-top: 2.25rem;
 		padding-bottom: 9.125rem;
@@ -2570,9 +2405,6 @@ textarea:focus-visible
 	}
 	.wrapper {
 		overflow: hidden;
-	}
-	.reklama_card_item.mb {
-		display: block;
 	}
 	.mb_header_buttons {
 		display: flex;
@@ -2793,12 +2625,6 @@ textarea:focus-visible
 		margin: 0;
 		border: none;
 	}
-	.filter_body {
-		padding: 2.25rem .875rem;
-		.accordion_link {
-			font-size: .875rem;
-		}
-	}
 	.filter_bottom {
 		padding: 2.25rem .875rem;
 	}
@@ -2986,28 +2812,6 @@ textarea:focus-visible
 			object-fit: cover;
 		}
 	}
-	.reklama_card_item {
-		.text {
-			.card_link {
-				display: none;
-			}
-			padding: 5.9375rem .875rem .875rem .875rem;
-			z-index: 2;
-		}
-		.card_subinfo {
-			margin-bottom: 0;
-			font-size: .875rem;
-			z-index: 9;
-		}
-		.card_label {
-			font-size: 1.125rem;
-			margin-bottom: .5rem;
-			margin-top: .5rem;
-		}
-		.bg-text {
-			font-size: 4rem;
-		}
-	}
 	.categories_swiper {
 		.swiper-wrapper {
 			flex-wrap: wrap;
@@ -3047,32 +2851,6 @@ textarea:focus-visible
 	.news_fresh_clothes {
 		.aksesuari_item.ds {
 			display: none;
-		}
-	}
-	.news-2 {
-		.reklama_card_item {
-			.text {
-				.card_link {
-					display: block;
-					width: calc(100% - 1.625rem);
-				}
-				padding: .875rem;
-				padding-top: 9.375rem;
-				background: linear-gradient( 180deg, rgba(247, 247, 247, 0) 37.73%, $bg-light 66.07% );
-				width: 100%;
-			}
-			.card_subinfo {
-				margin-bottom: 1.5rem;
-				margin-bottom: 4.25rem;
-			}
-		}
-		.cloth_item {
-			.img {
-				width: 17.8125rem;
-				height: 14.0625rem;
-				top: 1.25rem;
-				left: calc(50% - 8.9063rem);
-			}
 		}
 	}
 	.mobile_none {

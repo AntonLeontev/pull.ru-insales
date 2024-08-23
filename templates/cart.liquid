@@ -37,7 +37,7 @@
 					<div class="cart__item">
 						<div class="item__image">
 							<a :href="item.product_url">
-								<img :src="item.product.images[0].large_url" :alt="item.title">
+								<img :src="item.product.first_image.large_url" :alt="item.title">
 							</a>
 							<div class="item__discount"
 								x-show="$store.cart.getItemVariant(item)?.old_price > item.sale_price"

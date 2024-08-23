@@ -292,6 +292,23 @@
 						}
 					}
 				}
+
+				.summary__option_discount {
+					display: block !important;
+
+					.discount__value {
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						gap: 1rem;
+						margin-bottom: .5rem;
+					}
+
+					.discount__description {
+						color: $secondary;
+						font-size: .875rem;
+					}
+				}
 			}
 
 			.summary__total {
@@ -553,6 +570,23 @@
 						&_discount {
 							color: $danger;
 						}
+					}
+				}
+
+				.summary__option_discount {
+					display: block !important;
+
+					.discount__value {
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						gap: 1rem;
+						margin-bottom: .5rem;
+					}
+
+					.discount__description {
+						color: $secondary;
+						font-size: .875rem;
 					}
 				}
 			}

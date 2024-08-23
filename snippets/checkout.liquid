@@ -58,9 +58,12 @@
 					<div class="option__name">Цена</div>
 					<div class="option__value option__value_price"><span x-text="formatNumber($store.cart.getSalePriceSum())"></span> ₽</div>
 				</div>
-				<div class="summary__option" x-show="$store.cart.getTotalDiscount() > 0">
-					<div class="option__name">Скидка</div>
-					<div class="option__value option__value_discount" x-text="'- ' + formatNumber($store.cart.getTotalDiscount()) + ' ₽'"></div>
+				<div class="summary__option summary__option_discount" x-show="$store.cart.getTotalDiscount() > 0">
+					<div class="discount__value">
+						<div class="option__name">Скидка</div>
+						<div class="option__value option__value_discount" x-text="'- ' + formatNumber($store.cart.getTotalDiscount()) + ' ₽'"></div>
+					</div>
+					<div class="discount__description" x-text="$store.cart.cart.discount_description"></div>
 				</div>
 				<div class="summary__option" x-show="deliveryPrice() > 0">
 					<div class="option__name">Доставка</div>

@@ -58,13 +58,15 @@
 					<div class="option__name">Цена</div>
 					<div class="option__value option__value_price"><span x-text="formatNumber($store.cart.getSalePriceSum())"></span> ₽</div>
 				</div>
-				<div class="summary__option summary__option_discount" x-show="$store.cart.getTotalDiscount() > 0">
-					<div class="discount__value">
-						<div class="option__name">Скидка</div>
-						<div class="option__value option__value_discount" x-text="'- ' + formatNumber($store.cart.getTotalDiscount()) + ' ₽'"></div>
+				<template x-if="$store.cart.getTotalDiscount() > 0">
+					<div class="summary__option summary__option_discount">
+						<div class="discount__value">
+							<div class="option__name">Скидка</div>
+							<div class="option__value option__value_discount" x-text="'- ' + formatNumber($store.cart.getTotalDiscount()) + ' ₽'"></div>
+						</div>
+						<div class="discount__description" x-text="$store.cart.cart.discount_description"></div>
 					</div>
-					<div class="discount__description" x-text="$store.cart.cart.discount_description"></div>
-				</div>
+				</template>
 				<div class="summary__option" x-show="deliveryPrice() > 0">
 					<div class="option__name">Доставка</div>
 					<div class="option__value" x-text="deliveryPrice() + ' ₽'"></div>
@@ -362,11 +364,11 @@
 			},
 			pay(order) {
 				let widget = new cp.CloudPayments({
-				yandexPaySupport: false,
-				applePaySupport: false,
-				googlePaySupport: false,
-				masterPassSupport: false,
-				tinkoffInstallmentSupport: false
+					yandexPaySupport: false,
+					applePaySupport: false,
+					googlePaySupport: false,
+					masterPassSupport: false,
+					tinkoffInstallmentSupport: false
 				});
 
 				let receipt = {
@@ -386,86 +388,86 @@
 
 
 				order.order_lines.forEach(line => {
-				receipt['Items'].push({
-					'label': line.title, //наименование товара
-					'price': line.full_sale_price, //цена
-					'quantity': line.quantity, //количество
-					'amount': line.full_total_price, //сумма
-					'vat': null, //ставка НДС
-					'method': 1, // тег-1214 признак способа расчета - признак способа расчета
-					'object': 1, // тег-1212 признак предмета расчета - признак предмета товара, работы, услуги, платежа, выплаты, иного предмета расчета
-					'measurementUnit': 'шт', //единица измерения
-					'AgentSign': 6, //признак агента, тег ОФД 1057, 1222
-					'PurveyorData': { //данные поставщика платежного агента,  тег ОФД 1224
-					'Name': this.productsOrganizations[line.product_id].title, // наименование поставщика, тег ОФД 1225
-					'Inn': this.productsOrganizations[line.product_id].inn // ИНН поставщика, тег ОФД 1226
-					}
-				})
+					receipt['Items'].push({
+						'label': line.title, //наименование товара
+						'price': line.full_sale_price, //цена
+						'quantity': line.quantity, //количество
+						'amount': line.full_total_price, //сумма
+						'vat': null, //ставка НДС
+						'method': 1, // тег-1214 признак способа расчета - признак способа расчета
+						'object': 1, // тег-1212 признак предмета расчета - признак предмета товара, работы, услуги, платежа, выплаты, иного предмета расчета
+						'measurementUnit': 'шт', //единица измерения
+						'AgentSign': 6, //признак агента, тег ОФД 1057, 1222
+						'PurveyorData': { //данные поставщика платежного агента,  тег ОФД 1224
+						'Name': this.$store.cart.productsOrganizations[line.product_id].title, // наименование поставщика, тег ОФД 1225
+						'Inn': this.$store.cart.productsOrganizations[line.product_id].inn // ИНН поставщика, тег ОФД 1226
+						}
+					})
 				})
 
 				if (order.full_delivery_price > 0) {
-				receipt['Items'].push({
-					'label': 'Доставка', //наименование товара
-					'price': order.full_delivery_price, //цена
-					'quantity': 1, //количество
-					'amount': order.full_delivery_price, //сумма
-					'vat': null, //ставка НДС
-					'method': 1, // тег-1214 признак способа расчета - признак способа расчета
-					'object': 4, // тег-1212 признак предмета расчета - признак предмета товара, работы, услуги, платежа, выплаты, иного предмета расчета
-				})
+					receipt['Items'].push({
+						'label': 'Доставка', //наименование товара
+						'price': order.full_delivery_price, //цена
+						'quantity': 1, //количество
+						'amount': order.full_delivery_price, //сумма
+						'vat': null, //ставка НДС
+						'method': 1, // тег-1214 признак способа расчета - признак способа расчета
+						'object': 4, // тег-1212 признак предмета расчета - признак предмета товара, работы, услуги, платежа, выплаты, иного предмета расчета
+					})
 				}
 
 				widget.pay('charge',
-				{ 
-					// publicId: 'pk_c99424b82aed407cd4b167d280b77' // test,
-					publicId: 'pk_211facd05c03ac924464a0ff67758',
-					description: 'Оплата товаров в limmite.ru',
-					amount: order.total_price,
-					currency: 'RUB',
-					invoiceId: order.number,
-					email: order.client.email,
-					skin: 'classic',
-					data: {
-					CloudPayments: { CustomerReceipt: receipt }
+					{ 
+						// publicId: 'pk_c99424b82aed407cd4b167d280b77' // test,
+						publicId: 'pk_211facd05c03ac924464a0ff67758',
+						description: 'Оплата товаров в limmite.ru',
+						amount: order.total_price,
+						currency: 'RUB',
+						invoiceId: order.number,
+						email: order.client.email,
+						skin: 'classic',
+						data: {
+						CloudPayments: { CustomerReceipt: receipt }
+						}
+					}, {
+						onSuccess: (options) => { // success
+						location.href = '/orders/' + this.orderKey + '?success=1'
+						},
+						onFail: (reason, options) => { // fail
+						//действие при неуспешной оплате
+						},
+						onComplete: (paymentResult, options) => { //Вызывается как только виджет получает от api.cloudpayments ответ с результатом транзакции.
+						//например вызов вашей аналитики Facebook Pixel
+						}
 					}
-				}, {
-					onSuccess: (options) => { // success
-					location.href = '/orders/' + this.orderKey + '?success=1'
-					},
-					onFail: (reason, options) => { // fail
-					//действие при неуспешной оплате
-					},
-					onComplete: (paymentResult, options) => { //Вызывается как только виджет получает от api.cloudpayments ответ с результатом транзакции.
-					//например вызов вашей аналитики Facebook Pixel
-					}
-				}
 				)
 			},
 			sendMetrica(order) {
 				let products = []
 
 				order.order_lines.forEach(line => {
-				let name = line.title.replace(/ \(.+\)/g, '')
-				let match = line.title.match(/\(.+\)/)
-				let variant
+					let name = line.title.replace(/ \(.+\)/g, '')
+					let match = line.title.match(/\(.+\)/)
+					let variant
 
-				if (match.length > 0) {
-					variant = match[0].replaceAll('(', '')
-					variant = variant.replaceAll(')', '')
-				} else {
-					variant = null;
-				}
+					if (match.length > 0) {
+						variant = match[0].replaceAll('(', '')
+						variant = variant.replaceAll(')', '')
+					} else {
+						variant = null;
+					}
 
-				products.push({
-					'id': line.product_id,
-					'name': name,
-					'price': line.full_sale_price,
-					// 'category': 'Одежда/Мужская одежда/Толстовки и свитшоты',
-					'variant': variant,
-					'quantity': line.quantity,
-					// 'list': 'Одежда',
-					// 'position': 1
-				})
+					products.push({
+						'id': line.product_id,
+						'name': name,
+						'price': line.full_sale_price,
+						// 'category': 'Одежда/Мужская одежда/Толстовки и свитшоты',
+						'variant': variant,
+						'quantity': line.quantity,
+						// 'list': 'Одежда',
+						// 'position': 1
+					})
 				})
 
 				dataLayer.push({

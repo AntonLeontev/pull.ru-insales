@@ -5,330 +5,285 @@
 {% assign women = collections.zhenschinam %}
 {% assign current_collections_list = collection.current_collections | map: 'title' | join: '' %}
 
-<div class="container">
-	<section class="collection" id="collection" x-data="{
-		showFilters: false,
-	  	showSort: false,
+<div x-data="{
+	filters: null,
 	
-		init() {
-			this.$refs.products.addEventListener('click', (event) => {
-				if (event.target.closest('a') === null) {
-					return;
-				}
-			
-				let productNode = event.target.closest('.collection__product');
-				if (productNode === null) {
-					return;
-				}
-
-				event.preventDefault();
-			
-				dataLayer.push({
-					'ecommerce': {
-						'currencyCode': 'RUB',
-						'click': {
-							'products': [JSON.parse(this.toJson(productNode.dataset.product))]
-						}
-					}
-				});
-				
-				location.href = productNode.dataset.url
-			});
-		},
-		toJson(data) {
-			return data.replaceAll('\'', '&quot;')
-		},
-	}">
+	init() {
+		let url = new URL(location.href);
+		url.pathname = 'front_api' + url.pathname
+		this.update(url)
+	},
+	update(url = null) {
+		if (url === null) {
+			url = new URL(location.href);
+			let search = new URLSearchParams(new FormData(this.$refs.filter_form))
+			url.pathname = 'front_api' + url.pathname
+			url.search = search
+		}
+		$.get(url)
+			.success(response => {
+				this.filters = response
+			})
+	},
+	onChange() {
+		this.$nextTick(() => this.update())
+	},
+	checkEnabled() {
+		this.$nextTick(() => {
+			let inputs = this.$refs.values.querySelectorAll('input[checked]')
+			this.enabled = inputs.length > 0
+			this.enabledOptionsCount = inputs.length
+		})
+	},
+	cleanFilter() {
+		this.$refs.values.querySelectorAll('input')
+			.forEach(el => el.checked = false)
+	},
+	descFilterClick(e) {
+		if (!e.target.closest('.clean-filter-button')) {
+			this.open = !this.open
+		} else {
+			this.cleanFilter()
+		}
+	},
+	addOrder(order) {
+		let url = new URL(location.href)
+		url.searchParams.set('order', order)
+		return url
+	},
+}">
+	<div class="container">
+		<section class="collection" id="collection" x-data="{
+			showFilters: false,
+			  showSort: false,
 		
-		{% paginate products by collection_size %}
-			<div class="collection__header">
-				<h1 class="section_title">
-					{{collection.title}}
-				</h1>
-				<div class="collection__count">{{ collection.products.size }} товаров</div>
-			</div>
-			<div class="collection__content">
-				{% unless collection.url contains 'all' %}
-					<aside class="collection__categories">
-						<nav class="collection__categories-wrap">
-							{% if current_collections_list contains 'Мужчинам' %}
-								<ul class="men_categories">
-									{% for category in men.subcollections %}
-										{% if category.products.size > 0 %}
-											<li class="category" x-data="{
-												show: {% if category.current? %}true{% else %}false{% endif %},
-											}">
-												<div class="category__header">
-													<a href="{{ category.url }}" 
-														class="category__title {% if category.current? %}category__title_active{% endif %}"
-													>
-														{{ category.title }}
-													</a>
-													{% if category.subcollections.size > 0 %}
-														<button class="header__icon" :class="show && 'header__icon_active'" @click="show = !show">
-															<img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="Стрелка вниз">
-														</button>
-													{% endif %}
-												</div>
-												
-												{% if category.subcollections.size > 0 %}
-													<div class="subcategories__wrap" :class="show && 'subcategories__wrap_active'">
-														<div class="subcategories__content">
-															<ul class="category__subcategories">
-																{% for collection1 in category.subcollections %}
-																	<li class="subcategories__item">
-																		<a href="{{ collection1.url }}" class="subcategories__link" tabindex="-1">
-																			{{ collection1.title }}
-																		</a>
-																	</li>
-							
-																	{% if collection1.subcollections.size > 0 %}
-																		<ul class="subcategories">
-																		{% for collection2 in collection1.subcollections %}
-																			<li class="subcategories__item">
-																				<a href="{{ collection2.url }}" tabindex="-1" class="subcategories__link">
-																					{{ collection2.title }}
-																				</a>
-																			</li>
-																		{% endfor %}
-																		</ul>
-																	{% endif %}
-																{% endfor %}
-															</ul>
-														</div>
+			init() {
+				this.$refs.products.addEventListener('click', (event) => {
+					if (event.target.closest('a') === null) {
+						return;
+					}
+				
+					let productNode = event.target.closest('.collection__product');
+					if (productNode === null) {
+						return;
+					}
+	
+					event.preventDefault();
+				
+					dataLayer.push({
+						'ecommerce': {
+							'currencyCode': 'RUB',
+							'click': {
+								'products': [JSON.parse(this.toJson(productNode.dataset.product))]
+							}
+						}
+					});
+					
+					location.href = productNode.dataset.url
+				});
+			},
+			toJson(data) {
+				return data.replaceAll('\'', '&quot;')
+			},
+		}">
+			
+			{% paginate products by collection_size %}
+				<div class="collection__header">
+					<h1 class="section_title">
+						{{collection.title}}
+					</h1>
+					<div class="collection__count">{{ collection.products.size }} товаров</div>
+				</div>
+				<div class="collection__content">
+					{% unless collection.url contains 'all' %}
+						<aside class="collection__categories">
+							<nav class="collection__categories-wrap">
+								{% if current_collections_list contains 'Мужчинам' %}
+									<ul class="men_categories">
+										{% for category in men.subcollections %}
+											{% if category.products.size > 0 %}
+												<li class="category" x-data="{
+													show: {% if category.current? %}true{% else %}false{% endif %},
+												}">
+													<div class="category__header">
+														<a href="{{ category.url }}" 
+															class="category__title {% if category.current? %}category__title_active{% endif %}"
+														>
+															{{ category.title }}
+														</a>
+														{% if category.subcollections.size > 0 %}
+															<button class="header__icon" :class="show && 'header__icon_active'" @click="show = !show">
+																<img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="Стрелка вниз">
+															</button>
+														{% endif %}
 													</div>
-												{% endif %}
-											</li>
-										{% endif %}
-									{% endfor %}
-								</ul>
-							{% endif %}
-							{% if current_collections_list contains 'Женщинам' %}	
-								<ul class="women_categories">
-									{% for category in women.subcollections %}
-										{% if category.products.size > 0 %}
-											<li class="category" x-data="{
-												show: {% if category.current? %}true{% else %}false{% endif %},
-											}">
-												<div class="category__header">
-													<a href="{{ category.url }}" 
-														class="category__title {% if category.current? %}category__title_active{% endif %}"
-													>
-														{{ category.title }}
-													</a>
+													
 													{% if category.subcollections.size > 0 %}
-														<button class="header__icon" :class="show && 'header__icon_active'" @click="show = !show">
-															<img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="Стрелка вниз">
-														</button>
-													{% endif %}
-												</div>
-												
-												{% if category.subcollections.size > 0 %}
-													<div class="subcategories__wrap" :class="show && 'subcategories__wrap_active'">
-														<div class="subcategories__content">
-															<ul class="category__subcategories">
-																{% for collection1 in category.subcollections %}
-																	<li class="subcategories__item">
-																		<a href="{{ collection1.url }}" class="subcategories__link" tabindex="-1">
-																			{{ collection1.title }}
-																		</a>
-																	</li>
-							
-																	{% if collection1.subcollections.size > 0 %}
-																		<ul class="subcategories">
-																		{% for collection2 in collection1.subcollections %}
-																			<li class="subcategories__item">
-																				<a href="{{ collection2.url }}" tabindex="-1" class="subcategories__link">
-																					{{ collection2.title }}
-																				</a>
-																			</li>
-																		{% endfor %}
-																		</ul>
-																	{% endif %}
-																{% endfor %}
-															</ul>
+														<div class="subcategories__wrap" :class="show && 'subcategories__wrap_active'">
+															<div class="subcategories__content">
+																<ul class="category__subcategories">
+																	{% for collection1 in category.subcollections %}
+																		<li class="subcategories__item">
+																			<a href="{{ collection1.url }}" class="subcategories__link" tabindex="-1">
+																				{{ collection1.title }}
+																			</a>
+																		</li>
+								
+																		{% if collection1.subcollections.size > 0 %}
+																			<ul class="subcategories">
+																			{% for collection2 in collection1.subcollections %}
+																				<li class="subcategories__item">
+																					<a href="{{ collection2.url }}" tabindex="-1" class="subcategories__link">
+																						{{ collection2.title }}
+																					</a>
+																				</li>
+																			{% endfor %}
+																			</ul>
+																		{% endif %}
+																	{% endfor %}
+																</ul>
+															</div>
 														</div>
-													</div>
-												{% endif %}
-											</li>
-										{% endif %}
-									{% endfor %}
-								</ul>
-							{% endif %}
-						</nav>
-					</aside>
-				{% endunless %}
-				<div class="collection__products-wrap" x-ref="products">
-					<div class="products__header" id="filters"
-						@change="onChange"
-						x-data="{
-							filters: null,
-
-							init() {
-								let url = new URL(location.href);
-								url.pathname = 'front_api' + url.pathname
-								this.update(url)
-							},
-							update(url = null) {
-								if (url === null) {
-									url = new URL(location.href);
-									let search = new URLSearchParams(new FormData(this.$refs.filter_form))
-									url.pathname = 'front_api' + url.pathname
-									url.search = search
-								}
-								$.get(url)
-									.success(response => {
-										this.filters = response
-									})
-							},
-							onChange() {
-								this.$nextTick(() => this.update())
-							},
-							checkEnabled() {
-								this.$nextTick(() => {
-									let inputs = this.$refs.values.querySelectorAll('input[checked]')
-									this.enabled = inputs.length > 0
-									this.enabledOptionsCount = inputs.length
-								})
-							},
-							cleanFilter() {
-								this.$refs.values.querySelectorAll('input')
-									.forEach(el => el.checked = false)
-							},
-							descFilterClick(e) {
-								if (!e.target.closest('.clean-filter-button')) {
-									this.open = !this.open
-								} else {
-									this.cleanFilter()
-								}
-							},
-						}"
-					>
-						<form class="collection__filters_desctop" x-ref="filter_form">
-							<div class="filters__list">
-								{% if order %}
-									<input type="hidden" name="order" value="{{ order }}">
+													{% endif %}
+												</li>
+											{% endif %}
+										{% endfor %}
+									</ul>
 								{% endif %}
-								<div type="button" class="filter__item filter__item_price"
-									:class="{'filter__item_active': open, 'filter__item_enabled': enabled}" 
-									@click.outside="open = false"
-									@input.debounce.300ms="onInput"
-									x-data="{
-										open: false,
-										enabled: false,
-										activeValue: '',
-										priceMin: '',
-										priceMax: '',
-
-										init() {
-											this.checkEnabled()
-										},
-										checkEnabled() {
-											let params = new URLSearchParams(location.search);
-											let priceMin = 0, priceMax = '∞'
-
-											if (params.has('price_min') && params.get('price_min') != '') {
-												this.enabled = true
-												priceMin = +params.get('price_min')
-												this.priceMin = +params.get('price_min')
-											}
-
-											if (params.has('price_max') && params.get('price_max') != '') {
-												this.enabled = true
-												priceMax = +params.get('price_max')
-												this.priceMax = +params.get('price_max')
-											}
-
-											this.activeValue = `(${priceMin} - ${priceMax})`
-										},
-										cleanFilter() {
-											this.$refs.values.querySelectorAll('input')
-												.forEach(el => el.value = '')
-										},
-										onInput() {
-											this.$nextTick(() => this.update())
-										},
-									}"
-								>
-									<div class="item__button" @click="descFilterClick">
-										<span>
-											<span>Цена</span> 
-											<span class="item__count" x-show="enabled" 
-												x-text="activeValue"
-											></span>
-										</span>
-										<img class="item__icon item__icon_arrow" src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="arrow down"/>
-										<button class="clean-filter-button">
-											<img class="item__icon item__icon_close" src="{{ 'ICO-close-white.svg' | asset_url }}" alt="close"/>
-										</button>
-									</div>
-									<div class="item__content" x-ref="values" :class="open && 'item__content_active'">
-										<div class="item__options">
-											<label class="option">
-												<div class="option__title">Цена от:</div>
-												<input type="number" class="option__value" name="price_min" step="0.01" 
-													:value="priceMin"
-												>
-											</label>
-											<label class="option">
-												<div class="option__title">Цена до:</div>
-												<input type="number" class="option__value" name="price_max" step="0.01"
-													:value="priceMax"
-												>
-											</label>
-										</div>
-										<div class="item__controls">
-											<button class="btn btn-primary controls__button">
-												Показать
-												<span x-text="filters?.count ?? 0"></span>
-											</button>
-										</div>
-									</div>
-								</div>
-
-								<template x-for="option in filters?.options">
-									<div type="button" class="filter__item"
+								{% if current_collections_list contains 'Женщинам' %}	
+									<ul class="women_categories">
+										{% for category in women.subcollections %}
+											{% if category.products.size > 0 %}
+												<li class="category" x-data="{
+													show: {% if category.current? %}true{% else %}false{% endif %},
+												}">
+													<div class="category__header">
+														<a href="{{ category.url }}" 
+															class="category__title {% if category.current? %}category__title_active{% endif %}"
+														>
+															{{ category.title }}
+														</a>
+														{% if category.subcollections.size > 0 %}
+															<button class="header__icon" :class="show && 'header__icon_active'" @click="show = !show">
+																<img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="Стрелка вниз">
+															</button>
+														{% endif %}
+													</div>
+													
+													{% if category.subcollections.size > 0 %}
+														<div class="subcategories__wrap" :class="show && 'subcategories__wrap_active'">
+															<div class="subcategories__content">
+																<ul class="category__subcategories">
+																	{% for collection1 in category.subcollections %}
+																		<li class="subcategories__item">
+																			<a href="{{ collection1.url }}" class="subcategories__link" tabindex="-1">
+																				{{ collection1.title }}
+																			</a>
+																		</li>
+								
+																		{% if collection1.subcollections.size > 0 %}
+																			<ul class="subcategories">
+																			{% for collection2 in collection1.subcollections %}
+																				<li class="subcategories__item">
+																					<a href="{{ collection2.url }}" tabindex="-1" class="subcategories__link">
+																						{{ collection2.title }}
+																					</a>
+																				</li>
+																			{% endfor %}
+																			</ul>
+																		{% endif %}
+																	{% endfor %}
+																</ul>
+															</div>
+														</div>
+													{% endif %}
+												</li>
+											{% endif %}
+										{% endfor %}
+									</ul>
+								{% endif %}
+							</nav>
+						</aside>
+					{% endunless %}
+					<div class="collection__products-wrap" x-ref="products">
+						<div class="products__header" id="filters"
+							@change="onChange"
+							x-data="{
+								
+							}"
+						>
+							<form class="collection__filters_desctop" x-ref="filter_form">
+								<div class="filters__list">
+									{% if order %}
+										<input type="hidden" name="order" value="{{ order }}">
+									{% endif %}
+									<div type="button" class="filter__item filter__item_price"
 										:class="{'filter__item_active': open, 'filter__item_enabled': enabled}" 
 										@click.outside="open = false"
+										@input.debounce.300ms="onInput"
 										x-data="{
 											open: false,
 											enabled: false,
-											enabledOptionsCount: 0,
+											activeValue: '',
+											priceMin: '',
+											priceMax: '',
+	
 											init() {
 												this.checkEnabled()
+											},
+											checkEnabled() {
+												let params = new URLSearchParams(location.search);
+												let priceMin = 0, priceMax = '∞'
+	
+												if (params.has('price_min') && params.get('price_min') != '') {
+													this.enabled = true
+													priceMin = +params.get('price_min')
+													this.priceMin = +params.get('price_min')
+												}
+	
+												if (params.has('price_max') && params.get('price_max') != '') {
+													this.enabled = true
+													priceMax = +params.get('price_max')
+													this.priceMax = +params.get('price_max')
+												}
+	
+												this.activeValue = `(${priceMin} - ${priceMax})`
+											},
+											cleanFilter() {
+												this.$refs.values.querySelectorAll('input')
+													.forEach(el => el.value = '')
+											},
+											onInput() {
+												this.$nextTick(() => this.update())
 											},
 										}"
 									>
 										<div class="item__button" @click="descFilterClick">
 											<span>
-												<span x-text="option.title"></span> 
-												<span class="item__count" x-show="enabled" x-text="'('+enabledOptionsCount+')'"></span>
+												<span>Цена</span> 
+												<span class="item__count" x-show="enabled" 
+													x-text="activeValue"
+												></span>
 											</span>
 											<img class="item__icon item__icon_arrow" src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="arrow down"/>
 											<button class="clean-filter-button">
 												<img class="item__icon item__icon_close" src="{{ 'ICO-close-white.svg' | asset_url }}" alt="close"/>
 											</button>
 										</div>
-
 										<div class="item__content" x-ref="values" :class="open && 'item__content_active'">
 											<div class="item__options">
-												<template x-for="value in option.values">
-													<div class="radio-check" x-show="value.products_count > 0">
-														<div class="option">
-															<label>
-																<input 
-																	type="checkbox" 
-																	:name="`options[${option.id}][]`" 
-																	:value="value.id" 
-																	:checked="value.selected"
-																>
-																<div class="check"></div>
-																<span x-text="value.title"></span>
-															</label>
-															<span class="option__products-count" x-text="value.products_count"></span>
-														</div>
-													</div>
-												</template>
+												<label class="option">
+													<div class="option__title">Цена от:</div>
+													<input type="number" class="option__value" name="price_min" step="0.01" 
+														:value="priceMin"
+													>
+												</label>
+												<label class="option">
+													<div class="option__title">Цена до:</div>
+													<input type="number" class="option__value" name="price_max" step="0.01"
+														:value="priceMax"
+													>
+												</label>
 											</div>
 											<div class="item__controls">
 												<button class="btn btn-primary controls__button">
@@ -338,353 +293,349 @@
 											</div>
 										</div>
 									</div>
-								</template>
-
-								<template x-for="property in filters?.properties">
-									<div class="filter__item"
+	
+									<template x-for="option in filters?.options">
+										<div type="button" class="filter__item"
+											:class="{'filter__item_active': open, 'filter__item_enabled': enabled}" 
+											@click.outside="open = false"
+											x-data="{
+												open: false,
+												enabled: false,
+												enabledOptionsCount: 0,
+												init() {
+													this.checkEnabled()
+												},
+											}"
+										>
+											<div class="item__button" @click="descFilterClick">
+												<span>
+													<span x-text="option.title"></span> 
+													<span class="item__count" x-show="enabled" x-text="'('+enabledOptionsCount+')'"></span>
+												</span>
+												<img class="item__icon item__icon_arrow" src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="arrow down"/>
+												<button class="clean-filter-button">
+													<img class="item__icon item__icon_close" src="{{ 'ICO-close-white.svg' | asset_url }}" alt="close"/>
+												</button>
+											</div>
+	
+											<div class="item__content" x-ref="values" :class="open && 'item__content_active'">
+												<div class="item__options">
+													<template x-for="value in option.values">
+														<div class="radio-check" x-show="value.products_count > 0">
+															<div class="option">
+																<label>
+																	<input 
+																		type="checkbox" 
+																		:name="`options[${option.id}][]`" 
+																		:value="value.id" 
+																		:checked="value.selected"
+																	>
+																	<div class="check"></div>
+																	<span x-text="value.title"></span>
+																</label>
+																<span class="option__products-count" x-text="value.products_count"></span>
+															</div>
+														</div>
+													</template>
+												</div>
+												<div class="item__controls">
+													<button class="btn btn-primary controls__button">
+														Показать
+														<span x-text="filters?.count ?? 0"></span>
+													</button>
+												</div>
+											</div>
+										</div>
+									</template>
+	
+									<template x-for="property in filters?.properties">
+										<div class="filter__item"
+											:class="{'filter__item_active': open, 'filter__item_enabled': enabled}" 
+											@click.outside="open = false"
+											x-data="{
+												open: false,
+												enabled: false,
+												enabledOptionsCount: 0,
+												init() {
+													this.checkEnabled()
+												},
+											}"
+										>
+											<div class="item__button" @click="descFilterClick">
+												<span>
+													<span x-text="property.title"></span> 
+													<span class="item__count" x-show="enabled" x-text="'('+enabledOptionsCount+')'"></span>
+												</span>
+												<img class="item__icon item__icon_arrow" src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="arrow down"/>
+												<button class="clean-filter-button">
+													<img class="item__icon item__icon_close" src="{{ 'ICO-close-white.svg' | asset_url }}" alt="close"/>
+												</button>
+											</div>
+	
+											<div class="item__content" x-ref="values" :class="open && 'item__content_active'">
+												<div class="item__options">
+													<template x-for="characteristic in property.characteristics">
+														<div class="radio-check" x-show="characteristic.products_count > 0">
+															<div class="option">
+																<label>
+																	<input 
+																		type="checkbox" 
+																		:name="`characteristics[]`"
+																		:value="characteristic.id"
+																		:checked="characteristic['current?']"
+																	>
+																	<div class="check"></div>
+																	<span x-text="characteristic.title"></span>
+																</label>
+																<span class="option__products-count" x-text="characteristic.products_count"></span>
+															</div>
+														</div>
+													</template>
+												</div>
+												<div class="item__controls">
+													<button class="btn btn-primary controls__button controls__button_show">
+														Показать
+														<span x-text="filters?.count ?? 0"></span>
+													</button>
+												</div>
+											</div>
+										</div>
+	
+										
+									</template>
+	
+									<div type="button" class="filter__item"
 										:class="{'filter__item_active': open, 'filter__item_enabled': enabled}" 
 										@click.outside="open = false"
 										x-data="{
 											open: false,
 											enabled: false,
-											enabledOptionsCount: 0,
+	
 											init() {
 												this.checkEnabled()
+											},
+											checkEnabled() {
 											},
 										}"
 									>
 										<div class="item__button" @click="descFilterClick">
 											<span>
-												<span x-text="property.title"></span> 
-												<span class="item__count" x-show="enabled" x-text="'('+enabledOptionsCount+')'"></span>
+												<span>Упорядочить</span> 
 											</span>
 											<img class="item__icon item__icon_arrow" src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="arrow down"/>
 											<button class="clean-filter-button">
 												<img class="item__icon item__icon_close" src="{{ 'ICO-close-white.svg' | asset_url }}" alt="close"/>
 											</button>
 										</div>
-
 										<div class="item__content" x-ref="values" :class="open && 'item__content_active'">
-											<div class="item__options">
-												<template x-for="characteristic in property.characteristics">
-													<div class="radio-check" x-show="characteristic.products_count > 0">
-														<div class="option">
-															<label>
-																<input 
-																	type="checkbox" 
-																	:name="`characteristics[]`"
-																	:value="characteristic.id"
-																	:checked="characteristic['current?']"
-																>
-																<div class="check"></div>
-																<span x-text="characteristic.title"></span>
-															</label>
-															<span class="option__products-count" x-text="characteristic.products_count"></span>
-														</div>
-													</div>
-												</template>
-											</div>
-											<div class="item__controls">
-												<button class="btn btn-primary controls__button controls__button_show">
-													Показать
-													<span x-text="filters?.count ?? 0"></span>
-												</button>
+											<div class="sort">
+												<a class="sort__link" :href="addOrder('price')">По возрастанию цены</a>
+												<a class="sort__link" :href="addOrder('descending_price')">По убыванию цены</a>
+												<a class="sort__link" :href="addOrder('title')">По названию А-Я</a>
+												<a class="sort__link" :href="addOrder('descending_title')">По названию Я-А</a>
+												<a class="sort__link" :href="addOrder('discount')">По возрастанию скидки</a>
+												<a class="sort__link" :href="addOrder('descending_discount')">По убыванию скидки</a>
+												<a class="sort__link" :href="addOrder('popularity')">По популярности</a>
 											</div>
 										</div>
 									</div>
-
-									
-								</template>
+								</div>
+								<a href="{{ collection.url }}" class="filters__reset">Сбросить фильтры</a>
+							</form>
+							<div class="collection__filters_mobile">
+								<button class="filters__item" @click="$dispatch('sort-click')">
+									<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
+									</svg>
+									Сортировать
+								</button>
+								<button class="filters__item" @click="$dispatch('filters-click')">
+									<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
+									</svg>
+									Фильтры
+								</button>
 							</div>
-							<a href="{{ collection.url }}" class="filters__reset">Сбросить фильтры</a>
-						</form>
-						<div class="collection__filters_mobile">
-							<button class="filters__item" @click="$dispatch('sort-click')">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
-								</svg>
-								Сортировать
-							</button>
-							<button class="filters__item" @click="$dispatch('filters-click')">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
-								</svg>
-								Фильтры
-							</button>
 						</div>
-					</div>
-					<div class="collection__products">
-						{% for product in collection.products %}
-							{% if product.old_price > 0 and product.old_price > product.price %}
-								{% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
-								{% assign saleNumber = priceDivision | minus: 100 %}
-								{% assign salePercent = saleNumber | round: 0 %}
-							{% endif %}
-							{% assign collectionTitles = product.collections | sort: 'level' | map: 'title' %}
-							<div class="collection__product" 
-								data-product='{"id": "{{ product.id }}","name": "{{product.title}}","price": {{ product.price }},"discount": "{{ salePercent | remove_first: "-"}}","category": "{{ collectionTitles | join: "/" }}"}'
-								data-url="{{product.url}}"
-							>
-								<div class="product__image-wrap">
-									<a class="product__image-link" href="{{product.url}}">
-										<img class="product__image" src="{{ product.first_image.large_url}}" alt="{{product.title}}" width="100%" height="100%" />
-									</a>
-									<div class="product__labels">
+						<div class="collection__products">
+							{% for product in collection.products %}
+								{% if product.old_price > 0 and product.old_price > product.price %}
+									{% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+									{% assign saleNumber = priceDivision | minus: 100 %}
+									{% assign salePercent = saleNumber | round: 0 %}
+								{% endif %}
+								{% assign collectionTitles = product.collections | sort: 'level' | map: 'title' %}
+								<div class="collection__product" 
+									data-product='{"id": "{{ product.id }}","name": "{{product.title}}","price": {{ product.price }},"discount": "{{ salePercent | remove_first: "-"}}","category": "{{ collectionTitles | join: "/" }}"}'
+									data-url="{{product.url}}"
+								>
+									<div class="product__image-wrap">
+										<a class="product__image-link" href="{{product.url}}">
+											<img class="product__image" src="{{ product.first_image.large_url}}" alt="{{product.title}}" width="100%" height="100%" />
+										</a>
+										<div class="product__labels">
+											{% if product.old_price > 0 and product.old_price > product.price %}
+												<div class="product__label product__label_discount">{{ salePercent }}%</div>
+											{% endif %}
+										</div>
+										<button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
+											<img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+											<img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+										</button>
+									</div>
+									<a href="{{product.url}}" class="product__title">{{product.title}}</a>
+									<div class="product__prices">
+										<div class="product__price">{{ product.price | money}}</div>
 										{% if product.old_price > 0 and product.old_price > product.price %}
-											<div class="product__label product__label_discount">{{ salePercent }}%</div>
+											<div class="product__old-price">{{ product.old_price | round: 0 }}</div>
 										{% endif %}
 									</div>
-									<button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
-										<img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
-										<img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
-									</button>
 								</div>
-								<a href="{{product.url}}" class="product__title">{{product.title}}</a>
-								<div class="product__prices">
-									<div class="product__price">{{ product.price | money}}</div>
-									{% if product.old_price > 0 and product.old_price > product.price %}
-										<div class="product__old-price">{{ product.old_price | round: 0 }}</div>
-									{% endif %}
-								</div>
-							</div>
-						{% endfor %}
+							{% endfor %}
+						</div>
 					</div>
 				</div>
-			</div>
-
-			<script>
-				let products = [
-				{% for product in collection.products %}
-					{% if product.old_price > 0 and product.old_price > product.price %}
-					{% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
-					{% assign saleNumber = priceDivision | minus: 100 %}
-					{% assign salePercent = saleNumber | round: 0 %}
-					{% endif %}
-					{% assign collectionTitles = product.collections | sort: 'level' | map: 'title' %}
-					{
-					"id": "{{ product.id }}",
-					"name" : "{{product.title}}",
-					"price": {{ product.price }},
-					{% if product.old_price > 0 and product.old_price > product.price %}
-					"discount": {{ salePercent | remove_first: "-"}},
-					{% endif %}
-					"category": "{{ collectionTitles | join: '/' }}",
-					// "list": "Catalog",
-					// "position": 1
-					},
-				{% endfor %}
-				];
 	
-				dataLayer.push({
-				"ecommerce": {
-					"currencyCode": "RUB",
-					"impressions": products,
-				}
-				});
-			</script>
-	
-			{% if paginate.pages > 1 %}
-				{% include 'pagination' %}
-			{% endif %}
-	
-		{% endpaginate %}
-	
-	  <div class="cover" :class="showFilters && 'active'">
-	  </div>
-	  {% include "filters_block" %}
-	</section>
-</div>
-
-<div class="top-menu top-menu_categories" 
-	@sort-click.window="active = true; overflow = false"
-	:class="active && 'top-menu_active'"
-	x-cloak 
-	x-data="{
-		active: false,
-	}"
->
-	<div class="top-menu__header">
-		<div class="top-menu__title">Сортировка</div>
-		<div class="top-menu__button">
-			<button @click="active = false; overflow = true">
-				<img src="{{ 'ICO-top-menu-close.svg' | asset_url }}" alt="">
-			</button>
-		</div>
+				<script>
+					let products = [
+					{% for product in collection.products %}
+						{% if product.old_price > 0 and product.old_price > product.price %}
+						{% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+						{% assign saleNumber = priceDivision | minus: 100 %}
+						{% assign salePercent = saleNumber | round: 0 %}
+						{% endif %}
+						{% assign collectionTitles = product.collections | sort: 'level' | map: 'title' %}
+						{
+						"id": "{{ product.id }}",
+						"name" : "{{product.title}}",
+						"price": {{ product.price }},
+						{% if product.old_price > 0 and product.old_price > product.price %}
+						"discount": {{ salePercent | remove_first: "-"}},
+						{% endif %}
+						"category": "{{ collectionTitles | join: '/' }}",
+						// "list": "Catalog",
+						// "position": 1
+						},
+					{% endfor %}
+					];
+		
+					dataLayer.push({
+					"ecommerce": {
+						"currencyCode": "RUB",
+						"impressions": products,
+					}
+					});
+				</script>
+		
+				{% if paginate.pages > 1 %}
+					{% include 'pagination' %}
+				{% endif %}
+		
+			{% endpaginate %}
+		
+		  <div class="cover" :class="showFilters && 'active'">
+		  </div>
+		  {% include "filters_block" %}
+		</section>
 	</div>
-	<div class="top-menu__body"
+	
+	<div class="top-menu top-menu_categories" 
+		@sort-click.window="active = true; overflow = false"
+		:class="active && 'top-menu_active'"
+		x-cloak 
 		x-data="{
-            addOrder(order) {
-				let url = new URL(location.href)
-				url.searchParams.set('order', order)
-				return url
-            },
+			active: false,
 		}"
 	>
-		<div class="sort">
-			<a class="sort__link" :href="addOrder('price')">По возрастанию цены</a>
-			<a class="sort__link" :href="addOrder('descending_price')">По убыванию цены</a>
-			<a class="sort__link" :href="addOrder('title')">По названию А-Я</a>
-			<a class="sort__link" :href="addOrder('descending_title')">По названию Я-А</a>
-			<a class="sort__link" :href="addOrder('discount')">По возрастанию скидки</a>
-			<a class="sort__link" :href="addOrder('descending_discount')">По убыванию скидки</a>
-			<a class="sort__link" :href="addOrder('popularity')">По популярности</a>
+		<div class="top-menu__header">
+			<div class="top-menu__title">Сортировка</div>
+			<div class="top-menu__button">
+				<button @click="active = false; overflow = true">
+					<img src="{{ 'ICO-top-menu-close.svg' | asset_url }}" alt="">
+				</button>
+			</div>
+		</div>
+		<div class="top-menu__body">
+			<div class="sort">
+				<a class="sort__link" :href="addOrder('price')">По возрастанию цены</a>
+				<a class="sort__link" :href="addOrder('descending_price')">По убыванию цены</a>
+				<a class="sort__link" :href="addOrder('title')">По названию А-Я</a>
+				<a class="sort__link" :href="addOrder('descending_title')">По названию Я-А</a>
+				<a class="sort__link" :href="addOrder('discount')">По возрастанию скидки</a>
+				<a class="sort__link" :href="addOrder('descending_discount')">По убыванию скидки</a>
+				<a class="sort__link" :href="addOrder('popularity')">По популярности</a>
+			</div>
 		</div>
 	</div>
-</div>
-
-
-<div class="top-menu top-menu_filters"
-	@filters-click.window="active = true; overflow = false"
-	:class="active && 'top-menu_active'"
-	x-cloak 
-	x-data="{
-		active: false,
-	}"
->
-	<div class="top-menu__header">
-		<div class="top-menu__title">Фильтры</div>
-		<div class="top-menu__button">
-			<button @click="active = false; overflow = true">
-				<img src="{{ 'ICO-top-menu-close.svg' | asset_url }}" alt="">
-			</button>
-		</div>
-	</div>
-	<div class="top-menu__body">
-		<div class="filters" id="mobile-filters"
-			x-data="{
-				filters: null,
-
-				init() {
-					let url = new URL(location.href);
-					url.pathname = 'front_api' + url.pathname
-					this.update(url)
-				},
-				update(url = null) {
-					if (url === null) {
-						url = new URL(location.href);
-						let search = new URLSearchParams(new FormData(this.$refs.filter_form))
-						url.pathname = 'front_api' + url.pathname
-						url.search = search
-					}
-					$.get(url)
-						.success(response => {
-							this.filters = response
-						})
-				},
-				checkEnabled() {
-					this.$nextTick(() => {
-						let inputs = this.$refs.values.querySelectorAll('input[checked]')
-						this.enabled = inputs.length > 0
-						this.enabledOptionsCount = inputs.length
-					})
-				},
-				onChange() {
-					this.$nextTick(() => this.update())
-				},
-				cleanFilter() {
-					this.$refs.values.querySelectorAll('input')
-						.forEach(el => el.checked = false)
-				},
-				descFilterClick(e) {
-					if (!e.target.closest('.clean-filter-button')) {
-						this.open = !this.open
-					} else {
-						this.cleanFilter()
-					}
-				},
-			}">
-            <form class="filter__body " @change="onChange" x-ref="filter_form">
-				<div class="filter__wrap">
-					{% if order %}
-						<input type="hidden" name="order" value="{{ order }}">
-					{% endif %}
-					<div class="filter__item filter__item_price" id="price_filter"
-						:class="{'filter__item_active': open, 'filter__item_enabled': enabled}" 
-						@input.debounce.300ms="onChange"
-						x-data="{
-							open: false,
-							enabled: false,
-							activeValue: '',
-							priceMin: '',
-							priceMax: '',
-
-							init() {
-								this.checkEnabled()
-							},
-							checkEnabled() {
-								let params = new URLSearchParams(location.search);
-								let priceMin = 0, priceMax = '∞'
-
-								if (params.has('price_min') && params.get('price_min') != '') {
-									this.enabled = true
-									priceMin = +params.get('price_min')
-									this.priceMin = +params.get('price_min')
-								}
-
-								if (params.has('price_max') && params.get('price_max') != '') {
-									this.enabled = true
-									priceMax = +params.get('price_max')
-									this.priceMax = +params.get('price_max')
-								}
-
-								this.activeValue = `(${priceMin} - ${priceMax})`
-							},
-							cleanFilter() {
-								this.$refs.values.querySelectorAll('input')
-									.forEach(el => el.value = '')
-							},
-						}"
-					>
-						<div type="button" class="item__button" @click="descFilterClick" :class="open && 'item__button_active'">
-							<span>
-								Цена
-								<span class="item__count" x-show="enabled" 
-									x-text="activeValue"
-								></span>
-							</span> 
-							<img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""/>
-							<button class="clean-filter-button">
-								<img class="item__icon item__icon_close" src="{{ 'ICO-close-white.svg' | asset_url }}" alt="close"/>
-							</button>
-						</div>
-						<div class="item__body" :class="open && 'item__body_active'">
-							<div class="item__content" x-ref="values">
-								<div class="item__options">
-									<label class="option">
-										<div class="option__title">Цена от:</div>
-										<input type="number" class="option__value" name="price_min" step="0.01" 
-											:value="priceMin"
-										>
-									</label>
-									<label class="option">
-										<div class="option__title">Цена до:</div>
-										<input type="number" class="option__value" name="price_max" step="0.01"
-											:value="priceMax"
-										>
-									</label>
-								</div>
-							</div>
-						</div>
-					</div>
 	
-					<template x-for="option in filters?.options">
-						<div class="filter__item" 
+	
+	<div class="top-menu top-menu_filters"
+		@filters-click.window="active = true; overflow = false"
+		:class="active && 'top-menu_active'"
+		x-cloak 
+		x-data="{
+			active: false,
+		}"
+	>
+		<div class="top-menu__header">
+			<div class="top-menu__title">Фильтры</div>
+			<div class="top-menu__button">
+				<button @click="active = false; overflow = true">
+					<img src="{{ 'ICO-top-menu-close.svg' | asset_url }}" alt="">
+				</button>
+			</div>
+		</div>
+		<div class="top-menu__body">
+			<div class="filters" id="mobile-filters">
+				<form class="filter__body " @change="onChange" x-ref="filter_form">
+					<div class="filter__wrap">
+						{% if order %}
+							<input type="hidden" name="order" value="{{ order }}">
+						{% endif %}
+						<div class="filter__item filter__item_price" id="price_filter"
 							:class="{'filter__item_active': open, 'filter__item_enabled': enabled}" 
-							@change="checkEnabled"
+							@input.debounce.300ms="onChange"
 							x-data="{
 								open: false,
 								enabled: false,
-								enabledOptionsCount: 0,
+								activeValue: '',
+								priceMin: '',
+								priceMax: '',
+	
 								init() {
 									this.checkEnabled()
 								},
+								checkEnabled() {
+									let params = new URLSearchParams(location.search);
+									let priceMin = 0, priceMax = '∞'
+	
+									if (params.has('price_min') && params.get('price_min') != '') {
+										this.enabled = true
+										priceMin = +params.get('price_min')
+										this.priceMin = +params.get('price_min')
+									}
+	
+									if (params.has('price_max') && params.get('price_max') != '') {
+										this.enabled = true
+										priceMax = +params.get('price_max')
+										this.priceMax = +params.get('price_max')
+									}
+	
+									this.activeValue = `(${priceMin} - ${priceMax})`
+								},
+								cleanFilter() {
+									this.$refs.values.querySelectorAll('input')
+										.forEach(el => el.value = '')
+								},
 							}"
 						>
-							<div type="button" class="item__button" @click="descFilterClick">
+							<div type="button" class="item__button" @click="descFilterClick" :class="open && 'item__button_active'">
 								<span>
-									<span x-text="option.title"></span> 
-									<span class="item__count" x-show="enabled" x-text="'('+enabledOptionsCount+')'"></span>
-								</span>
+									Цена
+									<span class="item__count" x-show="enabled" 
+										x-text="activeValue"
+									></span>
+								</span> 
 								<img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""/>
 								<button class="clean-filter-button">
 									<img class="item__icon item__icon_close" src="{{ 'ICO-close-white.svg' | asset_url }}" alt="close"/>
@@ -692,72 +643,116 @@
 							</div>
 							<div class="item__body" :class="open && 'item__body_active'">
 								<div class="item__content" x-ref="values">
-									<template x-for="value in option.values">
-										<div class="radio-check">
-											<label class="item__label">
+									<div class="item__options">
+										<label class="option">
+											<div class="option__title">Цена от:</div>
+											<input type="number" class="option__value" name="price_min" step="0.01" 
+												:value="priceMin"
+											>
+										</label>
+										<label class="option">
+											<div class="option__title">Цена до:</div>
+											<input type="number" class="option__value" name="price_max" step="0.01"
+												:value="priceMax ?? ''"
+											>
+										</label>
+									</div>
+								</div>
+							</div>
+						</div>
+		
+						<template x-for="option in filters?.options">
+							<div class="filter__item" 
+								:class="{'filter__item_active': open, 'filter__item_enabled': enabled}" 
+								@change="checkEnabled"
+								x-data="{
+									open: false,
+									enabled: false,
+									enabledOptionsCount: 0,
+									init() {
+										this.checkEnabled()
+									},
+								}"
+							>
+								<div type="button" class="item__button" @click="descFilterClick">
+									<span>
+										<span x-text="option.title"></span> 
+										<span class="item__count" x-show="enabled" x-text="'('+enabledOptionsCount+')'"></span>
+									</span>
+									<img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""/>
+									<button class="clean-filter-button">
+										<img class="item__icon item__icon_close" src="{{ 'ICO-close-white.svg' | asset_url }}" alt="close"/>
+									</button>
+								</div>
+								<div class="item__body" :class="open && 'item__body_active'">
+									<div class="item__content" x-ref="values">
+										<template x-for="value in option.values">
+											<div class="radio-check">
+												<label class="item__label">
+													<input 
+														type="checkbox" 
+														:name="`options[${option.id}][]`" 
+														:value="value.id" 
+														:checked="value.selected"
+													>
+													<div class="check"></div>
+													<span x-text="`${value.title} (${value.products_count})`"></span>
+												</label>
+											</div>
+										</template>
+									</div>
+								</div>
+							</div>
+						</template>
+		
+						<template x-for="property in filters?.properties">
+							<div class="filter__item" 
+								:class="{'filter__item_active': open, 'filter__item_enabled': enabled}" 
+								@change="checkEnabled"
+								x-data="{
+									open: false,
+									enabled: false,
+									init() {
+										this.checkEnabled()
+									},
+								}"
+							>
+								<div type="button" class="item__button" @click="descFilterClick">
+									<span x-text="property.title"></span>  
+									<img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""/>
+									<button class="clean-filter-button">
+										<img class="item__icon item__icon_close" src="{{ 'ICO-close-white.svg' | asset_url }}" alt="close"/>
+									</button>
+								</div>
+								<div class="item__body" :class="open && 'item__body_active'">
+									<div class="item__content" x-ref="values">
+										<template x-for="characteristic in property.characteristics">
+											<div class="radio-check">
+												<label class="item__label">
 												<input 
 													type="checkbox" 
-													:name="`options[${option.id}][]`" 
-													:value="value.id" 
-													:checked="value.selected"
+													:name="`characteristics[]`"
+													:value="characteristic.id"
+													:checked="characteristic['current?']"
 												>
 												<div class="check"></div>
-												<span x-text="`${value.title} (${value.products_count})`"></span>
-											</label>
-										</div>
-									</template>
+												<span x-text="`${characteristic.title} (${characteristic.products_count})`"></span>
+												</label>
+											</div>
+										</template>
+									</div>
 								</div>
 							</div>
-						</div>
-					</template>
+						</template>
+					</div>
 	
-					<template x-for="property in filters?.properties">
-						<div class="filter__item" 
-							:class="{'filter__item_active': open, 'filter__item_enabled': enabled}" 
-							@change="checkEnabled"
-							x-data="{
-								open: false,
-								enabled: false,
-								init() {
-									this.checkEnabled()
-								},
-							}"
-						>
-							<div type="button" class="item__button" @click="descFilterClick">
-								<span x-text="property.title"></span>  
-								<img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt=""/>
-								<button class="clean-filter-button">
-									<img class="item__icon item__icon_close" src="{{ 'ICO-close-white.svg' | asset_url }}" alt="close"/>
-								</button>
-							</div>
-							<div class="item__body" :class="open && 'item__body_active'">
-								<div class="item__content" x-ref="values">
-									<template x-for="characteristic in property.characteristics">
-										<div class="radio-check">
-											<label class="item__label">
-											<input 
-												type="checkbox" 
-												:name="`characteristics[]`"
-												:value="characteristic.id"
-												:checked="characteristic['current?']"
-											>
-											<div class="check"></div>
-											<span x-text="`${characteristic.title} (${characteristic.products_count})`"></span>
-											</label>
-										</div>
-									</template>
-								</div>
-							</div>
-						</div>
-					</template>
-				</div>
-
-				
-				<div class="filter__footer">
-					<button type="submit" class="btn btn-primary w-full">Показать<span x-text="`${filters?.count ?? 0}`"></span></button>
-					<a :href="location.href.replace(/\?[^?]+$/, '')" class="clear_filter"><span>Очистить фильтры</span></a>
-				</div>
-            </form>
-          </div>
+					
+					<div class="filter__footer">
+						<button type="submit" class="btn btn-primary w-full">Показать<span x-text="`${filters?.count ?? 0}`"></span></button>
+						<a :href="location.href.replace(/\?[^?]+$/, '')" class="clear_filter"><span>Очистить фильтры</span></a>
+					</div>
+				</form>
+			  </div>
+		</div>
 	</div>
 </div>

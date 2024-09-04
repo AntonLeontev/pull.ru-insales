@@ -114,7 +114,6 @@ document.addEventListener("DOMContentLoaded", function () {
         ".section-sim-products-carousel .products_header .swiper-button-prev",
     },
   });
-  console.log(document.querySelector(".home__swiper"));
 
   const homeBannersSwiper = new Swiper(".home__swiper", {
     autoplay: {

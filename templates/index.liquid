@@ -221,7 +221,10 @@
 			<form class="form">
 				<div class="wrap">
 					<input type="email" placeholder="Введите ваш E-mail">
-					<button>Отправить</button>
+					<button>
+						<span>Отправить</span>
+						<img src="{{ 'loading-white.svg' | asset_url }}" height="20px" width="20px" alt="loading" x-show="false" x-cloak>
+					</button>
 				</div>
 				<div class="radio-wrap">
 					<label>

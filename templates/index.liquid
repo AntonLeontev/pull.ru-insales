@@ -1,21 +1,173 @@
-<div class="main-choice">
+<div class="home">
 	<div class="container">
-		<!-- <h2 class="main-choice__title">Выберите раздел</h2> -->
-		<div class="main-choice__choices">
-			<div class="choice">
-				<a class="choice__link" href="/page/muzhchinam">
-					<img class="choice__image" src="{{ 'home-men.png' | asset_url }}" alt="Мужчинам">
-					<div class="choice__title">Мужская одежда</div>
-				</a>
+		<section class="home__banners">
+			<div class="home__swiper swiper">
+				<div class="swiper-wrapper">
+					<div class="swiper__slide swiper-slide">
+						<img class="slide__image" src="{{ 'home_swiper01.webp' | asset_url }}" alt="Баннер новинки">
+						<div class="slide__content">
+							<div class="text-container">
+								<div class="slide__header">Новинки</div>
+								<div class="slide__text" style="margin-bottom: 24px;">тестовый заголовок тестовый заголовок тестовый заголовоктестовый заголовоктестовый заголовоктестовый заголовок</div>
+								<button class="slide__button">Кнопка</button>
+							</div>
+						</div>
+					</div>
+					<div class="swiper__slide swiper-slide">
+						<img class="slide__image" src="{{ 'home_swiper02.webp' | asset_url }}" alt="Баннер открытие">
+						<div class="slide__content">
+							<div class="text-container">
+								<div class="slide__text" style="margin-bottom: 12px;">Ждём вас в гости!</div>
+								<div class="slide__header">Мы открываемся в Москве</div>
+								<div class="slide__text" style="margin-bottom: 24px;"> доп инфа почему приходить офлайн  доп инфа почему приходить офлайн доп инфа почему приходить офлайн доп инфа почему приходить офлайн доп инфа почему приходить офлайн доп инфа почему приходить офлайн</div>
+								<div class="slide__text" style="font-weight: 700;">Vegas Кунцево – в сентябре - Vegas Кунцево – в сентябре</div>
+							</div>
+						</div>
+					</div>
+					<div class="swiper__slide swiper-slide">
+						<img class="slide__image" src="{{ 'home_swiper03.webp' | asset_url }}" alt="Баннер скидка за первую покупку">
+						<div class="slide__content">
+							<div class="text-container">
+								<div class="slide__header">Дарим скидку 5%<br> на первую покупку</div>
+								<button class="slide__button">Получить скидку</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="swiper-pagination"></div>
+
+				<div class="swiper-button_prev">
+					<svg width="13" height="32" viewBox="0 0 13 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<g clip-path="url(#clip0_781_390)">
+						<path d="M11.9315 6.49252C11.7663 6.33646 11.5699 6.21259 11.3534 6.12805C11.1369 6.04352 10.9046 6 10.6701 6C10.4356 6 10.2033 6.04352 9.98685 6.12805C9.77035 6.21259 9.57385 6.33646 9.40869 6.49252L0.525525 14.8178C0.359004 14.9726 0.226833 15.1568 0.136635 15.3597C0.0464381 15.5626 0 15.7802 0 16C0 16.2198 0.0464381 16.4374 0.136635 16.6403C0.226833 16.8432 0.359004 17.0274 0.525525 17.1822L9.40869 25.5075C9.57385 25.6635 9.77035 25.7874 9.98685 25.8719C10.2033 25.9565 10.4356 26 10.6701 26C10.9046 26 11.1369 25.9565 11.3534 25.8719C11.5699 25.7874 11.7663 25.6635 11.9315 25.5075C12.098 25.3527 12.2302 25.1685 12.3204 24.9656C12.4106 24.7627 12.457 24.5451 12.457 24.3253C12.457 24.1055 12.4106 23.8878 12.3204 23.6849C12.2302 23.482 12.098 23.2979 11.9315 23.1431L4.29199 16L11.9315 8.8569C12.098 8.70211 12.2302 8.51796 12.3204 8.31505C12.4106 8.11215 12.457 7.89452 12.457 7.67471C12.457 7.4549 12.4106 7.23727 12.3204 7.03437C12.2302 6.83147 12.098 6.64731 11.9315 6.49252ZM31.4745 14.8178L22.5913 6.49252C22.4257 6.33727 22.229 6.21412 22.0126 6.13011C21.7961 6.04609 21.5642 6.00284 21.3299 6.00284C20.8568 6.00284 20.403 6.17898 20.0685 6.49252C19.9028 6.64777 19.7714 6.83207 19.6818 7.03492C19.5921 7.23776 19.546 7.45516 19.546 7.67471C19.546 8.11812 19.7339 8.54337 20.0685 8.8569L27.708 16L20.0685 23.1431C19.902 23.2979 19.7698 23.482 19.6796 23.6849C19.5894 23.8878 19.543 24.1055 19.543 24.3253C19.543 24.5451 19.5894 24.7627 19.6796 24.9656C19.7698 25.1685 19.902 25.3527 20.0685 25.5075C20.2337 25.6635 20.4301 25.7874 20.6466 25.8719C20.8631 25.9565 21.0954 26 21.3299 26C21.5644 26 21.7967 25.9565 22.0132 25.8719C22.2297 25.7874 22.4261 25.6635 22.5913 25.5075L31.4745 17.1822C31.641 17.0274 31.7732 16.8432 31.8634 16.6403C31.9536 16.4374 32 16.2198 32 16C32 15.7802 31.9536 15.5626 31.8634 15.3597C31.7732 15.1568 31.641 14.9726 31.4745 14.8178Z" fill="white"/>
+						</g>
+						<defs>
+						<clipPath id="clip0_781_390">
+						<rect width="13" height="32" fill="white"/>
+						</clipPath>
+						</defs>
+					</svg>
+				</div>
+  				<div class="swiper-button_next">
+					<svg width="13" height="32" viewBox="0 0 13 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<g clip-path="url(#clip0_781_386)">
+							<path d="M1.06849 6.49252C1.23365 6.33646 1.43015 6.21259 1.64665 6.12805C1.86315 6.04352 2.09536 6 2.3299 6C2.56444 6 2.79665 6.04352 3.01315 6.12805C3.22965 6.21259 3.42615 6.33646 3.59131 6.49252L12.4745 14.8178C12.641 14.9726 12.7732 15.1568 12.8634 15.3597C12.9536 15.5626 13 15.7802 13 16C13 16.2198 12.9536 16.4374 12.8634 16.6403C12.7732 16.8432 12.641 17.0274 12.4745 17.1822L3.59131 25.5075C3.42615 25.6635 3.22965 25.7874 3.01315 25.8719C2.79665 25.9565 2.56444 26 2.3299 26C2.09536 26 1.86315 25.9565 1.64665 25.8719C1.43015 25.7874 1.23365 25.6635 1.06849 25.5075C0.901969 25.3527 0.769798 25.1685 0.679601 24.9656C0.589403 24.7627 0.542965 24.5451 0.542965 24.3253C0.542965 24.1055 0.589403 23.8878 0.679601 23.6849C0.769798 23.482 0.901969 23.2979 1.06849 23.1431L8.70801 16L1.06849 8.8569C0.901969 8.70211 0.769798 8.51796 0.679601 8.31505C0.589403 8.11215 0.542965 7.89452 0.542965 7.67471C0.542965 7.4549 0.589403 7.23727 0.679601 7.03437C0.769798 6.83147 0.901969 6.64731 1.06849 6.49252ZM-18.4745 14.8178L-9.59131 6.49252C-9.42566 6.33727 -9.229 6.21412 -9.01257 6.13011C-8.79614 6.04609 -8.56417 6.00284 -8.3299 6.00284C-7.85678 6.00284 -7.40304 6.17898 -7.06849 6.49252C-6.90284 6.64777 -6.77144 6.83207 -6.68179 7.03492C-6.59214 7.23776 -6.546 7.45516 -6.546 7.67471C-6.546 8.11812 -6.73394 8.54337 -7.06849 8.8569L-14.708 16L-7.06849 23.1431C-6.90197 23.2979 -6.7698 23.482 -6.6796 23.6849C-6.5894 23.8878 -6.54296 24.1055 -6.54296 24.3253C-6.54296 24.5451 -6.5894 24.7627 -6.6796 24.9656C-6.7698 25.1685 -6.90197 25.3527 -7.06849 25.5075C-7.23365 25.6635 -7.43015 25.7874 -7.64665 25.8719C-7.86315 25.9565 -8.09536 26 -8.3299 26C-8.56444 26 -8.79665 25.9565 -9.01315 25.8719C-9.22965 25.7874 -9.42615 25.6635 -9.59131 25.5075L-18.4745 17.1822C-18.641 17.0274 -18.7732 16.8432 -18.8634 16.6403C-18.9536 16.4374 -19 16.2198 -19 16C-19 15.7802 -18.9536 15.5626 -18.8634 15.3597C-18.7732 15.1568 -18.641 14.9726 -18.4745 14.8178Z" fill="white"/>
+						</g>
+						<defs>
+							<clipPath id="clip0_781_386">
+							<rect width="13" height="32" fill="white" transform="matrix(-1 0 0 1 13 0)"/>
+							</clipPath>
+						</defs>
+					</svg>
+				</div>
 			</div>
-			<div class="choice">
-				<a class="choice__link" href="/page/zhenschinam">
-					<img class="choice__image" src="{{ 'home-women.png' | asset_url }}" alt="Женщинам">
-					<div class="choice__title">Женская одежда</div>
-				</a>
+		</section>
+		<section class="running_line swiper">
+			<div class="swiper-wrapper">
+				{% assign brands = block_lists.with_template['system-banner-3'].brands-runline.blocks %}
+
+				{% if page.url contains 'page/zhen' %}	
+					{% assign collection = collections.zhenschinam %}
+				{% elsif page.url contains 'page/muzh' %} 
+					{% assign collection = collections.muzhchinam %}
+				{% else %} 
+					{% assign collection = collections.all %}
+				{% endif %} 
+
+				{% assign brand_property = collection.properties | where: 'handle', 'brand' | first %}
+				
+				{% for brand in brands %}
+					{% assign brand_char = brand_property.characteristics | where: 'handle', brand.link | first %}
+
+					<div class="swiper-slide">
+						<a href="{{ collection.url | add_param: 'characteristics[]', brand_char.id }}">
+							<img class="brand-logo" src="{{ brand.image }}" alt="{{ brand.title }}"/>
+						</a>
+					</div>
+					{% if brand_char.id %}
+					{% endif %}
+				{% endfor %}
 			</div>
+		</section>
+
+		<div
+			class="swiper products_swiper_2 swiper-initialized swiper-horizontal swiper-backface-hidden"
+		>
+			<!-- Additional required wrapper -->
+			<div
+				id="swiper-wrapper-c817f23c6510735be"
+				class="swiper-wrapper"
+				aria-live="polite"
+			>
+				<!-- Slides -->
+				{% if page.url contains 'page/muzh' %}
+				{% assign block_new = blocks.with_template['system-collection'].novinki-muzhchinam %}
+				{% elsif page.url contains 'page/zhen' %}
+				{% assign block_new = blocks.with_template['system-collection'].novinki-zhenschinam %}
+				{% else %}
+				{% assign block_new = blocks.with_template['system-collection'].kollektsiya-novinki-blok-1 %}
+				{% endif %}
+
+				{%for product in collections[block_new.collection.handle].products %}
+				<div class="swiper-slide">
+				<div class="product_slide_card">
+					<div class="product_card_img">
+					<a href="{{ product.url }}" class="link_more"
+						><img src="{{ product.first_image.large_url }}" alt=""
+					/></a>
+					</div>
+					<div class="product_card_itext">
+					<a href="{{ product.url }}" class="product_card_name">
+						{{ product.title }}
+					</a>
+					<div class="product_card_prices">
+						<div class="product_card_price">
+						{{ product.price | money }}
+						</div>
+						<div class="product_card_old_price">
+						{{ product.old_price | money }}
+						</div>
+					</div>
+					</div>
+				</div>
+				</div>
+				{% endfor %} 
+			</div>
+
+			<!-- If we need navigation buttons -->
+			<div class="swiper-button-prev"></div>
+			<div class="swiper-button-next"></div>
+			<span
+				class="swiper-notification"
+				aria-live="assertive"
+				aria-atomic="true"
+			></span>
 		</div>
 	</div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const runningLine = new Swiper(".running_line", {
+      spaceBetween: 0,
+      centeredSlides: true,
+      speed: 3000,
+      autoplay: {
+        delay: 0,
+        disableOnInteraction: false,
+      },
+      loop: true,
+      loopedSlides: 4,
+      slidesPerView:'auto',
+      allowTouchMove: true,
+    });
+
+	setTimeout(() => {
+		console.log('runningLine', runningLine.autoplay.running);
+		runningLine.autoplay.resume()
+	}, 300);
+  })
+</script>
 
 

@@ -114,6 +114,52 @@ document.addEventListener("DOMContentLoaded", function () {
         ".section-sim-products-carousel .products_header .swiper-button-prev",
     },
   });
+  console.log(document.querySelector(".home__swiper"));
+
+  const homeBannersSwiper = new Swiper(".home__swiper", {
+    autoplay: {
+      delay: 3000,
+      pauseOnMouseEnter: true,
+      disableOnInteraction: false,
+    },
+    speed: 700,
+    loop: true,
+    slidesPerView: 1,
+    spaceBetween: 0,
+    breakpoints: {
+      //   320: {
+      //     slidesPerView: 2,
+      //     spaceBetween: 24,
+      //   },
+      //   767: {
+      //     slidesPerView: 2.3,
+      //     spaceBetween: 24,
+      //   },
+      //   999: {
+      //     slidesPerView: 3,
+      //     spaceBetween: 40,
+      //   },
+      //   1241: {
+      //     slidesPerView: 4,
+      //     spaceBetween: 40,
+      //   },
+      //   1441: {
+      //     slidesPerView: 4,
+      //     spaceBetween: 40,
+      //   },
+    },
+    // Navigation arrows
+    navigation: {
+      nextEl: ".swiper-button_next",
+      prevEl: ".swiper-button_prev",
+    },
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: false,
+      enabled: true,
+      type: "bullets",
+    },
+  });
   const productSwiper2 = new Swiper(".products_swiper_2", {
     // Optional parameters
 

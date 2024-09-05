@@ -679,6 +679,8 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		background: linear-gradient(0deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.82) 100%), url('form_background.webp') lightgray 0px -417.816px / 100% 309.677% no-repeat;
+		// background-image: url('form_background.webp');
 
 		@media screen and (max-width: 768px) {
 			margin-top: 64px;

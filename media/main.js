@@ -161,11 +161,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const homeBannersSwiper = new Swiper(".home__swiper", {
     autoplay: {
-      delay: 3000,
+      delay: 10000,
       pauseOnMouseEnter: true,
       disableOnInteraction: false,
     },
-    speed: 700,
+    speed: 1000,
     loop: true,
     slidesPerView: 1,
     spaceBetween: 0,

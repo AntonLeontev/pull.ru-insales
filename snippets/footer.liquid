@@ -4,7 +4,8 @@
 	subscribe(e) {
 		this.processing = true
 
-		$.post('https://app.limmite.ru/api/footer-subscribe', {email: e.target.querySelector('input').value})
+		let data = new FormData(e.target)
+		$.post('https://app.limmite.ru/api/footer-subscribe', Object.fromEntries(data.entries()))
 			.done(done => e.target.querySelector('span').innerText = '✓')
 			.fail(err => console.log(err))
 			.always(() => {
@@ -28,7 +29,7 @@
 
 					<div class="radio-wrap">
 						<label>
-							<input type="radio" name="sex" value="male" checked>
+							<input type="radio" name="sex" value="1" checked>
 							<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="empty">
 								<circle cx="7" cy="7" r="6.5" fill="white" stroke="#939393"/>
 							</svg>
@@ -39,7 +40,7 @@
 							<span>Для мужчин</span>
 						</label>
 						<label>
-							<input type="radio" name="sex" value="female">
+							<input type="radio" name="sex" value="2">
 							<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="empty">
 								<circle cx="7" cy="7" r="6.5" fill="white" stroke="#939393"/>
 							</svg>
@@ -112,7 +113,7 @@
 
 						<div class="radio-wrap">
 							<label>
-								<input type="radio" name="sex" value="male" checked>
+								<input type="radio" name="sex" value="1" checked>
 								<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="empty">
 									<circle cx="7" cy="7" r="6.5" fill="white" stroke="#939393"/>
 								</svg>
@@ -123,7 +124,7 @@
 								<span>Для мужчин</span>
 							</label>
 							<label>
-								<input type="radio" name="sex" value="female">
+								<input type="radio" name="sex" value="2">
 								<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="empty">
 									<circle cx="7" cy="7" r="6.5" fill="white" stroke="#939393"/>
 								</svg>

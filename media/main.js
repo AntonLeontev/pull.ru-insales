@@ -44,6 +44,50 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  const runningLine = new Swiper(".running_line", {
+    spaceBetween: 0,
+    centeredSlides: true,
+    speed: 3000,
+    autoplay: {
+      delay: 0,
+      disableOnInteraction: false,
+    },
+    loop: true,
+    loopedSlides: 4,
+    slidesPerView: "auto",
+    allowTouchMove: true,
+  });
+
+  setTimeout(() => {
+    runningLine.autoplay.resume();
+  }, 300);
+
+  const homeProductsSwiper = new Swiper(".home__products-swiper", {
+    spaceBetween: 24,
+    speed: 500,
+    loop: false,
+    slidesPerView: 6,
+    navigation: {
+      nextEl: ".home__products-swiper-button_next",
+      prevEl: ".home__products-swiper-button_prev",
+    },
+    breakpoints: {
+      1300: {
+        slidesPerView: 6,
+      },
+      1150: {
+        slidesPerView: 5,
+      },
+      768: {
+        slidesPerView: 4,
+      },
+      320: {
+        slidesPerView: 2.5,
+        spaceBetween: 8,
+      },
+    },
+  });
+
   const productSwiper = new Swiper(".products_swiper", {
     // Optional parameters
 

@@ -301,7 +301,7 @@
 				font-size: 1.125rem;
 				font-style: normal;
 				font-weight: 400;
-				line-height: 100%; /* 18px */
+				line-height: 130%; /* 18px */
 				text-transform: uppercase;
 
 				@media screen and (max-width: 768px) {
@@ -828,5 +828,121 @@
 			}
 		}
 
+	}
+}
+
+.popup-cover {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 100dvh;
+	display: none;
+	background-color: #11111170;
+	z-index: 40;
+	justify-content: center;
+	align-items: center;
+
+	&_active {
+		display: flex;
+	}
+}
+
+.popup_register {
+	background-color: $white;
+	padding: 24px;
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+	width: 520px;
+
+	.popup__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+
+		.header__title {
+			font-size: 24px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 100%; /* 24px */
+		}
+
+		.header__close {
+			display: inline-flex;
+			justify-content: center;
+			align-items: center;
+			width: 34px;
+			height: 34px;
+			border: solid 1px $primary;
+			border-radius: 100%;
+
+			img {
+				width: 22px;
+				height: 22px;
+			}
+		}
+	}
+
+	.popup__body {
+		.body__form {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			align-items: center;
+
+			input {
+				width: 100%;
+				padding: 16px;
+				border: 1px solid $secondary;
+			}
+
+			input.error {
+				border-color: $danger;
+			}
+
+			button {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 100%;
+				color: $white;
+				background-color: $primary;
+				padding: 16px;
+				margin-top: 10px;
+			}
+
+			.error {
+				display: none;
+				width: 100%;
+				margin-bottom: 3px;
+				color: $danger;
+
+				&_active {
+					display: block;
+				}
+			}
+		}
+
+		.text {
+			margin-top: 12px;
+			color: $secondary;
+			text-align: center;
+			font-size: .75rem;
+			font-style: normal;
+			font-weight: 300;
+			line-height: 150%; 
+
+			@media screen and (max-width: 768px) {
+				font-size: .75rem;
+				margin-top: 24px;
+			}
+
+			a {
+				color: $secondary;
+				text-decoration: underline;
+			}
+		}
 	}
 }

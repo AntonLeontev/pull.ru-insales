@@ -47,6 +47,7 @@
 <link rel="manifest" href="{{ 'site.webmanifest' | asset_url }}">
 
 {% include_insales_scripts "common-js@v2" %}
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 
 {% if template == 'cart' %}
@@ -85,6 +86,14 @@
 (function(w,d,n,c){w.CalltouchDataObject=n;w[n]=function(){w[n]["callbacks"].push(arguments)};if(!w[n]["callbacks"]){w[n]["callbacks"]=[]}w[n]["loaded"]=false;if(typeof c!=="object"){c=[c]}w[n]["counters"]=c;for(var i=0;i<c.length;i+=1){p(c[i])}function p(cId){var a=d.getElementsByTagName("script")[0],s=d.createElement("script"),i=function(){a.parentNode.insertBefore(s,a)},m=typeof Array.prototype.find === 'function',n=m?"init-min.js":"init.js";s.async=true;s.src="https://mod.calltouch.ru/"+n+"?id="+cId;if(w.opera=="[object Opera]"){d.addEventListener("DOMContentLoaded",i,false)}else{i()}}})(window,document,"ct","p7bhh2hj");
 </script>
 <!-- calltouch -->
+
+<script>
+	$.ajaxSetup({
+    headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+    }
+});
+</script>
 
 
 

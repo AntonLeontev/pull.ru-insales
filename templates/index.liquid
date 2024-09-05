@@ -29,7 +29,7 @@
 						<div class="slide__content">
 							<div class="text-container">
 								<div class="slide__header">Дарим скидку 5%<br> на первую покупку</div>
-								<button class="slide__button">Получить скидку</button>
+								<button class="slide__button" @click="$dispatch('open-register')">Получить скидку</button>
 							</div>
 						</div>
 					</div>
@@ -132,12 +132,12 @@
 	
 			</div>
 			<div class="swiper-nav">
-				<button class="swiper-button_prev">
+				<button class="swiper-button_prev home__products-swiper-button_prev">
 				   <svg width="32" viewBox="0 0 15 8" fill="none" xmlns="http://www.w3.org/2000/svg">
 					   <path d="M0.646446 4.35355C0.451184 4.15829 0.451184 3.84171 0.646446 3.64645L3.82843 0.464467C4.02369 0.269205 4.34027 0.269205 4.53553 0.464467C4.7308 0.659729 4.7308 0.976312 4.53553 1.17157L1.70711 4L4.53553 6.82843C4.7308 7.02369 4.7308 7.34027 4.53553 7.53553C4.34027 7.7308 4.02369 7.7308 3.82843 7.53553L0.646446 4.35355ZM15 4.5L1 4.5L1 3.5L15 3.5L15 4.5Z" fill="#111111"/>
 				   </svg>
 				</button>
-				<button class="swiper-button_next">
+				<button class="swiper-button_next home__products-swiper-button_next">
 				   <svg width="32" viewBox="0 0 15 8" fill="none" xmlns="http://www.w3.org/2000/svg">
 					   <path d="M14.3536 4.35355C14.5488 4.15829 14.5488 3.84171 14.3536 3.64645L11.1716 0.464467C10.9763 0.269205 10.6597 0.269205 10.4645 0.464467C10.2692 0.659729 10.2692 0.976312 10.4645 1.17157L13.2929 4L10.4645 6.82843C10.2692 7.02369 10.2692 7.34027 10.4645 7.53553C10.6597 7.7308 10.9763 7.7308 11.1716 7.53553L14.3536 4.35355ZM-4.68336e-08 4.5L14 4.5L14 3.5L4.68336e-08 3.5L-4.68336e-08 4.5Z" fill="#111111"/>
 				   </svg>
@@ -150,7 +150,7 @@
 			<div class="banner__text">
 				<div class="title">Дарим скидку 5% на первую покупку</div>
 				<div class="text">Регистрируйтесь – узнавайте о новинках и специальных предложениях первыми</div>
-				<button class="button">Получить скидку</button>
+				<button class="button" @click="$dispatch('open-register')">Получить скидку</button>
 			</div>
 		</section>
 
@@ -218,17 +218,34 @@
 		<section class="home__form">
 			<div class="subtitle">экспресс консультация стилиста под ваш запрос</div>
 			<div class="title">Получите персональную консультацию стилиста</div>
-			<form class="form">
+			<form class="form" @submit.prevent="submit" 
+				x-data="{
+					processing: false,
+
+					submit(e) {
+						this.processing = true
+
+						let data = new FormData(e.target)
+						$.post('https://app.limmite.ru/api/stylist-subscribe', Object.fromEntries(data.entries()))
+							.done(done => e.target.querySelector('button span').innerText = '✓')
+							.fail(err => console.log(err))
+							.always(() => {
+								e.target.reset()
+								this.processing = false
+							})
+					},
+				}"
+			>
 				<div class="wrap">
-					<input type="email" placeholder="Введите ваш E-mail">
+					<input type="email" name="email" placeholder="Введите ваш E-mail">
 					<button>
-						<span>Отправить</span>
-						<img src="{{ 'loading-white.svg' | asset_url }}" height="20px" width="20px" alt="loading" x-show="false" x-cloak>
+						<span x-show="!processing">Отправить</span>
+						<img src="{{ 'loading-white.svg' | asset_url }}" height="20px" width="20px" alt="loading" x-show="processing" x-cloak>
 					</button>
 				</div>
 				<div class="radio-wrap">
 					<label>
-						<input type="radio" name="sex" value="male" checked>
+						<input type="radio" name="sex" value="1" checked>
 						<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="empty">
 							<circle cx="7" cy="7" r="6.5" fill="white" stroke="#939393"/>
 						</svg>
@@ -239,7 +256,7 @@
 						<span>Для мужчин</span>
 					</label>
 					<label>
-						<input type="radio" name="sex" value="female">
+						<input type="radio" name="sex" value="2">
 						<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="empty">
 							<circle cx="7" cy="7" r="6.5" fill="white" stroke="#939393"/>
 						</svg>
@@ -258,53 +275,61 @@
 	</div>
 </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const runningLine = new Swiper(".running_line", {
-      spaceBetween: 0,
-      centeredSlides: true,
-      speed: 3000,
-      autoplay: {
-        delay: 0,
-        disableOnInteraction: false,
-      },
-      loop: true,
-      loopedSlides: 4,
-      slidesPerView:'auto',
-      allowTouchMove: true,
-    });
+<div class="popup-cover" :class="show && 'popup-cover_active'" x-data="{
+	show: false,
+	processing: false,
+	errors: {},
 
-	setTimeout(() => {
-		runningLine.autoplay.resume()
-	}, 300);
+	submit(e) {
+		this.processing = true;
+		this.errors = {};
 
+		let data = new FormData(e.target)
+		$.post('https://app.limmite.ru/api/register-from-main', Object.fromEntries(data.entries()))
+			.done(done => {
+				e.target.reset()
+				e.target.querySelector('button span').innerText = '✓'
+			})
+			.fail(err => {
+				if (err.status === 422) {
+					this.errors = err.responseJSON.errors
+					return;
+				}
 
-    const homeProductsSwiper = new Swiper(".home__products-swiper", {
-		spaceBetween: 24,
-		speed: 500,
-		loop: false,
-		slidesPerView: 6,
-		navigation: {
-			nextEl: ".swiper-button_next",
-			prevEl: ".swiper-button_prev",
-		},
-		breakpoints: {
-			1300: {
-				slidesPerView: 6,
-			},
-			1150: {
-				slidesPerView: 5,
-			},
-			768: {
-				slidesPerView: 4,
-			},
-			320: {
-				slidesPerView: 2.5,
-				spaceBetween: 8,
-			},
-		},
-    });
-  })
-</script>
-
+				e.target.reset()
+				console.log(err)
+			})
+			.always(() => {
+				this.processing = false
+			})
+	},
+}"
+@open-register.window="show = true"
+>
+	<div class="popup popup_register" x-show="show" x-transition.opacity>
+		<div class="popup__header">
+			<div class="header__title">Скидка за регистрацию</div>
+			<button class="header__close" aria-label="Кнопка закрыть модальное окно" @click="show = false">
+				<img src="{{ 'ICO-close.svg' | asset_url }}" alt="close button">
+			</button>
+		</div>
+		<div class="popup__body">
+			<form class="body__form" @submit.prevent="submit">
+				<input type="text" name="name" placeholder="Имя" required>
+				<div class="error" :class="errors?.name && 'error_active'" x-text="errors.name?.join('')">Error</div>
+				<input type="email" name="email" placeholder="Email" required>
+				<div class="error" :class="errors?.email && 'error_active'" x-text="errors.email?.join('')">Error</div>
+				<input type="phone" name="phone" placeholder="Номер телефона" value="+7 (9" required x-mask="+7 (999) 999-99-99">
+				<div class="error" :class="errors?.phone && 'error_active'" x-text="errors.phone?.join('')">Error</div>
+				<button :disabled="processing">
+					<span x-show="!processing">Получить скидку</span>
+					<img src="{{ 'loading-white.svg' | asset_url }}" height="20px" width="20px" alt="loading" x-show="processing" x-cloak>
+				</button>
+			</form>
+			<div class="text">
+				Нажимая "Получить скидку" вы даёте согласие на <a target="_blank" href="https://static.insales-cdn.com/files/1/3325/33565949/original/policy.pdf">обработку персональных данных</a>
+			</div>
+		</div>
+	</div>
+</div>
 

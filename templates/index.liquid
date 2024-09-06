@@ -237,7 +237,7 @@
 				}"
 			>
 				<div class="wrap">
-					<input type="email" name="email" placeholder="Введите ваш E-mail">
+					<input type="email" name="email" placeholder="Введите ваш E-mail" required>
 					<button>
 						<span x-show="!processing">Отправить</span>
 						<img src="{{ 'loading-white.svg' | asset_url }}" height="20px" width="20px" alt="loading" x-show="processing" x-cloak>

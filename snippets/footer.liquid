@@ -20,7 +20,7 @@
 				<div class="subscribe__title">Скидка 5% за подписку на новинки</div>
 				<form class="subscribe__input" @submit.prevent="subscribe">
 					<div class="wrap">
-						<input type="email" name="email" placeholder="Ваш e-mail">
+						<input type="email" name="email" placeholder="Ваш e-mail" required>
 						<button type="submit" class="" :disabled="processing">
 							<span x-show="!processing">Отправить</span>
 							<img src="{{ 'loading.svg' | asset_url }}" height="20px" width="20px" alt="loading" x-show="processing" x-cloak>
@@ -104,7 +104,7 @@
 					<div class="subscribe__title">Скидка 5% за подписку на новинки</div>
 					<form class="subscribe__input" @submit.prevent="subscribe">
 						<div class="wrap">
-							<input type="email" name="email" placeholder="Ваш e-mail">
+							<input type="email" name="email" placeholder="Ваш e-mail" required>
 							<button type="submit" class="" :disabled="processing">
 								<span x-show="!processing">Отправить</span>
 								<img src="{{ 'loading.svg' | asset_url }}" height="20px" width="20px"  alt="loading" x-show="processing" x-cloak>

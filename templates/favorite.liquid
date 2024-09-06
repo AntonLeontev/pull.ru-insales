@@ -1,98 +1,115 @@
 {% assign collection_size = settings.collection_count | default: "50" %}
 
-<section class="section-catalog">
-  <div class="container">
-    
-    {% paginate products by collection_size %}
-      <div class="section_header">
-        <div class="section_title">
-          Избранное
-        </div>
-        <div class="catalog_buttons">
-          <!-- <a href="#" class="sort">
-            <img src="{{ 'icon-park-outline_switch.svg' | asset_url }}" alt="" />
-            Сортировать</a
-          >
-          <a href="#" class="filter_toggle">
-            <img src="{{ 'bi_filter.svg' | asset_url }}" alt="" /> фильтр</a
-          > -->
-        </div>
-      </div>
-      <div class="catalog_inner">
-        {% for product in products %}
-          {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
-          {% assign saleNumber = priceDivision | minus: 100 %}
-          {% assign salePercent = saleNumber | round: 1 %}
-          <div class="product_slide_card product" id="products"
-            data-product='{"id": "{{ product.id }}","name": "{{product.title}}","price": {{ product.price }},"discount": {{ salePercent | remove_first: "-"}},"category": "{{ collectionTitles | join: "/" }}"}'
-            data-url="{{product.url}}"
-          >
-            <div class="product_card_img">
-              <a class="card_img__link" href="{{product.url}}">
-                <img class="card_img__image" src="{{product.first_image.large_url | image_url: 459, format: 'webp'}}" alt="{{product.title}}" />
-              </a>
-              <div class="labels">
-                {% if product.old_price > 0 and product.old_price > product.price %}
-                <div class="labe_discount">{{ salePercent }}%</div>
-                {% endif %}
-                <!-- <div class="labe_premium">Premium</div> -->
-              </div>
-			  <button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
-				<img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
-				<img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
-			  </button>
-            </div>
-            <div class="product_card_itext">
-              <a href="{{product.url}}" class="product_card_name">{{product.title}}</a>
-              <div class="product_card_prices">
-                <div class="product_card_price">{{ product.price | money }}</div>
-                {% if product.old_price > 0 and product.old_price > product.price %}
-                  <div class="product_card_old_price">{{ product.old_price | money }}</div>
-                {% endif %}
-              </div>
-            </div>
-          </div>
-        {% endfor %}
-      </div>
+<div class="container">
+  
+  {% paginate products by collection_size %}
+	  <section class="collection" id="collection">
 
-	    <script>
-        let products = [
-          {% for product in products %}
-            {% if product.old_price > 0 and product.old_price > product.price %}
-              {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
-              {% assign saleNumber = priceDivision | minus: 100 %}
-              {% assign salePercent = saleNumber | round: 0 %}
-            {% endif %}
-            {% assign collectionTitles = product.collections | sort: 'level' | map: 'title' %}
-            {
-              "id": "{{ product.id }}",
-              "name" : "{{product.title}}",
-              "price": {{ product.price }},
-              {% if product.old_price > 0 and product.old_price > product.price %}
-              "discount": {{ salePercent | remove_first: "-"}},
-              {% endif %}
-              "category": "{{ collectionTitles | join: '/' }}",
-              "list": "Избранное",
-              // "position": 1
-            },
-          {% endfor %}
-        ];
+		  <div class="collection__header">
+			  <h1 class="section_title">
+				  Избранное
+			  </h1>
+		  </div>
+		  <div class="collection__content">
+			  <div class="collection__products-wrap" x-ref="products">
+				  <div class="products__header" id="filters"
+					  @change="onChange"
+					  x-data="{
+						  
+					  }"
+				  >
+					  <div class="collection__filters_mobile">
+						  <button class="filters__item" @click="$dispatch('sort-click')">
+							  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+								  <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
+							  </svg>
+							  Сортировать
+						  </button>
+						  <button class="filters__item" @click="$dispatch('filters-click')">
+							  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+								  <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
+							  </svg>
+							  Фильтры
+						  </button>
+					  </div>
+				  </div>
+				  <div class="collection__products" id="products">
+					  {% for product in products %}
+						  {% if product.old_price > 0 and product.old_price > product.price %}
+							  {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+							  {% assign saleNumber = priceDivision | minus: 100 %}
+							  {% assign salePercent = saleNumber | round: 0 %}
+						  {% endif %}
+						  {% assign collectionTitles = product.collections | sort: 'level' | map: 'title' %}
+						  <div class="collection__product" 
+							  data-product='{"id": "{{ product.id }}","name": "{{product.title}}","price": {{ product.price }},"discount": "{{ salePercent | remove_first: "-"}}","category": "{{ collectionTitles | join: "/" }}"}'
+							  data-url="{{product.url}}"
+						  >
+							  <div class="product__image-wrap">
+								  <a class="product__image-link" href="{{product.url}}">
+									  <img class="product__image" src="{{ product.first_image.large_url}}" alt="{{product.title}}" width="100%" height="100%" />
+								  </a>
+								  <div class="product__labels">
+									  {% if product.old_price > 0 and product.old_price > product.price %}
+										  <div class="product__label product__label_discount">{{ salePercent }}%</div>
+									  {% endif %}
+								  </div>
+								  <button class="product_save_btn" data-ui-favorites-trigger="{{ product.id }}">
+									  <img class="icon_delete" src="{{ 'ICO-heart-filled.svg' | asset_url }}" alt="Добавить в избранное"/>
+									  <img class="icon_add" src="{{ 'ICO-heart.svg' | asset_url }}" alt="Удалить из избранного"/>
+								  </button>
+							  </div>
+							  <a href="{{product.url}}" class="product__title">{{product.title}}</a>
+							  <div class="product__prices">
+								  <div class="product__price">{{ product.price | money}}</div>
+								  {% if product.old_price > 0 and product.old_price > product.price %}
+									  <div class="product__old-price">{{ product.old_price | round: 0 }}</div>
+								  {% endif %}
+							  </div>
+						  </div>
+					  {% endfor %}
+				  </div>
+			  </div>
+		  </div>
 
-        dataLayer.push({
-          "ecommerce": {
-            "currencyCode": "RUB",
-            "impressions": products,
-          }
-        });
-      </script>
-
-      {% if paginate.pages > 1 %}
-        {% include 'pagination' %}
-      {% endif %}
-
-    {% endpaginate %}
-  </div>
-</section>
+		  <script>
+			  let products = [
+			  {% for product in collection.products %}
+				  {% if product.old_price > 0 and product.old_price > product.price %}
+				  {% assign priceDivision = product.price | divided_by: product.old_price | times : 100 %}
+				  {% assign saleNumber = priceDivision | minus: 100 %}
+				  {% assign salePercent = saleNumber | round: 0 %}
+				  {% endif %}
+				  {% assign collectionTitles = product.collections | sort: 'level' | map: 'title' %}
+				  {
+				  "id": "{{ product.id }}",
+				  "name" : "{{product.title}}",
+				  "price": {{ product.price }},
+				  {% if product.old_price > 0 and product.old_price > product.price %}
+				  "discount": {{ salePercent | remove_first: "-"}},
+				  {% endif %}
+				  "category": "{{ collectionTitles | join: '/' }}",
+				  // "list": "Catalog",
+				  // "position": 1
+				  },
+			  {% endfor %}
+			  ];
+  
+			  dataLayer.push({
+			  "ecommerce": {
+				  "currencyCode": "RUB",
+				  "impressions": products,
+			  }
+			  });
+		  </script>
+  
+		  {% if paginate.pages > 1 %}
+			  {% include 'pagination' %}
+		  {% endif %}
+  
+	  {% endpaginate %}
+	  </section>
+</div>
 
 <script>
   document.getElementById('products').addEventListener('click', (event) => {

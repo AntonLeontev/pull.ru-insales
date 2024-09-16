@@ -45,7 +45,7 @@
 
 							{% if image_modulo > 0 and image_modulo <= 2 %}
 								<div class="image__wrap" data-index="{{ forloop.index0 }}">
-									<img src="{{image.original_url | format: 'webp'}}" alt="{{ product.title }}">
+									<img src="{{image.original_url | image_url: 900, format: 'webp'}}" alt="{{ product.title }}">
 								</div>
 							{% endif %}
 
@@ -56,7 +56,7 @@
 
 							{% if image_modulo > 2 and image_modulo <= 5 %}
 								<div class="image__wrap" data-index="{{ forloop.index0 }}">
-									<img src="{{image.original_url | format: 'webp'}}" alt="{{ product.title }}">
+									<img src="{{image.original_url | image_url: 900, format: 'webp'}}" alt="{{ product.title }}">
 								</div>
 							{% endif %}
 
@@ -64,7 +64,7 @@
 								</div>
 								<div class="images images_single">
 									<div class="image__wrap" data-index="{{ forloop.index0 }}">
-										<img src="{{image.large_url | format: 'webp'}}" alt="{{ product.title }}">
+										<img src="{{image.large_url | image_url: 900, format: 'webp'}}" alt="{{ product.title }}">
 									</div>
 								</div>
 							{% endif %}
@@ -72,7 +72,7 @@
 							{% if images_over_grid == 1 %}
 								<div class="images images_single">
 									<div class="image__wrap" data-index="{{ forloop.index0 }}">
-										<img src="{{image.large_url | format: 'webp'}}" alt="{{ product.title }}">
+										<img src="{{image.large_url | image_url: 900, format: 'webp'}}" alt="{{ product.title }}">
 									</div>
 								</div>
 							{% endif %}
@@ -84,7 +84,7 @@
 
 								{% if image_modulo <= 3 %}
 									<div class="image__wrap" data-index="{{ forloop.index0 }}">
-										<img src="{{image.original_url | format: 'webp'}}" alt="{{ product.title }}">
+										<img src="{{image.original_url | image_url: 900, format: 'webp'}}" alt="{{ product.title }}">
 									</div>
 								{% endif %}
 
@@ -100,7 +100,7 @@
 
 								{% if image_modulo <= 2 %}
 									<div class="image__wrap" data-index="{{ forloop.index0 }}">
-										<img src="{{image.original_url | format: 'webp'}}" alt="{{ product.title }}">
+										<img src="{{image.original_url | image_url: 900, format: 'webp'}}" alt="{{ product.title }}">
 									</div>
 								{% endif %}
 
@@ -111,7 +111,7 @@
 
 								{% if image_modulo > 2 %}
 									<div class="image__wrap" data-index="{{ forloop.index0 }}">
-										<img src="{{image.original_url | format: 'webp'}}" alt="{{ product.title }}">
+										<img src="{{image.original_url | image_url: 900, format: 'webp'}}" alt="{{ product.title }}">
 									</div>
 								{% endif %}
 

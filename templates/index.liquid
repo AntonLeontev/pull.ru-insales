@@ -7,9 +7,9 @@
 						<img class="slide__image" src="{{ 'home_swiper01.webp' | asset_url }}" alt="Баннер новинки">
 						<div class="slide__content">
 							<div class="text-container">
-								<div class="slide__header">Новинки</div>
-								<div class="slide__text" style="margin-bottom: 24px;">тестовый заголовок тестовый заголовок тестовый заголовоктестовый заголовоктестовый заголовоктестовый заголовок</div>
-								<a href="/page/new-products" class="slide__button">Кнопка</a>
+								<div class="slide__header">Новые поступления</div>
+								<div class="slide__subtext" style="margin-bottom: 24px;">Выбирайте актуальные модели сезона от мировых брендов по выгодным ценам.</div>
+								<a href="/page/new-products" class="slide__button">В каталог</a>
 							</div>
 						</div>
 					</div>
@@ -19,8 +19,8 @@
 							<div class="text-container">
 								<div class="slide__text" style="margin-bottom: 12px;">Ждём вас в гости!</div>
 								<div class="slide__header">Мы открываемся в Москве</div>
-								<div class="slide__text" style="margin-bottom: 24px;"> доп инфа почему приходить офлайн  доп инфа почему приходить офлайн доп инфа почему приходить офлайн доп инфа почему приходить офлайн доп инфа почему приходить офлайн доп инфа почему приходить офлайн</div>
-								<div class="slide__text" style="font-weight: 700;">Vegas Кунцево – в сентябре - Vegas Кунцево – в сентябре</div>
+								<div class="slide__subtext" style="margin-bottom: 24px;">Уникальные бренды в наличии, стилисты в команде консультантов&nbsp;и индивидуальный подход к каждому клиенту.</div>
+								<div class="slide__text" style="font-weight: 700;">Vegas Кунцево – открытие в сентябре<br>Крокус Сити Молл – открытие в ноябре</div>
 							</div>
 						</div>
 					</div>
@@ -115,15 +115,20 @@
 					{%for product in collections[block_new.collection.handle].products %}
 					<div class="swiper-slide">
 						<div class="swiper__card">
-							<div class="card__image-container">
-								<a href="{{ product.url }}">
-									<img  class="card__image" src="{{ product.first_image.large_url }}" alt="{{ product.title }}"/>
-								</a>
+							<div class="card__top">
+								<div class="card__image-container">
+									<a href="{{ product.url }}">
+										<img  class="card__image" src="{{ product.first_image.large_url }}" alt="{{ product.title }}"/>
+									</a>
+								</div>
+								<div class="card__text">
+									<a href="{{ product.url }}" class="card__title">
+										{{ product.title }}
+									</a>
+								</div>
 							</div>
-							<div class="card__text">
-								<a href="{{ product.url }}" class="card__title">
-									{{ product.title }}
-								</a>
+							<div class="card__price">
+								{{ product.price | money }}
 							</div>
 						</div>
 					</div>
@@ -146,7 +151,7 @@
 		</section>
 
 		<section class="home__banner">
-			<img src="{{ 'home_banner01.webp' | asset_url }}" alt="" class="banner_image">
+			<img src="{{ 'home_banner01.webp' | asset_url }}" alt="" class="banner__image">
 			<div class="banner__text">
 				<div class="title">Дарим скидку 5% на первую покупку</div>
 				<div class="text">Регистрируйтесь – узнавайте о новинках и специальных предложениях первыми</div>
@@ -303,12 +308,22 @@
 				this.processing = false
 			})
 	},
+	format(e) {
+		if (e.target.value.length >= 2) {
+			return
+		}
+
+		e.target.value = '+7';
+	},
 }"
 @open-register.window="show = true"
 >
 	<div class="popup popup_register" x-show="show" x-transition.opacity>
 		<div class="popup__header">
-			<div class="header__title">Скидка за регистрацию</div>
+			<div class="">
+				<div class="header__title">Получите скидку на первый заказ</div>
+				<div class="header__subtitle">Подпишитесь на наши новости и спецпредложения</div>
+			</div>
 			<button class="header__close" aria-label="Кнопка закрыть модальное окно" @click="show = false">
 				<img src="{{ 'ICO-close.svg' | asset_url }}" alt="close button">
 			</button>
@@ -319,7 +334,7 @@
 				<div class="error" :class="errors?.name && 'error_active'" x-text="errors.name?.join('')">Error</div>
 				<input type="email" name="email" placeholder="Email" required>
 				<div class="error" :class="errors?.email && 'error_active'" x-text="errors.email?.join('')">Error</div>
-				<input type="phone" name="phone" placeholder="Номер телефона" value="+7 (9" required x-mask="+7 (999) 999-99-99">
+				<input type="phone" name="phone" placeholder="Номер телефона" value="+7" required x-mask="+7(999)999-99-99" @input="format">
 				<div class="error" :class="errors?.phone && 'error_active'" x-text="errors.phone?.join('')">Error</div>
 				<button :disabled="processing">
 					<span x-show="!processing">Получить скидку</span>
@@ -327,7 +342,7 @@
 				</button>
 			</form>
 			<div class="text">
-				Нажимая "Получить скидку" вы даёте согласие на <a target="_blank" href="https://static.insales-cdn.com/files/1/3325/33565949/original/policy.pdf">обработку персональных данных</a>
+				Нажимая "Получить скидку", вы даёте согласие на <a target="_blank" href="https://static.insales-cdn.com/files/1/3325/33565949/original/policy.pdf">обработку персональных данных</a>
 			</div>
 		</div>
 	</div>

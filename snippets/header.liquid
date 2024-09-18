@@ -1,4 +1,4 @@
-{% if template contains 'product' %}	
+{% if template == 'product' %}	
 	{% assign catalog = collections | where: 'title', 'Каталог' | first %}
 	{% assign categories = catalog.subcollections %}
 	{% assign men = categories | where: 'title', 'Мужчинам' | first %}
@@ -8,6 +8,7 @@
 	{% assign men = collections.muzhchinam %}
 	{% assign women = collections.zhenschinam %}
 {% endif %}  
+
 
 {% assign brands = block_lists.with_template['system-banner-3'].brands.blocks %}
 

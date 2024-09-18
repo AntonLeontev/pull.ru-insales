@@ -37,6 +37,13 @@
 	.cdek-hlhf5b[data-v-3c8861b9] {
 		z-index: 10 !important;
 	}
+
+	.notice {
+		padding: .9375rem;
+		background: #ffebeb;
+		text-align: center;
+		border-radius: .5rem;
+	}
 </style>
 
 
@@ -47,9 +54,14 @@
     show: true,
     widget: null,
     initiated: false,
+	notice: false,
 
     init() {
 		this.initWidget(sessionStorage.getItem('location'))
+		
+		if (sessionStorage.getItem('location') === 'Москва') {
+			this.notice = true;
+		}
     },
     initWidget(location) {
 		if (location == null || location == '') {
@@ -154,6 +166,9 @@
   <div class="card_name" @click="toggle()">
     <div class="checkout__subtitle">Выберите способ доставки</div>
   </div>
+  <div class="notice">
+	Доставка в Москву и Московскую область временно недоступна
+  </div>
   <div class="card_content" :class="show && 'active'">
 	<div class="card_content_wrap">
 		<div id="cdekmap"></div>
@@ -169,7 +184,7 @@
 			</div>
 		</template>
 	</div>
-  </div>
+</div>
 </div>
 
 

@@ -6,7 +6,10 @@
 
 		let data = new FormData(e.target)
 		$.post('https://app.limmite.ru/api/footer-subscribe', Object.fromEntries(data.entries()))
-			.done(done => e.target.querySelector('span').innerText = '✓')
+			.done(done => {
+				e.target.querySelector('span').innerText = '✓'
+				ym(96482433, 'reachGoal', 'submit-footer-form');
+			})
 			.fail(err => console.log(err))
 			.always(() => {
 				e.target.reset()

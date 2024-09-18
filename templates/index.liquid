@@ -232,7 +232,10 @@
 
 						let data = new FormData(e.target)
 						$.post('https://app.limmite.ru/api/stylist-subscribe', Object.fromEntries(data.entries()))
-							.done(done => e.target.querySelector('button span').innerText = '✓')
+							.done(done => {
+								e.target.querySelector('button span').innerText = '✓';
+								ym(96482433, 'reachGoal', 'submit-stylist-form');
+							})
 							.fail(err => console.log(err))
 							.always(() => {
 								e.target.reset()
@@ -284,6 +287,7 @@
 	show: false,
 	processing: false,
 	errors: {},
+	page: 'form',
 
 	submit(e) {
 		this.processing = true;
@@ -293,7 +297,8 @@
 		$.post('https://app.limmite.ru/api/register-from-main', Object.fromEntries(data.entries()))
 			.done(done => {
 				e.target.reset()
-				e.target.querySelector('button span').innerText = '✓'
+				this.page = 'success'
+				ym(96482433, 'reachGoal', 'submit-register-popup');
 			})
 			.fail(err => {
 				if (err.status === 422) {
@@ -315,8 +320,16 @@
 
 		e.target.value = '+7';
 	},
+	open() {
+		this.show = true
+		ym(96482433, 'reachGoal', 'open-register-popup');
+	},
+	close() {
+		this.show = false
+		this.page = 'form'
+	},
 }"
-@open-register.window="show = true"
+@open-register.window="open"
 >
 	<div class="popup popup_register" x-show="show" x-transition.opacity>
 		<div class="popup__header">
@@ -324,25 +337,30 @@
 				<div class="header__title">Получите скидку на первый заказ</div>
 				<div class="header__subtitle">Подпишитесь на наши новости и спецпредложения</div>
 			</div>
-			<button class="header__close" aria-label="Кнопка закрыть модальное окно" @click="show = false">
+			<button class="header__close" aria-label="Кнопка закрыть модальное окно" @click="close">
 				<img src="{{ 'ICO-close.svg' | asset_url }}" alt="close button">
 			</button>
 		</div>
 		<div class="popup__body">
-			<form class="body__form" @submit.prevent="submit">
-				<input type="text" name="name" placeholder="Имя" required>
-				<div class="error" :class="errors?.name && 'error_active'" x-text="errors.name?.join('')">Error</div>
-				<input type="email" name="email" placeholder="Email" required>
-				<div class="error" :class="errors?.email && 'error_active'" x-text="errors.email?.join('')">Error</div>
-				<input type="phone" name="phone" placeholder="Номер телефона" value="+7" required x-mask="+7(999)999-99-99" @input="format">
-				<div class="error" :class="errors?.phone && 'error_active'" x-text="errors.phone?.join('')">Error</div>
-				<button :disabled="processing">
-					<span x-show="!processing">Получить скидку</span>
-					<img src="{{ 'loading-white.svg' | asset_url }}" height="20px" width="20px" alt="loading" x-show="processing" x-cloak>
-				</button>
-			</form>
-			<div class="text">
-				Нажимая "Получить скидку", вы даёте согласие на <a target="_blank" href="https://static.insales-cdn.com/files/1/3325/33565949/original/policy.pdf">обработку персональных данных</a>
+			<div x-show="page === 'form'">
+				<form class="body__form" @submit.prevent="submit">
+					<input type="text" name="name" placeholder="Имя" required>
+					<div class="error" :class="errors?.name && 'error_active'" x-text="errors.name?.join('')">Error</div>
+					<input type="email" name="email" placeholder="Email" required>
+					<div class="error" :class="errors?.email && 'error_active'" x-text="errors.email?.join('')">Error</div>
+					<input type="phone" name="phone" placeholder="Номер телефона" value="+7" required x-mask="+7(999)999-99-99" @input="format">
+					<div class="error" :class="errors?.phone && 'error_active'" x-text="errors.phone?.join('')">Error</div>
+					<button :disabled="processing">
+						<span x-show="!processing">Получить скидку</span>
+						<img src="{{ 'loading-white.svg' | asset_url }}" height="20px" width="20px" alt="loading" x-show="processing" x-cloak>
+					</button>
+				</form>
+				<div class="text">
+					Нажимая "Получить скидку", вы даёте согласие на <a target="_blank" href="https://static.insales-cdn.com/files/1/3325/33565949/original/policy.pdf">обработку персональных данных</a>
+				</div>
+			</div>
+			<div class="" x-show="page === 'success'">
+				<p style="text-align: center; padding: 30px 5px;">Спасибо! Мы отправили промокод вам на email.</p>
 			</div>
 		</div>
 	</div>

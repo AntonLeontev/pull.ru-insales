@@ -56,25 +56,25 @@
 				</div>
 				<div class="summary__option">
 					<div class="option__name">Цена</div>
-					<div class="option__value option__value_price"><span x-text="formatNumber($store.cart.getSalePriceSum())"></span> ₽</div>
+					<div class="option__value option__value_price text-inter"><span x-text="formatNumber($store.cart.getSalePriceSum())"></span> ₽</div>
 				</div>
 				<template x-if="$store.cart.getTotalDiscount() > 0">
 					<div class="summary__option summary__option_discount">
 						<div class="discount__value">
 							<div class="option__name">Скидка</div>
-							<div class="option__value option__value_discount" x-text="'- ' + formatNumber($store.cart.getTotalDiscount()) + ' ₽'"></div>
+							<div class="option__value option__value_discount text-inter" x-text="'- ' + formatNumber($store.cart.getTotalDiscount()) + ' ₽'"></div>
 						</div>
 						<div class="discount__description" x-text="$store.cart.cart.discount_description"></div>
 					</div>
 				</template>
 				<div class="summary__option" x-show="deliveryPrice() > 0">
 					<div class="option__name">Доставка</div>
-					<div class="option__value" x-text="deliveryPrice() + ' ₽'"></div>
+					<div class="option__value text-inter" x-text="deliveryPrice() + ' ₽'"></div>
 				</div>
 			</div>
 			<div class="summary__total">
 				<div class="total__title">Итого:</div>
-				<div class="total__value" x-text="formatNumber(+$store.cart.cart?.total_price + deliveryPrice()) + ' ₽'"></div>
+				<div class="total__value text-inter" x-text="formatNumber(+$store.cart.cart?.total_price + deliveryPrice()) + ' ₽'"></div>
 			</div>
 			<div class="summary__button">
 				<button type="button" class="btn btn-primary w-full" @click="submit" :disabled="processing">

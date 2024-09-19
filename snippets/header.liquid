@@ -238,7 +238,7 @@
 							show: false,
 						}">
 							<div class="category__header">
-								<a href="{{ category.url }}" class="category__title">{{ collection.title }}</a>
+								<a href="{{ collection.url }}" class="category__title">{{ collection.title }}</a>
 								{% if collection.subcollections.size > 0 %}
 									<button class="header__icon" :class="show && 'header__icon_active'" @click="show = !show">
 										<img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="Стрелка вниз">
@@ -282,7 +282,7 @@
 							show: false,
 						}">
 							<div class="category__header">
-								<a href="{{ category.url }}" class="category__title">{{ collection.title }}</a>
+								<a href="{{ collection.url }}" class="category__title">{{ collection.title }}</a>
 								{% if collection.subcollections.size > 0 %}
 									<button class="header__icon" :class="show && 'header__icon_active'" @click="show = !show">
 										<img src="{{ 'ICO-arrow-down.svg' | asset_url }}" alt="Стрелка вниз">

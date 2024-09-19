@@ -645,6 +645,7 @@
 						flex-grow: 1;
 						padding: 1rem;
 						border: solid 1px #d1d1d1;
+						border-radius: 0px;
 						font-size: 1rem;
 						min-width: 1px;
 					}
@@ -657,6 +658,7 @@
 						padding: 1rem;
 						border: solid 1px $primary;
 						font-size: 1rem;
+						color: $primary;
 					}
 				}
 			}

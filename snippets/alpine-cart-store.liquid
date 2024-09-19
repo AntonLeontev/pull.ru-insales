@@ -13,7 +13,7 @@
 				ajaxAPI.cart.get()
 					.done(cart => {
 						this.cart = cart
-						// console.log(cart)
+						this.cartReady = true
 						this.getOrganizations()
 					})
 			},

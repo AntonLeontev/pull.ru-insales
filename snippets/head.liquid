@@ -3,15 +3,6 @@
 {%- include "system_seo_description" -%}
 {%- include "system_v4_meta_data" -%}
 
-<!-- Предзагрузка видео на главной -->
-{% if page.url contains 'page/muzh' %}
-  <link rel="preload" href="{{ 'men.mp4' | file_url }}" as="video" />
-{% elsif page.url contains 'page/zhen' %}
-  <link rel="preload" href="{{ '01.mp4' | file_url }}" as="video" />
-{% endif %}
-
-
-
 <meta name="robots" content="index,follow" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -95,5 +86,13 @@
 });
 </script>
 
+<!-- Hawk -->
+<script src="https://cdn.jsdelivr.net/npm/@hawk.so/javascript@3.0.2/dist/hawk.min.js"></script>
+<script>
+	const hawk = new HawkCatcher({
+	token: 'eyJpbnRlZ3JhdGlvbklkIjoiMDdkODQ2ZTctY2ZhZS00YjQwLWE4MTYtZTJiNGNjMTNjMjdmIiwic2VjcmV0IjoiOGQzOWUyZTItY2QzMy00ZTkwLWE0Y2YtMWJhNTAyZGIwYTdlIn0='
+	}); 
+</script>
+<!-- Hawk -->
 
 

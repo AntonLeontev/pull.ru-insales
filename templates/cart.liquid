@@ -90,9 +90,9 @@
 								<div class="item-prices">
 									<div class="item__old-price text-inter" 
 										x-show="$store.cart.getItemVariant(item)?.old_price > item.sale_price"
-										x-text="Math.round($store.cart.getItemVariant(item)?.old_price)"
+										x-text="formatNumber($store.cart.getItemVariant(item)?.old_price)"
 									></div>
-									<div class="item__total-price text-inter" x-text="item.sale_price+' ₽'"></div>
+									<div class="item__total-price text-inter" x-text="formatNumber(item.sale_price)+' ₽'"></div>
 									<div class="item__discount text-inter"
 										x-show="$store.cart.getItemVariant(item)?.old_price > item.sale_price"
 										x-text="'- '+$store.cart.getItemDiscount(item)+'%'"
@@ -146,7 +146,7 @@
 				</svg>
 			</div>
 
-			<div class="fixed-button-wrap" x-show="$store.cart.cart.items_count > 0 && page === 'cart'">
+			<!-- <div class="fixed-button-wrap" x-show="$store.cart.cart.items_count > 0 && page === 'cart'">
 				<div class="container">
 					<button type="button" class="fixed-button" @click="toCheckout">
 						<div class="button__text">Перейти к оформлению</div>
@@ -157,7 +157,7 @@
 						</div>
 					</button>
 				</div>
-			</div>
+			</div> -->
 		</div>
 
 		{% include 'checkout' %}

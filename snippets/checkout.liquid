@@ -16,7 +16,14 @@
 		<div class="contacts" id="customer">
 			<div class="checkout__subtitle">Контактные данные</div>
 			<div class="contacts__form">
-				<input class="checkout__input" type="text" name="phone" placeholder="Укажите номер телефона" x-model="phone">
+				<input class="checkout__input" 
+					type="text" 
+					name="phone" 
+					placeholder="Укажите номер телефона" 
+					x-model="phone"
+					@input="phoneInput" 
+					x-mask="+7(999)999-99-99"
+				>
 				<input class="checkout__input" type="email" name="email" placeholder="Укажите email" x-model="email">
 			</div>
 		</div>
@@ -94,7 +101,9 @@
 			<div class="promo">
 				<div class="promo__title">У вас есть промокод?</div>
 				<form class="promo__form" @submit.prevent.stop="setCoupon">
-					<input type="text" class="promo__input" placeholder="Промокод" x-model="coupon" name="coupon">
+					<input type="text" class="promo__input" placeholder="Промокод" x-model="coupon" name="coupon" 
+						:style="$store.cart.cart.errors?.includes('Указан несуществующий купон, убедитесь, что он введен верно') && {'border-color': '#d61818'}"
+					>
 					<button type="submit" class="promo__button">
 						<span x-show="!couponLoading">Применить</span>
 						<svg x-show="couponLoading" width="14px" height="14px" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
@@ -131,7 +140,7 @@
 				<div class="button__description">
 					<span x-text="cartItemsForHuman"></span>
 					<span>-</span>
-					<span x-text="formatNumber(+$store.cart.cart?.total_price + deliveryPrice()) + ' ₽'"></span>
+					<span class="text-inter" x-text="formatNumber(+$store.cart.cart?.total_price + deliveryPrice()) + ' ₽'"></span>
 				</div>
 			</button>
 		</div>
@@ -494,6 +503,11 @@
 				}
 
 				return phone
+			},
+			phoneInput(e) {
+				if (e.target.value.length >= 2) return;
+
+				this.phone = '+7';
 			},
 		}))
 	})
